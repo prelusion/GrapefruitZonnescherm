@@ -1,0 +1,1 @@
+﻿The `sensors` folder contains all sensor reading related code.
