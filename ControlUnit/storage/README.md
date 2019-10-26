@@ -1,0 +1,1 @@
+﻿The `storage` folder contains all EEPROM related code.
