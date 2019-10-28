@@ -11,7 +11,7 @@ class Controller(ABC):
         self.app = app
 
 
-class View(wx.Frame):
+class View(wx.Panel):
     pass
 
 
