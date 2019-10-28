@@ -122,8 +122,14 @@ class ControlUnitManager:
         return self._units
 
     def update_models(self):
-        for comm, model in self._units:
+        for i, unit in enumerate(self._units.copy())/:
+            comm, model = unit
+
             data = comm.get_sensor_data()
+
+            if not data:
+                del self._units[i]
+
             model.add_temperature(Measurement(data.timestamp, data.temperature))
             model.add_shutter_status(Measurement(data.timestamp, data.shutter_status))
             model.add_light_sensitivity(Measurement(data.timestamp, data.light_sensitivity))
