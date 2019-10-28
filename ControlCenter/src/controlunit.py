@@ -70,8 +70,10 @@ class ControlUnitCommunication:
     def get_sensor_history(self):
         pass
 
-    def _connect(self):
-        pass
+    def _get_connection(self):
+        if not self._serial_connection:
+            self._serial_connection = ser.Connection(self._com_port, BAUDRATE, timeout=0.1)
+        return self._serial_connection
 
 
 class ControlUnitManager:

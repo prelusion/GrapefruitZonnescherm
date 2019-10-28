@@ -12,14 +12,6 @@ def get_com_ports():
     return tuple(ports)
 
 
-@contextmanager
-def connect(port, baudrate=115200, timeout=0.5):
-    connection = Connection(port, baudrate, timeout)
-    connection.open()
-    yield connection
-    connection.close()
-
-
 class Connection:
     def __init__(self, port, baudrate, timeout):
         self._port = port
