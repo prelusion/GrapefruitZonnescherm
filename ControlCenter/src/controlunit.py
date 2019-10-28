@@ -1,6 +1,13 @@
+from collections import namedtuple
+
 from src import serialinterface as ser
 
 BAUDRATE = 192500
+
+SensorData = namedtuple("SensorData", ["timestamp",
+                                       "temperature",
+                                       "shutter_status",
+                                       "light_sensitivity"])
 
 
 def get_online_control_units():
@@ -23,17 +30,35 @@ class Measurement:
         self.timestamp = timestamp
 
 
-class SensorData:
-    pass
-
-
 class ControlUnitCommunication:
-    pass
+    def __init__(self):
+        self.id = None
+        self._com_port = None
+        self._serial_connection = None
+
+    def is_online(self):
+        pass
+
+    def get_shutter_status(self):
+        pass
+
+    def get_sensor_data(self):
+        pass
+
+    def get_sensor_history(self):
+        pass
+
+    def _connect(self):
+        pass
 
 
 class ControlUnitManager:
-    pass
+    def __init__(self):
+        self._control_unit_communications = {}
+        self._control_unit_models = {}
 
+    def add_control_unit(self, communication, model):
+        pass
 
 if __name__ == "__main__":
     get_online_control_units()
