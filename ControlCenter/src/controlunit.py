@@ -35,6 +35,41 @@ def get_online_control_units():
         while True:
             cu_manager.update_models()
             time.sleep(60)
+
+
+
+
+    Example with dynamic control unit connection:
+
+        cu_manager = ControlUnitManager()
+
+
+        def port_check_service:
+            previous_ports = []
+
+            while True:
+                ports = get_online_control_units()
+
+                new_ports = set(ports) - set(previous_ports)
+
+                for port in new_ports:
+                    cu_comm = ControlUnitCommunication(port)
+
+                    id = cu_comm.get_id()
+                    if not id:
+                        cu_comm.set_id(generate_id())
+
+                    cu_model = ControlUnitModel(id)
+
+                    cu_manager.add_unit(cu_comm, cu_model)
+
+                time.sleep(5)
+
+
+        def sensor_data_service:
+            while True:
+                cu_manager.update_models()
+                time.sleep(60)
     """
     ports = ser.get_com_ports()
 
