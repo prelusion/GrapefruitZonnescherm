@@ -1,9 +1,14 @@
 import wx
+from pubsub import pub
 
 
-class Frame(wx.Frame):
+EVENT_MONEY_CHANGED = "money_changed"
+EVENT_CHANGE_MONEY = "change_money"
+
+
+class MainView(wx.Frame):
     def __init__(self, title):
-        wx.Frame.__init__(self, None, title=title, pos=(150, 150), size=(350, 200))
+        super().__init__(None, title=title, pos=(150, 150), size=(350, 200))
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
         menuBar = wx.MenuBar()
@@ -41,7 +46,11 @@ class Frame(wx.Frame):
 
 
 def mainloop():
-    app = wx.App(redirect=True)
-    top = Frame("Hello World")
-    top.Show()
+    app = wx.App(False)
+    mainview = MainView("My title")
+    mainview.Show()
     app.MainLoop()
+
+
+if __name__ == "__main__":
+    mainloop()
