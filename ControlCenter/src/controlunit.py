@@ -17,5 +17,17 @@ def get_online_control_units():
             print("end")
 
 
+class SensorData:
+    pass
+
+
+class ControlUnitCommunication:
+    pass
+
+
+class ControlUnitManager:
+    pass
+
+
 if __name__ == "__main__":
     get_online_control_units()
