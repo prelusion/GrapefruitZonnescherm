@@ -1,4 +1,5 @@
 from src import mvc
+from src import controlunit
 
 
 class ControlUnitModel(mvc.Model):
@@ -31,7 +32,7 @@ class ControlUnitModel(mvc.Model):
     def get_online(self):
         return self._online.get()
 
-    def add_temperature(self, temperature):
+    def add_temperature(self, temperature: controlunit.Measurement):
         temperatures = self._temperatures.get()
         if len(temperatures) > self.MEMORY_COUNT_THRESHOLD:
             temperatures.pop(0)
@@ -44,7 +45,7 @@ class ControlUnitModel(mvc.Model):
     def get_temperatures(self):
         return self._temperatures.get()
 
-    def add_shutter_status(self, status):
+    def add_shutter_status(self, status: controlunit.Measurement):
         shutter_status = self._shutter_status.get()
         if len(shutter_status) > self.MEMORY_COUNT_THRESHOLD:
             shutter_status.pop(0)
@@ -57,7 +58,7 @@ class ControlUnitModel(mvc.Model):
     def get_shutter_status(self):
         return self._shutter_status.get()
 
-    def add_light_sensitivity(self, light_sensitivity):
+    def add_light_sensitivity(self, light_sensitivity: controlunit.Measurement):
         light_sensitivities = self._light_sensitivities.get()
         if len(light_sensitivities) > self.MEMORY_COUNT_THRESHOLD:
             light_sensitivities.pop(0)

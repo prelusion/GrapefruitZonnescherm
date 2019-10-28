@@ -17,6 +17,12 @@ def get_online_control_units():
             print("end")
 
 
+class Measurement:
+    def __init__(self, value, timestamp):
+        self.value = value
+        self.timestamp = timestamp
+
+
 class SensorData:
     pass
 
