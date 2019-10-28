@@ -1,9 +1,8 @@
-from src.app import App
+from src import app
 
 
 def main():
     try:
-        app = App()
         app.mainloop()
     except KeyboardInterrupt:
         pass
