@@ -6,8 +6,8 @@ class ControlUnitModel(mvc.Model):
 
     MEMORY_COUNT_THRESHOLD = 1000
 
-    def __init__(self):
-        self._id = mvc.Observable()
+    def __init__(self, id):
+        self._id = mvc.Observable(id)
         self._name = mvc.Observable()
         self._online = mvc.Observable(False)
         self._temperatures = mvc.Observable([])
