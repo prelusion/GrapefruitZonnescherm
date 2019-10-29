@@ -1,5 +1,8 @@
 import wx
 from src.views.controlunits_view import ControlUnitsView
+from src.views.filter_view import FilterView
+from src.views.tab_view import TabView
+from src.views.graph_view import GraphView
 EVENT_MONEY_CHANGED = "money_changed"
 EVENT_CHANGE_MONEY = "change_money"
 
@@ -19,10 +22,18 @@ class MainView(wx.Frame):
         right_panel = wx.Panel(main_panel)
         right_panel.SetBackgroundColour((0, 0, 255))
 
-        controlunits_view = ControlUnitsView(right_panel)
-        right_panel_sizer_vbox.Add(controlunits_view, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        controlunits_view = ControlUnitsView(left_panel)
+        filter_view = FilterView(left_panel)
 
+        left_panel_sizer_vbox.Add(controlunits_view, 3, wx.EXPAND | wx.ALL)
+        left_panel_sizer_vbox.Add(filter_view, 1, wx.EXPAND | wx.ALL)
         left_panel.SetSizer(left_panel_sizer_vbox)
+
+        tab_view = TabView(right_panel)
+        graph_view = GraphView(right_panel)
+
+        right_panel_sizer_vbox.Add(tab_view, 1, wx.EXPAND | wx.ALL)
+        right_panel_sizer_vbox.Add(graph_view, 10, wx.EXPAND | wx.ALL)
         right_panel.SetSizer(right_panel_sizer_vbox)
 
         main_sizer_hbox.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
