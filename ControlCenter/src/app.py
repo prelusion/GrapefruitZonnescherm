@@ -30,7 +30,7 @@ class MainView(wx.Frame):
     def OnClose(self, event):
         dlg = wx.MessageDialog(self,
                                "Do you really want to close this application?",
-                               "Confirm Exit", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
+                               "Confirm Exit", wx.OK | wx.CANCEL)
         result = dlg.ShowModal()
         dlg.Destroy()
         if result == wx.ID_OK:
