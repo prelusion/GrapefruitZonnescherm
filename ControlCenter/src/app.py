@@ -10,6 +10,8 @@ from src.views.tab_view import TabView
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.filter import FilterModel
 from src.controllers.controlunits_controller import ControlUnitsController
+from src import controlunit
+import threading
 
 
 class App(wx.App):
@@ -18,6 +20,8 @@ class App(wx.App):
 
         self.controlunit_manager = ControlUnitManager()
         self.filter_model = FilterModel()
+        t = threading.Thread(target=controlunit.online_control_unit_service, args=(self.controlunit_manager,))
+        t.start()
 
 
 class MainView(wx.Frame):

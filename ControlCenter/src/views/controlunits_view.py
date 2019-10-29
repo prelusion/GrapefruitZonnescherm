@@ -1,13 +1,31 @@
+import wx
+
 from src import mvc
-from src.views.controlunit_view import ControlUnitView
 
 
 class ControlUnitsView(mvc.View):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.SetBackgroundColour((0, 255, 0))
+        self.units = {}
+        self.unit_count = 0
 
-    def render_controlunit(self, controlunit_view):
-        # render controlunit_view
-        pass
+        self.SetBackgroundColour((0, 255, 0))
+        self.vbox = wx.BoxSizer(wx.VERTICAL)
+
+    def render_unit(self, id_, view):
+        print("RENDER CONTROL UNIT:", id_)
+
+        btn = wx.Button(self, -1, str(id_))
+
+        self.units[id_] = self.unit_count
+        self.unit_count += 1
+        print("button made")
+        self.vbox.Add(btn, wx.ID_ANY, wx.ALIGN_CENTER)
+        print("add button")
+
+    def remove_unit(self, id_):
+        print("REMOVE UNIT:", id_)
+        count = self.units[id_]
+        self.vbox.Remove(count)
+

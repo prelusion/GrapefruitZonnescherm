@@ -53,11 +53,11 @@ def online_control_unit_service(controlunit_manager):
 
             comm = ControlUnitCommunication(port)
 
-            id_ = comm.get_id()
-            if not id_:
-                comm.set_id(util.generate_id())
+            # id_ = comm.get_id()
+            # if not id_:
+            #     comm.set_id(util.generate_id())
 
-            model = ControlUnitModel(id_)
+            model = ControlUnitModel(util.generate_id())
 
             controlunit_manager.add_unit(port, comm, model)
 
@@ -171,42 +171,6 @@ class ControlUnitCommunication:
 
     def close(self):
         if self._conn: self._conn.close()
-
-
-class ControlUnitManager:
-    def __init__(self):
-        self._units = OrderedDict()
-
-    def add_unit(self, port, communication, model):
-        self._units[port] = (communication, model)
-
-    def remove_unit(self, port):
-        del self._units[port]
-
-    def get_units(self):
-        return self._units
-
-    def is_port_connected(self, port):
-        return port in self._units
-
-    def get_connected_ports(self):
-        return list(self._units.keys())
-
-    def update_models(self):
-        for i, unit in enumerate(self._units.copy()):
-            comm, model = unit
-
-            data = comm.get_sensor_data()
-
-            if not data:
-                del self._units[i]
-
-            model.add_measurement(data)
-
-    def close_connections(self):
-        for unit in self._units.items():
-            comm, model = unit
-            comm.close()
 
 
 if __name__ == "__main__":
