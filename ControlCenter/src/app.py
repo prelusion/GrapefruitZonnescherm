@@ -7,11 +7,24 @@ from src.views.controlunits_view import ControlUnitsView
 from src.views.filter_view import FilterView
 from src.views.graph_view import GraphView
 from src.views.tab_view import TabView
+from src.models.controlunit_manager import ControlUnitManager
+from src.models.filter import FilterModel
+from src.controllers.controlunits_controller import ControlUnitsController
+
+
+class App(wx.App):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.controlunit_manager = ControlUnitManager()
+        self.filter_model = FilterModel()
 
 
 class MainView(wx.Frame):
-    def __init__(self, title):
+    def __init__(self, app, title):
         super().__init__(None, title=title, size=(1200, 700))
+
+        self.app = app
 
         self.SetIcon(wx.Icon(os.path.join(const.ROOT_DIR, "Assets", "Icons", "logo.ico")))
 
@@ -26,10 +39,10 @@ class MainView(wx.Frame):
         right_panel = wx.Panel(main_panel)
         right_panel.SetBackgroundColour((0, 0, 255))
 
-        controlunits_view = ControlUnitsView(left_panel)
+        controlunits_controller = ControlUnitsController(left_panel, self.app.controlunit_manager)
         filter_view = FilterView(left_panel)
 
-        left_panel_sizer_vbox.Add(controlunits_view, 3, wx.EXPAND | wx.ALL)
+        left_panel_sizer_vbox.Add(controlunits_controller.get_view(), 3, wx.EXPAND | wx.ALL)
         left_panel_sizer_vbox.Add(filter_view, 1, wx.EXPAND | wx.ALL)
         left_panel.SetSizer(left_panel_sizer_vbox)
 
@@ -47,8 +60,8 @@ class MainView(wx.Frame):
 
 
 def mainloop():
-    app = wx.App(False)
-    mainview = MainView("Grapefruit controlpanel")
+    app = App(False)
+    mainview = MainView(app, "Grapefruit controlpanel")
     mainview.Show()
     app.MainLoop()
 

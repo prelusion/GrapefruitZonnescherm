@@ -122,7 +122,7 @@ class ControlUnitManager:
         return self._units
 
     def update_models(self):
-        for i, unit in enumerate(self._units.copy())/:
+        for i, unit in enumerate(self._units.copy()):
             comm, model = unit
 
             data = comm.get_sensor_data()
