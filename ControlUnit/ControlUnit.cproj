@@ -144,6 +144,12 @@
     <Compile Include="ports\ports.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="serial\serial.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="serial\serial.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="storage\history.c">
       <SubType>compile</SubType>
     </Compile>
@@ -197,6 +203,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="serial" />
     <Folder Include="ports" />
     <Folder Include="storage" />
     <Folder Include="sensors" />

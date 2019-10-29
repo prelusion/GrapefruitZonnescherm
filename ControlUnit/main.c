@@ -1,5 +1,11 @@
 #include <avr/io.h>
 
+//serial includes
+#include "serial/serial.h"
+//ports includes
+#include "ports/adc.h"
+#include "ports/ports.h"
+
 // Sensor includes
 #include "sensors/distance.h"
 #include "sensors/light_intensity.h"
@@ -7,7 +13,6 @@
 
 // Storage includes
 #include "storage/unit_id.h"
-#include "storage/history.h"
 
 // Enum that indicates the unit status.
 enum unit_status{STARTING, OPERATING, INITIALIZING, ERROR} control_unit_status = STARTING;
@@ -28,18 +33,18 @@ struct ControlUnitData {
 
 /**
  * \brief 
- * Update the temperature in the current_unit_statistics struct.
+ * Update the temperature in the current_unit_statistics struct.	
  */
-void update_temperature(void)
+void update_temperature()
 {
 	control_unit_data.temperature = get_temperature();
 }
 
 /**
  * \brief 
- * Update the light intensity in the current_unit_statistics struct.
+ * Update the light sensitivity in the current_unit_statistics struct.
  */	
-void update_light_intensity(void)
+void update_light_sensitivity()
 {
 	control_unit_data.light_intensity = get_light_intensity();
 }
@@ -48,15 +53,17 @@ void update_light_intensity(void)
  * \brief 
  * Update the distance in the current_unit_statistics struct.
  */	
-void update_distance(void)
+void update_distance()
 {
 	control_unit_data.distance = get_distance();
 }
 
 int main(void)
 {
-	if (!has_unit_id())
-	{
+	init_ports();
+	adc_init();
+	ser_init();
+	if (!has_unit_id()) {
 		// TODO don't operate but listen for initialisation.
 		control_unit_status = INITIALIZING;
 		return 1;
@@ -84,15 +91,9 @@ int main(void)
 	// Initializating and sensor check passed, serial communication is ready and scheduler is running.
 	control_unit_status = OPERATING;
 	uint8_t init_data;
-	
+	uint16_t adcvalue;
     while (1) 
     {
-		init_data = adc_read();
-		init_data = 1;
-		init_data = 2;
-		init_data = 3;
-		init_data = 4;
-		init_data = 5;
-		
+		secret_msg();
     }
 }
