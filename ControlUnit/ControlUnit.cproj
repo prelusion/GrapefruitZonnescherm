@@ -43,15 +43,15 @@
     </com_atmel_avrdbg_tool_simulator>
     <AsfFrameworkConfig>
       <framework-data xmlns="">
-  <options />
-  <configurations />
-  <files />
-  <documentation help="" />
-  <offline-documentation help="" />
-  <dependencies>
-    <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.40.0" />
-  </dependencies>
-</framework-data>
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.40.0" />
+        </dependencies>
+      </framework-data>
     </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -132,10 +132,28 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="storage\light_sensitivity_threshold.c">
+    <Compile Include="ports\adc.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="storage\light_sensitivity_threshold.h">
+    <Compile Include="ports\adc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ports\ports.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ports\ports.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\history.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\history.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\light_intensity_threshold.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\light_intensity_threshold.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="storage\temperature_threshold.c">
@@ -165,10 +183,10 @@
     <Compile Include="sensors\distance.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="sensors\light_sensitivity.c">
+    <Compile Include="sensors\light_intensity.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="sensors\light_sensitivity.h">
+    <Compile Include="sensors\light_intensity.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="sensors\temperature.c">
@@ -179,6 +197,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ports" />
     <Folder Include="storage" />
     <Folder Include="sensors" />
   </ItemGroup>
