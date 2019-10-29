@@ -75,145 +75,93 @@ class ControlUnitCommunication:
         self._conn = None
 
     @retry_on_except(retries=EXCEPT_RETRIES)
-    def get_light_intensity_threshold(self):
-        conn = self._get_connection()
-
-        for i in range(self.COMMAND_RETRY):
-            conn.write("GET_LS_THRESHOLD")
-            data = conn.readbuffer()
-
-            if "GET_LS_THRESHOLD=" not in data:
-                time.sleep(self.RETRY_SLEEP)
-                continue
-
-            return data.split("GET_LS_THRESHOLD=")[1]
+    def get_up_time(self):
+        return self._get_command("GET_UP_TIME")
 
     @retry_on_except(retries=EXCEPT_RETRIES)
-    def set_id(self, id):
-        conn = self._get_connection()
-        data = None
+    def get_id(self):
+        return self._get_command("GET_ID")
 
-        for i in range(self.COMMAND_RETRY):
-            conn.write("SET_LS_THRESHOLD")
-            data = conn.readbuffer()
-
-            if "SET_LS_THRESHOLD=" in data:
-                break
-
-            time.sleep(self.RETRY_SLEEP)
-
-        return True if "SET_LS_THRESHOLD=OK" in data else False
+    def set_id(self, id_):
+        """ id is a 16-bit int. """
+        return self._set_command("SET_ID", id_)
 
     def is_online(self):
         pass
 
     @retry_on_except(retries=EXCEPT_RETRIES)
     def get_sensor_data(self):
-        conn = self._get_connection()
+        data = self._get_command("GET_LS_THRESHOLD")
 
-        for i in range(self.COMMAND_RETRY):
-            conn.write("GET_SENSOR_DATA")
-            data = conn.readbuffer()
+        temp, light, shutter = data.split(",")
 
-            if "SENSOR_DATA=" not in data:
-                time.sleep(self.RETRY_SLEEP)
-                continue
+        return Measurement(
+            time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+            int(light), int(shutter))
 
-            temp, light, shutter = data.split("SENSOR_DATA=")[1].split(",")
-
-            return SensorData(
-                time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
-                int(light), int(shutter))
-
-    @retry_on_except(retries=EXCEPT_RETRIES)
     def get_window_height(self):
-        conn = self._get_connection()
+        return self._get_command("GET_WINDOW_HEIGHT")
 
-        for i in range(self.COMMAND_RETRY):
-            conn.write("GET_WINDOW_HEIGHT")
-            data = conn.readbuffer()
+    def set_window_height(self, value):
+        return self._set_command("SET_WINDOW_HEIGHT", value)
 
-            if "GET_WINDOW_HEIGHT=" not in data:
-                time.sleep(self.RETRY_SLEEP)
-                continue
-
-            return data.split("WINDOW_HEIGHT=")[1]
-
-    @retry_on_except(retries=EXCEPT_RETRIES)
-    def set_window_height(self):
-        conn = self._get_connection()
-        data = None
-
-        for i in range(self.COMMAND_RETRY):
-            conn.write("SET_WINDOW_HEIGHT")
-            data = conn.readbuffer()
-
-            if "SET_WINDOW_HEIGHT=" in data:
-                break
-
-            time.sleep(self.RETRY_SLEEP)
-
-        return True if "SET_WINDOW_HEIGHT=OK" in data else False
-
-    @retry_on_except(retries=EXCEPT_RETRIES)
     def get_temperature_threshold(self):
-        conn = self._get_connection()
+        return self._get_command("GET_TEMP_THRESHOLD")
 
-        for i in range(self.COMMAND_RETRY):
-            conn.write("GET_TEMP_THRESHOLD")
-            data = conn.readbuffer()
+    def set_temperature_threshold(self, value):
+        return self._set_command("SET_TEMP_THRESHOLD", value)
 
-            if "GET_TEMP_THRESHOLD=" not in data:
-                time.sleep(self.RETRY_SLEEP)
-                continue
-
-            return data.split("GET_TEMP_THRESHOLD=")[1]
-
-    @retry_on_except(retries=EXCEPT_RETRIES)
-    def set_temperature_threshold(self):
-        conn = self._get_connection()
-        data = None
-
-        for i in range(self.COMMAND_RETRY):
-            conn.write("SET_TEMP_THRESHOLD")
-            data = conn.readbuffer()
-
-            if "SET_TEMP_THRESHOLD=" in data:
-                break
-
-            time.sleep(self.RETRY_SLEEP)
-
-        return True if "SET_TEMP_THRESHOLD=OK" in data else False
-
-    @retry_on_except(retries=EXCEPT_RETRIES)
     def get_light_intensity_threshold(self):
-        conn = self._get_connection()
+        return self._get_command("GET_LS_THRESHOLD")
 
-        for i in range(self.COMMAND_RETRY):
-            conn.write("GET_LS_THRESHOLD")
-            data = conn.readbuffer()
+    def set_light_intensity_threshold(self, value):
+        return self._set_command("SET_LS_THRESHOLD", value)
 
-            if "GET_LS_THRESHOLD=" not in data:
-                time.sleep(self.RETRY_SLEEP)
-                continue
+    def roll_up(self):
+        return self._set_command("ROLL_UP")
 
-            return data.split("GET_LS_THRESHOLD=")[1]
+    def roll_down(self):
+        return self._set_command("ROLL_DOWN")
+
+    def get_manual(self):
+        return self._get_command("GET_MANUAL")
+
+    def set_manual(self, boolean):
+        return self._set_command("SET_MANUAL", boolean)
 
     @retry_on_except(retries=EXCEPT_RETRIES)
-    def set_light_intensity_threshold(self):
+    def _set_command(self, command, arg=None):
         conn = self._get_connection()
         data = None
 
+        cmd_with_arg = command
+        if arg:
+            cmd_with_arg += "=" + arg
+
         for i in range(self.COMMAND_RETRY):
-            conn.write("SET_LS_THRESHOLD")
+            conn.write(cmd_with_arg)
             data = conn.readbuffer()
 
-            if "SET_LS_THRESHOLD=" in data:
+            if f"{command}=" in data:
                 break
 
             time.sleep(self.RETRY_SLEEP)
 
-        return True if "SET_LS_THRESHOLD=OK" in data else False
+        return True if f"{command}=OK" in data else False
+
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def _get_command(self, command):
+        conn = self._get_connection()
+
+        for i in range(self.COMMAND_RETRY):
+            conn.write(command)
+            data = conn.readbuffer()
+
+            if f"{command}=" not in data:
+                time.sleep(self.RETRY_SLEEP)
+                continue
+
+            return data.split(f"{command}=")[1].strip()
 
     def _get_connection(self):
         if not self._conn:
