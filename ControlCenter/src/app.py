@@ -1,6 +1,6 @@
 import wx
-from pubsub import pub
-
+import os
+from src import const
 
 EVENT_MONEY_CHANGED = "money_changed"
 EVENT_CHANGE_MONEY = "change_money"
@@ -9,9 +9,9 @@ EVENT_CHANGE_MONEY = "change_money"
 class MainView(wx.Frame):
     def __init__(self, title):
         super().__init__(None, title=title, size=(1200, 700))
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
-        self.SetIcon(wx.Icon("Assets/Icons/logo.ico"))
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.SetIcon(wx.Icon(os.path.join(const.ROOT_DIR, "Assets", "Icons", "logo.ico")))
 
         mainpanel = wx.Panel(self)
         grid = wx.GridSizer(0, 2, 0, 0)
