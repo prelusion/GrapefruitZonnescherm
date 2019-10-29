@@ -1,15 +1,19 @@
+import os
+
 import wx
+
+from src import const
 from src.views.controlunits_view import ControlUnitsView
 from src.views.filter_view import FilterView
-from src.views.tab_view import TabView
 from src.views.graph_view import GraphView
-EVENT_MONEY_CHANGED = "money_changed"
-EVENT_CHANGE_MONEY = "change_money"
+from src.views.tab_view import TabView
 
 
 class MainView(wx.Frame):
     def __init__(self, title):
         super().__init__(None, title=title, size=(1200, 700))
+
+        self.SetIcon(wx.Icon(os.path.join(const.ROOT_DIR, "Assets", "Icons", "logo.ico")))
 
         main_panel = wx.Panel(self)
 
@@ -51,35 +55,3 @@ def mainloop():
 
 if __name__ == "__main__":
     mainloop()
-
-# self.Bind(wx.EVT_CLOSE, self.OnClose)
-# # self.SetIcon(wx.Icon(os.path.join(const.ROOT_DIR, "Assets", "Icons", "logo.ico")))
-#
-# mainpanel = wx.Panel(self)
-# mainsizer = wx.BoxSizer(wx.HORIZONTAL)
-#
-# # cu panel
-# cupanel = wx.Panel(mainpanel)
-# cupanel.SetBackgroundColour((1, 1, 1))
-# cupanel.Show()
-# cupanel.Layout()
-# # data panel
-# datapanel = wx.Panel(mainpanel)
-# datapanel.SetBackgroundColour((100, 100, 100))
-# datapanel.Show()
-# datapanel.Layout()
-# datapanel_sizer = wx.BoxSizer(wx.VERTICAL)
-#
-# controlunits_view = ControlUnitsView(mainpanel)
-#
-# datapanel_sizer.Add(controlunits_view, wx.ID_ANY, wx.EXPAND | wx.ALL)
-# #
-# datapanel.SetSizer(datapanel_sizer)
-# datapanel.Layout()
-#
-# # main sizer
-# mainsizer.Add(cupanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-# mainsizer.Add(datapanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-#
-# mainpanel.SetSizer(mainsizer)
-# mainpanel.Layout()
