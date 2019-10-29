@@ -1,9 +1,9 @@
 import time
 from collections import namedtuple
-
+import threading
 from src import serialinterface as ser
 
-BAUDRATE = 192500
+BAUDRATE = 38400
 
 SensorData = namedtuple("SensorData", ["timestamp",
                                        "temperature",
@@ -71,17 +71,30 @@ def get_online_control_units():
                 cu_manager.update_models()
                 time.sleep(60)
     """
-    ports = ser.get_com_ports()
 
-    for port, name in ports:
-        print(port, name)
-        with ser.connect(port, baudrate=BAUDRATE, timeout=5) as conn:
-            print("write data..")
-            conn.write("PING")
-            print("read data..")
-            data = conn.readline()
-            print(data)
-            print("end")
+    online_ports = []
+
+    def test_port(port, name):
+        nonlocal online_ports
+
+        with ser.connect(port, baudrate=BAUDRATE, timeout=1) as conn:
+            for i in range(15):
+                conn.write("PING")
+                data = conn.readbuffer()
+                if "PONG" in data:
+                    online_ports.append((port, name))
+                    return
+                time.sleep(0.1)
+
+    threads = []
+    for port, name in ser.get_com_ports():
+        t = threading.Thread(target=test_port, args=(port, name))
+        threads.append(t)
+        t.start()
+
+    [t.join() for t in threads]
+
+    return online_ports
 
 
 class ControlUnitCommunication:
@@ -122,7 +135,7 @@ class ControlUnitManager:
         return self._units
 
     def update_models(self):
-        for i, unit in enumerate(self._units.copy())/:
+        for i, unit in enumerate(self._units.copy()):
             comm, model = unit
 
             data = comm.get_sensor_data()

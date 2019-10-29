@@ -45,6 +45,12 @@ class Connection:
 
         self._interface.write(data.encode())
 
+    def readbuffer(self):
+        if not self._interface:
+            raise IOError("Connection must be opened before reading")
+
+        return self._interface.read(self._interface.inWaiting()).decode()
+
     def readline(self):
         if not self._interface:
             raise IOError("Connection must be opened before reading")
