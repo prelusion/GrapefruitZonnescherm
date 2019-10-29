@@ -1,5 +1,7 @@
 #include <avr/io.h>
 
+#include "scheduler.h"
+
 // Sensor includes
 #include "sensors/distance.h"
 #include "sensors/light_intensity.h"
@@ -77,14 +79,19 @@ int main(void)
 	control_unit_configuration.temperature_threshold = get_temperature_threshold();
 	control_unit_configuration.light_intensity_threshold = get_light_intensity_threshold();
 	
-	// TODO execute sensor updates by timer scheduling.
+	// Initialize the timer.
+	timer_init();
+	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
+	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
+	timer_start();
 	
 	// TODO handle serial communication, maybe do this in the infinite loop.
 	
-	// Initializating and sensor check passed, serial communication is ready and scheduler is running.
+	// Initializating and sensor check passed, serial communication is ready and scheduler is ready.
 	control_unit_status = OPERATING;
 	
     while (1) 
     {
+		timer_dispatch_tasks();
     }
 }

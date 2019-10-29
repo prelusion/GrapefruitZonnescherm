@@ -1,13 +1,15 @@
 #ifndef _STORAGE_WINDOW_HEIGHT_H_
 #define _STORAGE_WINDOW_HEIGHT_H_
 
+#include <avr/io.h>
+
 /**
  * \brief 
  * Get the window height.
  * 
- * \return uint8_t The window hight in CM
+ * \return uint16_t The window hight in CM
  */
-uint8_t get_window_height(void);
+uint16_t get_window_height(void);
 
 /**
  * \brief 
@@ -15,6 +17,6 @@ uint8_t get_window_height(void);
  * 
  * \param window_height The window height to set in CM
  */
-void set_window_height(uint8_t window_height);
+void set_window_height(uint16_t window_height);
 
 #endif

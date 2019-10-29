@@ -1,3 +1,4 @@
+#include "temperature_threshold.h"
 #include <avr/eeprom.h>
 
 // The temperature threshold will be stored in EEPROM at address 0x0004.
