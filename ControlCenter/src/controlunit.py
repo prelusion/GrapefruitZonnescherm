@@ -2,6 +2,7 @@ import time
 from collections import namedtuple
 import threading
 from src import serialinterface as ser
+from concurrent.futures import ThreadPoolExecutor
 
 BAUDRATE = 38400
 
@@ -72,29 +73,19 @@ def get_online_control_units():
                 time.sleep(60)
     """
 
-    online_ports = []
-
-    def test_port(port, name):
-        nonlocal online_ports
-
+    def test_port(arg):
+        port, name = arg
         with ser.connect(port, baudrate=BAUDRATE, timeout=1) as conn:
             for i in range(15):
                 conn.write("PING")
                 data = conn.readbuffer()
                 if "PONG" in data:
-                    online_ports.append((port, name))
-                    return
+                    return port, name
                 time.sleep(0.1)
 
-    threads = []
-    for port, name in ser.get_com_ports():
-        t = threading.Thread(target=test_port, args=(port, name))
-        threads.append(t)
-        t.start()
-
-    [t.join() for t in threads]
-
-    return online_ports
+    with ThreadPoolExecutor() as executor:
+        results = executor.map(test_port, ser.get_com_ports())
+        return list(filter(None, results))
 
 
 class ControlUnitCommunication:
