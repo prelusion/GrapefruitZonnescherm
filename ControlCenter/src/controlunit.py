@@ -1,8 +1,10 @@
 import time
-from collections import namedtuple
-import threading
-from src import serialinterface as ser
+from collections import namedtuple, OrderedDict
 from concurrent.futures import ThreadPoolExecutor
+
+from src import serialinterface as ser
+from src import util
+from src.models.controlunit import ControlUnitModel
 
 BAUDRATE = 38400
 
@@ -14,85 +16,60 @@ SensorData = namedtuple("SensorData", ["timestamp",
 Measurement = namedtuple("Measurement", ["timestamp", "value"])
 
 
-def get_online_control_units():
-    """
-    Example:
+def get_online_control_units(skip=[]):
+    """ :returns new_ports, down_ports """
 
-        cu_manager = ControlUnitManager()
-
-        ports = get_online_control_units()
-
-        for port in ports:
-            cu_comm = ControlUnitCommunication(port)
-
-            id = cu_comm.get_id()
-            if not id:
-                cu_comm.set_id(generate_id())
-
-            cu_model = ControlUnitModel(id)
-
-            cu_manager.add_unit(cu_comm, cu_model)
-
-        while True:
-            cu_manager.update_models()
-            time.sleep(60)
-
-
-
-
-    Example with dynamic control unit connection:
-
-        cu_manager = ControlUnitManager()
-
-
-        def port_check_service:
-            previous_ports = []
-
-            while True:
-                ports = get_online_control_units()
-
-                new_ports = set(ports) - set(previous_ports)
-
-                for port in new_ports:
-                    cu_comm = ControlUnitCommunication(port)
-
-                    id = cu_comm.get_id()
-                    if not id:
-                        cu_comm.set_id(generate_id())
-
-                    cu_model = ControlUnitModel(id)
-
-                    cu_manager.add_unit(cu_comm, cu_model)
-
-                time.sleep(5)
-
-
-        def sensor_data_service:
-            while True:
-                cu_manager.update_models()
-                time.sleep(60)
-    """
-
-    def test_port(arg):
-        port, name = arg
+    def test_if_port_is_control_unit(port):
         with ser.connect(port, baudrate=BAUDRATE, timeout=1) as conn:
             for i in range(15):
                 conn.write("PING")
                 data = conn.readbuffer()
                 if "PONG" in data:
-                    return port, name
+                    return port
                 time.sleep(0.1)
 
+    all_ports = ser.get_com_ports()
+    unconnected_ports = set(all_ports) - set(skip)
+    down_ports = set(skip) - set(all_ports)
+
     with ThreadPoolExecutor() as executor:
-        results = executor.map(test_port, ser.get_com_ports())
-        return list(filter(None, results))
+        results = executor.map(test_if_port_is_control_unit, unconnected_ports)
+        return list(filter(None, results)), down_ports
+
+
+def online_control_unit_service(controlunit_manager):
+    while True:
+        connected_ports = controlunit_manager.get_connected_ports()
+
+        new_ports, down_ports = get_online_control_units(skip=connected_ports)
+
+        for port in down_ports:
+            controlunit_manager.remove_unit(port)
+
+        for port in new_ports:
+
+            if controlunit_manager.is_port_connected(port):
+                continue
+
+            comm = ControlUnitCommunication(port)
+
+            id_ = comm.get_id()
+            if not id_:
+                comm.set_id(util.generate_id())
+
+            model = ControlUnitModel(id_)
+
+            controlunit_manager.add_unit(port, comm, model)
 
 
 class ControlUnitCommunication:
     def __init__(self, port):
         self.id = None
-        self._com_port = port
-        self._serial_connection = None
+        self.com_port = port
+        self._conn = None
+
+    def set_id(self, id):
+        pass
 
     def get_id(self):
         pass
@@ -110,20 +87,29 @@ class ControlUnitCommunication:
         pass
 
     def _get_connection(self):
-        if not self._serial_connection:
-            self._serial_connection = ser.Connection(self._com_port, BAUDRATE, timeout=0.1)
-        return self._serial_connection
+        if not self._conn:
+            self._conn = ser.Connection(self.com_port, BAUDRATE, timeout=0.1)
+        return self._conn
 
 
 class ControlUnitManager:
     def __init__(self):
-        self._units = []
+        self._units = OrderedDict()
 
-    def add_unit(self, communication, model):
-        self._units.append((communication, model))
+    def add_unit(self, port, communication, model):
+        self._units[port] = (communication, model)
+
+    def remove_unit(self, port):
+        del self._units[port]
 
     def get_units(self):
         return self._units
+
+    def is_port_connected(self, port):
+        return port in self._units
+
+    def get_connected_ports(self):
+        return list(self._units.keys())
 
     def update_models(self):
         for i, unit in enumerate(self._units.copy()):

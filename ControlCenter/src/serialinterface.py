@@ -8,7 +8,7 @@ def get_com_ports():
     """ Get all serial ports in ((port, name), (port, name)) format. """
     ports = list(list_ports.comports())
     ports = [str(i) for i in ports]
-    ports = [tuple(i.split(" - ")) for i in ports]
+    ports = [tuple(i.split(" - "))[0] for i in ports]
     return tuple(ports)
 
 
