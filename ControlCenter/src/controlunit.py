@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from src import serialinterface as ser
 from src import util
+from src.decorators import retry_on_except
 from src.models.controlunit import ControlUnitModel
 
 BAUDRATE = 38400
@@ -63,33 +64,62 @@ def online_control_unit_service(controlunit_manager):
             controlunit_manager.add_unit(port, comm, model)
 
 
+EXCEPT_RETRIES = 5
+
+
 class ControlUnitCommunication:
+
+    COMMAND_RETRY = 10
+    RETRY_SLEEP = 0.2
+
     def __init__(self, port):
         self.id = None
         self.com_port = port
         self._conn = None
 
-    def set_id(self, id):
-        pass
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def get_light_intensity_threshold(self):
+        conn = self._get_connection()
 
-    def get_id(self):
-        pass
+        for i in range(self.COMMAND_RETRY):
+            conn.write("GET_LS_THRESHOLD")
+            data = conn.readbuffer()
+
+            if "GET_LS_THRESHOLD=" not in data:
+                time.sleep(self.RETRY_SLEEP)
+                continue
+
+            return data.split("GET_LS_THRESHOLD=")[1]
+
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def set_id(self, id):
+        conn = self._get_connection()
+        data = None
+
+        for i in range(self.COMMAND_RETRY):
+            conn.write("SET_LS_THRESHOLD")
+            data = conn.readbuffer()
+
+            if "SET_LS_THRESHOLD=" in data:
+                break
+
+            time.sleep(self.RETRY_SLEEP)
+
+        return True if "SET_LS_THRESHOLD=OK" in data else False
 
     def is_online(self):
         pass
 
-    def get_shutter_status(self):
-        pass
-
+    @retry_on_except(retries=EXCEPT_RETRIES)
     def get_sensor_data(self):
         conn = self._get_connection()
 
-        for i in range(10):
+        for i in range(self.COMMAND_RETRY):
             conn.write("GET_SENSOR_DATA")
             data = conn.readbuffer()
 
             if "SENSOR_DATA=" not in data:
-                time.sleep(0.2)
+                time.sleep(self.RETRY_SLEEP)
                 continue
 
             temp, light, shutter = data.split("SENSOR_DATA=")[1].split(",")
@@ -98,8 +128,95 @@ class ControlUnitCommunication:
                 time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
                 int(light), int(shutter))
 
-    def get_sensor_history(self):
-        pass
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def get_window_height(self):
+        conn = self._get_connection()
+
+        for i in range(self.COMMAND_RETRY):
+            conn.write("GET_WINDOW_HEIGHT")
+            data = conn.readbuffer()
+
+            if "GET_WINDOW_HEIGHT=" not in data:
+                time.sleep(self.RETRY_SLEEP)
+                continue
+
+            return data.split("WINDOW_HEIGHT=")[1]
+
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def set_window_height(self):
+        conn = self._get_connection()
+        data = None
+
+        for i in range(self.COMMAND_RETRY):
+            conn.write("SET_WINDOW_HEIGHT")
+            data = conn.readbuffer()
+
+            if "SET_WINDOW_HEIGHT=" in data:
+                break
+
+            time.sleep(self.RETRY_SLEEP)
+
+        return True if "SET_WINDOW_HEIGHT=OK" in data else False
+
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def get_temperature_threshold(self):
+        conn = self._get_connection()
+
+        for i in range(self.COMMAND_RETRY):
+            conn.write("GET_TEMP_THRESHOLD")
+            data = conn.readbuffer()
+
+            if "GET_TEMP_THRESHOLD=" not in data:
+                time.sleep(self.RETRY_SLEEP)
+                continue
+
+            return data.split("GET_TEMP_THRESHOLD=")[1]
+
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def set_temperature_threshold(self):
+        conn = self._get_connection()
+        data = None
+
+        for i in range(self.COMMAND_RETRY):
+            conn.write("SET_TEMP_THRESHOLD")
+            data = conn.readbuffer()
+
+            if "SET_TEMP_THRESHOLD=" in data:
+                break
+
+            time.sleep(self.RETRY_SLEEP)
+
+        return True if "SET_TEMP_THRESHOLD=OK" in data else False
+
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def get_light_intensity_threshold(self):
+        conn = self._get_connection()
+
+        for i in range(self.COMMAND_RETRY):
+            conn.write("GET_LS_THRESHOLD")
+            data = conn.readbuffer()
+
+            if "GET_LS_THRESHOLD=" not in data:
+                time.sleep(self.RETRY_SLEEP)
+                continue
+
+            return data.split("GET_LS_THRESHOLD=")[1]
+
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def set_light_intensity_threshold(self):
+        conn = self._get_connection()
+        data = None
+
+        for i in range(self.COMMAND_RETRY):
+            conn.write("SET_LS_THRESHOLD")
+            data = conn.readbuffer()
+
+            if "SET_LS_THRESHOLD=" in data:
+                break
+
+            time.sleep(self.RETRY_SLEEP)
+
+        return True if "SET_LS_THRESHOLD=OK" in data else False
 
     def _get_connection(self):
         if not self._conn:
