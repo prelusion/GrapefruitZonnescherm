@@ -1,6 +1,7 @@
 import time
 from collections import namedtuple, OrderedDict
 from concurrent.futures import ThreadPoolExecutor
+from decimal import Decimal
 
 from src import serialinterface as ser
 from src import util
@@ -81,15 +82,33 @@ class ControlUnitCommunication:
         pass
 
     def get_sensor_data(self):
-        return SensorData(time.time(), 5, 5, 5)
+        conn = self._get_connection()
+
+        for i in range(10):
+            conn.write("GET_SENSOR_DATA")
+            data = conn.readbuffer()
+
+            if "SENSOR_DATA=" not in data:
+                time.sleep(0.2)
+                continue
+
+            temp, light, shutter = data.split("SENSOR_DATA=")[1].split(",")
+
+            return SensorData(
+                time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                int(light), int(shutter))
 
     def get_sensor_history(self):
         pass
 
     def _get_connection(self):
         if not self._conn:
-            self._conn = ser.Connection(self.com_port, BAUDRATE, timeout=0.1)
+            self._conn = ser.Connection(self.com_port, BAUDRATE, timeout=2)
+            self._conn.open()
         return self._conn
+
+    def close(self):
+        if self._conn: self._conn.close()
 
 
 class ControlUnitManager:
@@ -123,6 +142,11 @@ class ControlUnitManager:
             model.add_temperature(Measurement(data.timestamp, data.temperature))
             model.add_shutter_status(Measurement(data.timestamp, data.shutter_status))
             model.add_light_sensitivity(Measurement(data.timestamp, data.light_sensitivity))
+
+    def close_connections(self):
+        for unit in self._units.items():
+            comm, model = unit
+            comm.close()
 
 
 if __name__ == "__main__":
