@@ -10,12 +10,10 @@ from src.models.controlunit import ControlUnitModel
 
 BAUDRATE = 38400
 
-SensorData = namedtuple("SensorData", ["timestamp",
-                                       "temperature",
-                                       "shutter_status",
-                                       "light_sensitivity"])
-
-Measurement = namedtuple("Measurement", ["timestamp", "value"])
+Measurement = namedtuple("SensorData", ["timestamp",
+                                        "temperature",
+                                        "shutter_status",
+                                        "light_sensitivity"])
 
 
 def get_online_control_units(skip=[]):
@@ -68,7 +66,6 @@ EXCEPT_RETRIES = 5
 
 
 class ControlUnitCommunication:
-
     COMMAND_RETRY = 10
     RETRY_SLEEP = 0.2
 
@@ -256,9 +253,7 @@ class ControlUnitManager:
             if not data:
                 del self._units[i]
 
-            model.add_temperature(Measurement(data.timestamp, data.temperature))
-            model.add_shutter_status(Measurement(data.timestamp, data.shutter_status))
-            model.add_light_sensitivity(Measurement(data.timestamp, data.light_sensitivity))
+            model.add_measurement(data)
 
     def close_connections(self):
         for unit in self._units.items():
