@@ -132,6 +132,12 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="command_processing.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="command_processing.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="scheduler.c">
       <SubType>compile</SubType>
     </Compile>

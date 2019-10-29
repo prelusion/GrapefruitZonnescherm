@@ -11,6 +11,8 @@
 #include "storage/unit_id.h"
 #include "storage/history.h"
 
+#include "command_processing.h"
+
 // Enum that indicates the unit status.
 enum unit_status{STARTING, OPERATING, INITIALIZING, ERROR} control_unit_status = STARTING;
 
