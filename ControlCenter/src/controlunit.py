@@ -1,19 +1,19 @@
 import time
 from collections import namedtuple, OrderedDict
 from concurrent.futures import ThreadPoolExecutor
+from decimal import Decimal
 
 from src import serialinterface as ser
 from src import util
+from src.decorators import retry_on_except
 from src.models.controlunit import ControlUnitModel
 
 BAUDRATE = 38400
 
-SensorData = namedtuple("SensorData", ["timestamp",
-                                       "temperature",
-                                       "shutter_status",
-                                       "light_sensitivity"])
-
-Measurement = namedtuple("Measurement", ["timestamp", "value"])
+Measurement = namedtuple("SensorData", ["timestamp",
+                                        "temperature",
+                                        "shutter_status",
+                                        "light_sensitivity"])
 
 
 def get_online_control_units(skip=[]):
@@ -62,34 +62,115 @@ def online_control_unit_service(controlunit_manager):
             controlunit_manager.add_unit(port, comm, model)
 
 
+EXCEPT_RETRIES = 5
+
+
 class ControlUnitCommunication:
+    COMMAND_RETRY = 10
+    RETRY_SLEEP = 0.2
+
     def __init__(self, port):
         self.id = None
         self.com_port = port
         self._conn = None
 
-    def set_id(self, id):
-        pass
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def get_up_time(self):
+        return self._get_command("GET_UP_TIME")
 
+    @retry_on_except(retries=EXCEPT_RETRIES)
     def get_id(self):
-        pass
+        return self._get_command("GET_ID")
+
+    def set_id(self, id_):
+        """ id is a 16-bit int. """
+        return self._set_command("SET_ID", id_)
 
     def is_online(self):
         pass
 
-    def get_shutter_status(self):
-        pass
-
+    @retry_on_except(retries=EXCEPT_RETRIES)
     def get_sensor_data(self):
-        return SensorData(time.time(), 5, 5, 5)
+        data = self._get_command("GET_LS_THRESHOLD")
 
-    def get_sensor_history(self):
-        pass
+        temp, light, shutter = data.split(",")
+
+        return Measurement(
+            time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+            int(light), int(shutter))
+
+    def get_window_height(self):
+        return self._get_command("GET_WINDOW_HEIGHT")
+
+    def set_window_height(self, value):
+        return self._set_command("SET_WINDOW_HEIGHT", value)
+
+    def get_temperature_threshold(self):
+        return self._get_command("GET_TEMP_THRESHOLD")
+
+    def set_temperature_threshold(self, value):
+        return self._set_command("SET_TEMP_THRESHOLD", value)
+
+    def get_light_intensity_threshold(self):
+        return self._get_command("GET_LS_THRESHOLD")
+
+    def set_light_intensity_threshold(self, value):
+        return self._set_command("SET_LS_THRESHOLD", value)
+
+    def roll_up(self):
+        return self._set_command("ROLL_UP")
+
+    def roll_down(self):
+        return self._set_command("ROLL_DOWN")
+
+    def get_manual(self):
+        return self._get_command("GET_MANUAL")
+
+    def set_manual(self, boolean):
+        return self._set_command("SET_MANUAL", boolean)
+
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def _set_command(self, command, arg=None):
+        conn = self._get_connection()
+        data = None
+
+        cmd_with_arg = command
+        if arg:
+            cmd_with_arg += "=" + arg
+
+        for i in range(self.COMMAND_RETRY):
+            conn.write(cmd_with_arg)
+            data = conn.readbuffer()
+
+            if f"{command}=" in data:
+                break
+
+            time.sleep(self.RETRY_SLEEP)
+
+        return True if f"{command}=OK" in data else False
+
+    @retry_on_except(retries=EXCEPT_RETRIES)
+    def _get_command(self, command):
+        conn = self._get_connection()
+
+        for i in range(self.COMMAND_RETRY):
+            conn.write(command)
+            data = conn.readbuffer()
+
+            if f"{command}=" not in data:
+                time.sleep(self.RETRY_SLEEP)
+                continue
+
+            return data.split(f"{command}=")[1].strip()
 
     def _get_connection(self):
         if not self._conn:
-            self._conn = ser.Connection(self.com_port, BAUDRATE, timeout=0.1)
+            self._conn = ser.Connection(self.com_port, BAUDRATE, timeout=2)
+            self._conn.open()
         return self._conn
+
+    def close(self):
+        if self._conn: self._conn.close()
 
 
 class ControlUnitManager:
@@ -120,9 +201,12 @@ class ControlUnitManager:
             if not data:
                 del self._units[i]
 
-            model.add_temperature(Measurement(data.timestamp, data.temperature))
-            model.add_shutter_status(Measurement(data.timestamp, data.shutter_status))
-            model.add_light_sensitivity(Measurement(data.timestamp, data.light_sensitivity))
+            model.add_measurement(data)
+
+    def close_connections(self):
+        for unit in self._units.items():
+            comm, model = unit
+            comm.close()
 
 
 if __name__ == "__main__":
