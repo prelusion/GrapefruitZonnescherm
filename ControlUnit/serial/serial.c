@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include <stdio.h>
-#include "serial.h"
 
 // output on USB = PD1 = board pin 1
 // datasheet p.190; F_OSC = 16 MHz & baud rate = 19.200
@@ -14,10 +13,6 @@ static int ser_stdio_putchar(char c, FILE *stream) {
 	}
 	ser_transmit(c);
 	return 0;
-}
-
-void secret_msg() {
-	printf("Hallo jan wytze");
 }
 
 static FILE uart_output = FDEV_SETUP_STREAM(ser_stdio_putchar, NULL, _FDEV_SETUP_WRITE);

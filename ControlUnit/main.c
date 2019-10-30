@@ -1,5 +1,6 @@
 #include <avr/io.h>
 
+
 //serial includes
 #include "serial/serial.h"
 //ports includes
@@ -91,9 +92,8 @@ int main(void)
 	// Initializating and sensor check passed, serial communication is ready and scheduler is running.
 	control_unit_status = OPERATING;
 	uint8_t init_data;
-	uint16_t adcvalue;
     while (1) 
-    {
-		secret_msg();
-    }
+	{
+		
+	}
 }
