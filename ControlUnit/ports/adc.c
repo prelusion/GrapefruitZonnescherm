@@ -1,7 +1,8 @@
 #include <avr/io.h>
 
 //Initialize ADC
-void adc_init() {
+void adc_init()
+{
 	
 	//The REFS0, REFS1 bit of ADMUX is the voltage amount and how
 	//ADLAR shows the result of the ADC
@@ -14,12 +15,14 @@ void adc_init() {
 
 //Starts the ADC conversion 
 //Always has to be called after a conversion is done
-void start_conversion() {
+void start_conversion()
+{
  	ADCSRA |= (1 << ADSC);
 }
 
 //Waits until the ADC conversion is done.
-void waitout_conversion() {
+void waitout_conversion()
+{
 	while( (ADCSRA & (1 << ADSC)) != 0);	
 }
 

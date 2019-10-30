@@ -31,7 +31,7 @@ struct ControlUnitConfiguration {
 	uint8_t		light_intensity_threshold;
 } control_unit_configuration;
 
-struct ControlUnitData {
+struct ControlUnitData { 
 	int8_t		temperature;
 	uint8_t		light_intensity;
 	uint8_t		distance;
@@ -78,7 +78,8 @@ int main(void)
 	init_ports();
 	adc_init();
 	serial_init();
-	if (!has_unit_id()) {
+	if (!has_unit_id())
+	{
 		// TODO don't operate but listen for initialization.
 		control_unit_status = INITIALIZING;
 		return 1;

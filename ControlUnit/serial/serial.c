@@ -5,17 +5,21 @@
 // datasheet p.190; F_OSC = 16 MHz & baud rate = 19.200
 #define UBBRVAL 51
 
-static int ser_stdio_putchar(char c, FILE *stream) {
-	if (c=='\n') {
+static int ser_stdio_putchar(char c, FILE *stream)
+{
+	if (c=='\n')
+	{
 		serial_transmit('\r');
 	}
+	
 	serial_transmit(c);
 	return 0;
 }
 
 static FILE uart_output = FDEV_SETUP_STREAM(ser_stdio_putchar, NULL, _FDEV_SETUP_WRITE);
 
-void serial_init() {
+void serial_init()
+{
 	// set the baud rate
 	UBRR0H = 0;
 	UBRR0L = UBBRVAL;
@@ -30,7 +34,8 @@ void serial_init() {
 }
 
 // Low level transmit
-void serial_transmit(uint8_t data) {
+void serial_transmit(uint8_t data)
+{
 	// wait for an empty transmit buffer
 	// UDRE is set when the transmit buffer is empty
 	loop_until_bit_is_set(UCSR0A, UDRE0);
@@ -39,21 +44,29 @@ void serial_transmit(uint8_t data) {
 }
 
 // Low level receive
-uint8_t serial_receive() {
+uint8_t serial_receive()
+{
     loop_until_bit_is_set(UCSR0A, RXC0); /* Wait until data exists. */
     return UDR0;
 }
 
-void serial_readln(char* buf, int maxlength) {
+void serial_readln(char* buf, int maxlength)
+{
 	int i=0;
-	while(1) {
+	
+	while(1)
+	{
 		uint8_t c = serial_receive();
-		if (c=='\r') {
+		
+		if (c=='\r')
+		{
 			break;
 		}
-		if (i<maxlength-1) {
-			buf[i++]=c;
+		if (i < maxlength - 1)
+		{
+			buf[i++] = c;
 		}
 	}
+	
 	buf[i]='\0';
 }

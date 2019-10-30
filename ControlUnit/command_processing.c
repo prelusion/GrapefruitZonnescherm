@@ -72,7 +72,8 @@ void process_input(char* input)
 	// Find the location of the = character.
 	char* startOfParameters = strchr(input, '=');
 	
-	if (!startOfParameters) {
+	if (!startOfParameters)
+	{
 		// When there is no = character there are no parameters, so we can use the entire input as command name.
 		execute_command(input, "");
 	} else {
