@@ -1,53 +1,54 @@
+import os
+
 import wx
-from pubsub import pub
 
-
-EVENT_MONEY_CHANGED = "money_changed"
-EVENT_CHANGE_MONEY = "change_money"
+from src import const
+from src.views.controlunits_view import ControlUnitsView
+from src.views.filter_view import FilterView
+from src.views.graph_view import GraphView
+from src.views.tab_view import TabView
 
 
 class MainView(wx.Frame):
     def __init__(self, title):
-        super().__init__(None, title=title, pos=(150, 150), size=(350, 200))
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        super().__init__(None, title=title, size=(1200, 700))
 
-        menuBar = wx.MenuBar()
-        menu = wx.Menu()
-        m_exit = menu.Append(wx.ID_EXIT, "E&xit\tAlt-X", "Close window and exit program.")
-        self.Bind(wx.EVT_MENU, self.OnClose, m_exit)
-        menuBar.Append(menu, "&File")
-        self.SetMenuBar(menuBar)
+        self.SetIcon(wx.Icon(os.path.join(const.ROOT_DIR, "Assets", "Icons", "logo.ico")))
 
-        self.statusbar = self.CreateStatusBar()
+        main_panel = wx.Panel(self)
 
-        panel = wx.Panel(self)
-        box = wx.BoxSizer(wx.VERTICAL)
+        main_sizer_hbox = wx.BoxSizer(wx.HORIZONTAL)
+        left_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
+        right_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
 
-        m_text = wx.StaticText(panel, -1, "Hello World!")
-        m_text.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
-        m_text.SetSize(m_text.GetBestSize())
-        box.Add(m_text, 0, wx.ALL, 10)
+        left_panel = wx.Panel(main_panel)
+        left_panel.SetBackgroundColour((1, 1, 1))
+        right_panel = wx.Panel(main_panel)
+        right_panel.SetBackgroundColour((0, 0, 255))
 
-        m_close = wx.Button(panel, wx.ID_CLOSE, "Close")
-        m_close.Bind(wx.EVT_BUTTON, self.OnClose)
-        box.Add(m_close, 0, wx.ALL, 10)
+        controlunits_view = ControlUnitsView(left_panel)
+        filter_view = FilterView(left_panel)
 
-        panel.SetSizer(box)
-        panel.Layout()
+        left_panel_sizer_vbox.Add(controlunits_view, 3, wx.EXPAND | wx.ALL)
+        left_panel_sizer_vbox.Add(filter_view, 1, wx.EXPAND | wx.ALL)
+        left_panel.SetSizer(left_panel_sizer_vbox)
 
-    def OnClose(self, event):
-        dlg = wx.MessageDialog(self,
-                               "Do you really want to close this application?",
-                               "Confirm Exit", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
-        result = dlg.ShowModal()
-        dlg.Destroy()
-        if result == wx.ID_OK:
-            self.Destroy()
+        tab_view = TabView(right_panel)
+        graph_view = GraphView(right_panel)
+
+        right_panel_sizer_vbox.Add(tab_view, 1, wx.EXPAND | wx.ALL)
+        right_panel_sizer_vbox.Add(graph_view, 10, wx.EXPAND | wx.ALL)
+        right_panel.SetSizer(right_panel_sizer_vbox)
+
+        main_sizer_hbox.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        main_sizer_hbox.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+
+        main_panel.SetSizer(main_sizer_hbox)
 
 
 def mainloop():
     app = wx.App(False)
-    mainview = MainView("My title")
+    mainview = MainView("Grapefruit controlpanel")
     mainview.Show()
     app.MainLoop()
 

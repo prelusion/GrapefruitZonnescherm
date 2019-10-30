@@ -1,7 +1,7 @@
 from src import mvc
 
 
-class GraphView(mvc.View):
+class TabView(mvc.View):
     def __init__(self, parent):
         super().__init__(parent)
-        self.SetBackgroundColour((0, 200, 80))
+        self.SetBackgroundColour((255, 100, 75))
