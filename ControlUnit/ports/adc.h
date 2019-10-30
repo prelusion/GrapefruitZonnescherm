@@ -4,4 +4,4 @@
  * 
  * Void no returns
  */
-void init_ports();
+void adc_init();
