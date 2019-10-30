@@ -2,6 +2,7 @@
 
 uint8_t get_distance(void)
 {
+	
 	// TODO read sensor.
 	return 0;
 }

@@ -2,7 +2,6 @@
 
 int8_t get_temperature(void)
 {
-	// TODO read sensor.
 	return 0;
 }
 
