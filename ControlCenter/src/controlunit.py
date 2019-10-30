@@ -1,11 +1,12 @@
 import time
+from serial.serialutil import SerialException
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 
 from src import serialinterface as ser
 from src import util
-from src.decorators import retry_on_except
+from src.decorators import retry_on_any_exception, retry_on_given_exception
 from src.models.controlunit import ControlUnitModel
 
 BAUDRATE = 38400
@@ -19,6 +20,7 @@ Measurement = namedtuple("SensorData", ["timestamp",
 def get_online_control_units(skip=set()):
     """ :returns new_ports, down_ports """
 
+    @retry_on_given_exception(SerialException, 5)
     def test_if_port_is_control_unit(port):
         with ser.connect(port, baudrate=BAUDRATE, timeout=0.5) as conn:
             for i in range(20):
@@ -85,11 +87,11 @@ class ControlUnitCommunication:
         self.com_port = port
         self._conn = None
 
-    @retry_on_except(retries=EXCEPT_RETRIES)
+    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_up_time(self):
         return self._get_command("GET_UP_TIME")
 
-    @retry_on_except(retries=EXCEPT_RETRIES)
+    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_id(self):
         return self._get_command("GET_ID")
 
@@ -100,7 +102,7 @@ class ControlUnitCommunication:
     def is_online(self):
         pass
 
-    @retry_on_except(retries=EXCEPT_RETRIES)
+    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_sensor_data(self):
         data = self._get_command("GET_LS_THRESHOLD")
 
@@ -140,7 +142,7 @@ class ControlUnitCommunication:
     def set_manual(self, boolean):
         return self._set_command("SET_MANUAL", boolean)
 
-    @retry_on_except(retries=EXCEPT_RETRIES)
+    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _set_command(self, command, arg=None):
         conn = self._get_connection()
         data = None
@@ -160,7 +162,7 @@ class ControlUnitCommunication:
 
         return True if f"{command}=OK" in data else False
 
-    @retry_on_except(retries=EXCEPT_RETRIES)
+    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _get_command(self, command):
         conn = self._get_connection()
 
