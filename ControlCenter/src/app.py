@@ -19,7 +19,12 @@ class App(wx.App):
 
         self.controlunit_manager = ControlUnitManager()
         self.filter_model = FilterModel()
-        t = threading.Thread(target=controlunit.online_control_unit_service, args=(self.controlunit_manager,))
+
+        self.start_background_services()
+
+    def start_background_services(self):
+        t = threading.Thread(target=controlunit.online_control_unit_service,
+                             args=(self.controlunit_manager,), daemon=True)
         t.start()
 
 
