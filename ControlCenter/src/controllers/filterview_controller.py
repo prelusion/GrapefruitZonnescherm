@@ -25,6 +25,7 @@ class FilterViewController(mvc.Controller):
             self.view.CHECKBOX_STATUS_UP: lambda value: self.on_checkbox_status_up(value),
             self.view.CHECKBOX_STATUS_DOWN: lambda value: self.on_checkbox_status_down(value)
         }
+
         distributor[label](value)
 
     def on_checkbox_connected(self, value):
