@@ -91,6 +91,7 @@ int main(void)
 	
 	// Initializating and sensor check passed, serial communication is ready and scheduler is ready.
 	control_unit_status = OPERATING;
+	uint8_t init_data;
 	
     while (1) 
     {

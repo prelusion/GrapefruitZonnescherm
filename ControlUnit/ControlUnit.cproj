@@ -138,6 +138,18 @@
     <Compile Include="command_processing.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="ports\adc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ports\adc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ports\ports.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ports\ports.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="scheduler.c">
       <SubType>compile</SubType>
     </Compile>
@@ -197,6 +209,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ports" />
     <Folder Include="storage" />
     <Folder Include="sensors" />
   </ItemGroup>
