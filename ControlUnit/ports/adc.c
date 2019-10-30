@@ -7,7 +7,6 @@ void adc_init() {
 	//ADLAR shows the result of the ADC
 	//MUX Chooses the Analog pin on the arduino
 	ADMUX = (0 << REFS1)|(1 << REFS0)|(0 << ADLAR)|(0 << MUX2)|(0 << MUX1)|(0 << MUX0);
-	/*  (1 << MUX3)|(0 << MUX2)|(0 << MUX1)|(0 << MUX0)  */
 	//ADEN enables the ADC conversion (DOESNT START THE PROCES)
 	//ADPS(n) sets a prescaler to change the frequency
 	ADCSRA = (1 << ADEN)|(1 << ADPS0)|(1 << ADPS1)|(1 << ADPS2);
