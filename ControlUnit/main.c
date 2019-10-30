@@ -2,6 +2,7 @@
 
 //serial includes
 #include "serial/serial.h"
+
 //ports includes
 #include "ports/adc.h"
 #include "ports/ports.h"
@@ -13,6 +14,7 @@
 
 // Storage includes
 #include "storage/unit_id.h"
+#include "storage/history.h"
 
 // Enum that indicates the unit status.
 enum unit_status{STARTING, OPERATING, INITIALIZING, ERROR} control_unit_status = STARTING;
@@ -33,9 +35,9 @@ struct ControlUnitData {
 
 /**
  * \brief 
- * Update the temperature in the current_unit_statistics struct.	
+ * Update the temperature in the current_unit_statistics struct.
  */
-void update_temperature()
+void update_temperature(void)
 {
 	control_unit_data.temperature = get_temperature();
 }
@@ -44,7 +46,7 @@ void update_temperature()
  * \brief 
  * Update the light sensitivity in the current_unit_statistics struct.
  */	
-void update_light_sensitivity()
+void update_light_intensity(void)
 {
 	control_unit_data.light_intensity = get_light_intensity();
 }
@@ -53,7 +55,7 @@ void update_light_sensitivity()
  * \brief 
  * Update the distance in the current_unit_statistics struct.
  */	
-void update_distance()
+void update_distance(void)
 {
 	control_unit_data.distance = get_distance();
 }
@@ -91,9 +93,8 @@ int main(void)
 	// Initializating and sensor check passed, serial communication is ready and scheduler is running.
 	control_unit_status = OPERATING;
 	uint8_t init_data;
-	uint16_t adcvalue;
     while (1) 
     {
-		secret_msg();
+		
     }
 }

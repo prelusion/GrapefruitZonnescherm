@@ -16,10 +16,6 @@ static int ser_stdio_putchar(char c, FILE *stream) {
 	return 0;
 }
 
-void secret_msg() {
-	printf("Hallo jan wytze");
-}
-
 static FILE uart_output = FDEV_SETUP_STREAM(ser_stdio_putchar, NULL, _FDEV_SETUP_WRITE);
 
 void ser_init() {
