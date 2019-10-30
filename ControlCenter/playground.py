@@ -1,122 +1,158 @@
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-"""
-ZetCode wxPython tutorial
-In this example, we create a check list control widget.
-author: Jan Bodnar
-website: www.zetcode.com
-last modified: May 2018
-"""
-
 import wx
-from wx.lib.mixins.listctrl import CheckListCtrlMixin, ListCtrlAutoWidthMixin
-
-packages = [('abiword', '5.8M', 'base'), ('adie', '145k', 'base'),
-            ('airsnort', '71k', 'base'), ('ara', '717k', 'base'), ('arc', '139k', 'base'),
-            ('asc', '5.8M', 'base'), ('ascii', '74k', 'base'), ('ash', '74k', 'base')]
-
-class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
-
-    def __init__(self, parent):
-        wx.ListCtrl.__init__(self, parent, wx.ID_ANY, style=wx.LC_REPORT |
-                                                            wx.SUNKEN_BORDER)
-        CheckListCtrlMixin.__init__(self)
-        ListCtrlAutoWidthMixin.__init__(self)
 
 
-class Example(wx.Frame):
+class test(wx.Frame):
 
-    def __init__(self, *args, **kw):
-        super(Example, self).__init__(*args, **kw)
+    def __init__(self, title):
+        super().__init__(None, title=title, size=(450, 100))
+        # Create main panel for control unit
+        unit = wx.Panel(self, style=wx.BORDER_RAISED)
+        unit.SetSize(500, 150)
 
-        panel = wx.Panel(self)
+        # Add gridsizer to main panel, 2 rows, 3 columns, 0 borders
+        grid = wx.GridSizer(2, 3, 0, 0)
+        unit.SetSizer(grid)
 
-        vbox = wx.BoxSizer(wx.VERTICAL)
-        hbox = wx.BoxSizer(wx.HORIZONTAL)
+        # Create panel for device name
+        namepanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
+        namepanel.SetBackgroundColour((255, 255, 255))
 
-        leftPanel = wx.Panel(panel)
-        rightPanel = wx.Panel(panel)
+        # Create namelabel
+        self.namelabel = wx.StaticText(namepanel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
+        font = self.namelabel.GetFont()
+        font.PointSize += 5
+        font = font.Bold()
+        self.namelabel.SetFont(font)
 
-        self.log = wx.TextCtrl(rightPanel, style=wx.TE_MULTILINE|wx.TE_READONLY)
-        self.list = CheckListCtrl(rightPanel)
-        self.list.InsertColumn(0, 'Package', width=140)
-        self.list.InsertColumn(1, 'Size')
-        self.list.InsertColumn(2, 'Repository')
+        # align name label to center
+        h_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        h_sizer.Add(self.namelabel, 0, wx.CENTER)
+        main_sizer.Add((0, 0), 1, wx.EXPAND)
+        main_sizer.Add(h_sizer, 0, wx.CENTER)
+        main_sizer.Add((0, 0), 1, wx.EXPAND)
+        namepanel.SetSizer(main_sizer)
 
-        idx = 0
+        # Panel for temperature readings
+        temppanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
+        temppanel.SetBackgroundColour((255, 255, 255))
 
-        for i in packages:
+        # initialize temperaturelabel
+        self.templabel = wx.StaticText(temppanel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
+        font = self.templabel.GetFont()
+        font.PointSize += 5
+        font = font.Bold()
+        self.templabel.SetFont(font)
 
-            index = self.list.InsertItem(idx, i[0])
-            self.list.SetItem(index, 1, i[1])
-            self.list.SetItem(index, 2, i[2])
-            idx += 1
+        # align temperature label to center
+        h_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        h_sizer.Add(self.templabel, 0, wx.CENTER)
+        main_sizer.Add((0, 0), 1, wx.EXPAND)
+        main_sizer.Add(h_sizer, 0, wx.CENTER)
+        main_sizer.Add((0, 0), 1, wx.EXPAND)
+        temppanel.SetSizer(main_sizer)
 
-        vbox2 = wx.BoxSizer(wx.VERTICAL)
+        # Create panel for device status
+        statuspanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
+        statuspanel.SetBackgroundColour((255, 255, 255))
 
-        selBtn = wx.Button(leftPanel, label='Select All')
-        desBtn = wx.Button(leftPanel, label='Deselect All')
-        appBtn = wx.Button(leftPanel, label='Apply')
+        # Create statuslabel
+        self.statuslabel = wx.StaticText(statuspanel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
+        font = self.statuslabel.GetFont()
+        font.PointSize += 5
+        font = font.Bold()
+        self.statuslabel.SetFont(font)
 
-        self.Bind(wx.EVT_BUTTON, self.OnSelectAll, id=selBtn.GetId())
-        self.Bind(wx.EVT_BUTTON, self.OnDeselectAll, id=desBtn.GetId())
-        self.Bind(wx.EVT_BUTTON, self.OnApply, id=appBtn.GetId())
+        # align  statuslabel to center
+        h_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        h_sizer.Add(self.statuslabel, 0, wx.CENTER)
+        main_sizer.Add((0, 0), 1, wx.EXPAND)
+        main_sizer.Add(h_sizer, 0, wx.CENTER)
+        main_sizer.Add((0, 0), 1, wx.EXPAND)
+        statuspanel.SetSizer(main_sizer)
 
-        vbox2.Add(selBtn, 0, wx.TOP|wx.BOTTOM, 5)
-        vbox2.Add(desBtn, 0, wx.BOTTOM, 5)
-        vbox2.Add(appBtn)
+        # Create panel for device color (no label or positioning initializing needed)
+        self.colorpanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
+        self.colorpanel.SetBackgroundColour((1,1,1))
 
-        leftPanel.SetSizer(vbox2)
+        # Create panel for connection status
+        connectionpanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
+        connectionpanel.SetBackgroundColour((255, 255, 255))
 
-        vbox.Add(self.list, 4, wx.EXPAND | wx.TOP, 3)
-        vbox.Add((-1, 10))
-        vbox.Add(self.log, 1, wx.EXPAND)
-        vbox.Add((-1, 10))
+        # Initialize connection label
+        self.connectionlabel = wx.StaticText(connectionpanel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
+        font = self.connectionlabel.GetFont()
+        font.PointSize += 5
+        font = font.Bold()
+        self.connectionlabel.SetFont(font)
 
-        rightPanel.SetSizer(vbox)
+        # Align connection label to center
+        h_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        h_sizer.Add(self.connectionlabel, 0, wx.CENTER)
+        main_sizer.Add((0, 0), 1, wx.EXPAND)
+        main_sizer.Add(h_sizer, 0, wx.CENTER)
+        main_sizer.Add((0, 0), 1, wx.EXPAND)
+        connectionpanel.SetSizer(main_sizer)
 
-        hbox.Add(leftPanel, 0, wx.EXPAND | wx.RIGHT, 5)
-        hbox.Add(rightPanel, 1, wx.EXPAND)
-        hbox.Add((3, -1))
+        # Create mode panel
+        modepanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
+        modepanel.SetBackgroundColour((255, 255, 255))
 
-        panel.SetSizer(hbox)
+        # Create mode label
+        self.modelabel = wx.StaticText(modepanel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
+        font = self.modelabel.GetFont()
+        font.PointSize += 5
+        font = font.Bold()
+        self.modelabel.SetFont(font)
 
-        self.SetTitle('Repository')
-        self.Centre()
+        # Align mode label to center
+        h_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        h_sizer.Add(self.modelabel, 0, wx.CENTER)
+        main_sizer.Add((0, 0), 1, wx.EXPAND)
+        main_sizer.Add(h_sizer, 0, wx.CENTER)
+        main_sizer.Add((0, 0), 1, wx.EXPAND)
+        modepanel.SetSizer(main_sizer)
 
-    def OnSelectAll(self, event):
-
-        num = self.list.GetItemCount()
-        for i in range(num):
-            self.list.CheckItem(i)
-
-    def OnDeselectAll(self, event):
-
-        num = self.list.GetItemCount()
-        for i in range(num):
-            self.list.CheckItem(i, False)
-
-    def OnApply(self, event):
-
-        num = self.list.GetItemCount()
-
-        for i in range(num):
-
-            if i == 0: self.log.Clear()
-
-            if self.list.IsChecked(i):
-                self.log.AppendText(self.list.GetItemText(i) + '\n')
-
-
-def main():
-
-    app = wx.App()
-    ex = Example(None)
-    ex.Show()
-    app.MainLoop()
+        # Add all panels to main device panel grid
+        grid.Add(namepanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        grid.Add(temppanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        grid.Add(statuspanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        grid.Add(self.colorpanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        grid.Add(connectionpanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        grid.Add(modepanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
 
-if __name__ == '__main__':
-    main()
+    def setTemperature(self, temp):
+        self.templabel.SetLabelText(str(temp) + "°C")
+
+    def setName(self, name):
+        self.namelabel.SetLabelText(str(name))
+
+    def setStatus(self, status):
+        self.statuslabel.SetLabelText(str(status))
+
+    def setDeviceCol(self, *colorTuple):
+        self.colorpanel.SetBackgroundColour(colorTuple)
+
+    def setConnection(self, connection):
+        self.connectionlabel.SetLabelText(str(connection))
+
+    def setMode(self, mode):
+        self.modelabel.SetLabelText(str(mode))
+
+app = wx.App(False)
+mainview = test("Grapefruit controlpanel")
+mainview.SetBackgroundColour((23,55,76))
+mainview.setConnection("disconnected")
+mainview.setMode("automatic")
+mainview.setStatus("shutter down")
+mainview.setName("arduino 100")
+mainview.setTemperature(12)
+mainview.Show()
+app.MainLoop()
+
+

@@ -1,6 +1,8 @@
 #ifndef _SENSORS_TEMPERATURE_H_
 #define _SENSORS_TEMPERATURE_H_
 
+#include <avr/io.h>
+
 /**
  * \brief 
  * Get the current temperature.
