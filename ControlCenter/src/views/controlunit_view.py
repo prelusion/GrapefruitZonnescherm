@@ -10,7 +10,7 @@ class ControlUnitView(wx.Panel):
         self.temperature = "0°C"
         self.name = "device1"
         self.status = "disconnected"
-        self.devicecol = (255, 50, 1)
+        self.device_col = (255, 50, 1)
         self.connection = "disonnected"
         self.mode = "disconnected"
 
@@ -84,7 +84,7 @@ class ControlUnitView(wx.Panel):
 
         # Create panel for device color (no label or positioning initializing needed)
         colorpanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
-        colorpanel.SetBackgroundColour(self.devicecol)
+        colorpanel.SetBackgroundColour(self.device_col)
 
         # Create panel for connection status
         connectionpanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
@@ -144,7 +144,7 @@ class ControlUnitView(wx.Panel):
         self.status = str(status)
 
     def setDeviceCol(self, *colorTuple):
-        self.devicecol = colorTuple
+        self.device_col = colorTuple
 
     def setConnection(self, connection):
         self.connection = str(connection)
