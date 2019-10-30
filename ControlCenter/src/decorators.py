@@ -1,7 +1,7 @@
 import time
 
 
-def retry_on_except(retries, sleep=0, ignored=None):
+def retry_on_any_exception(retries, sleep=0, ignored=None):
     """
     :param retries:
     :param sleep:
@@ -19,6 +19,35 @@ def retry_on_except(retries, sleep=0, ignored=None):
                     return fn(*args, **kwargs)
                 except Exception as e:
                     if e.__class__ in ignored:
+                        raise
+
+                    if i < retries - 1:
+                        if sleep > 0:
+                            time.sleep(sleep)
+                        continue
+
+                    raise
+
+        return wrapper
+    return decorator
+
+
+def retry_on_given_exception(exceptions, retries, sleep=0):
+
+    if not isinstance(exceptions, tuple) and not isinstance(exceptions, list):
+        exceptions = (exceptions,)
+
+    def decorator(fn):
+
+        def wrapper(*args, **kwargs):
+
+            for i in range(retries):
+                try:
+                    return fn(*args, **kwargs)
+                except Exception as e:
+                    print("Exception:", e)
+                    print("RETRY")
+                    if e.__class__ not in exceptions:
                         raise
 
                     if i < retries - 1:

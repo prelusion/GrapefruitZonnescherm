@@ -1,14 +1,17 @@
+import concurrent
 import time
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 
+from serial.serialutil import SerialException
+
 from src import serialinterface as ser
 from src import util
-from src.decorators import retry_on_except
+from src.decorators import retry_on_any_exception, retry_on_given_exception
 from src.models.controlunit import ControlUnitModel
 
-BAUDRATE = 38400
+BAUDRATE = 19200
 
 Measurement = namedtuple("SensorData", ["timestamp",
                                         "temperature",
@@ -16,32 +19,60 @@ Measurement = namedtuple("SensorData", ["timestamp",
                                         "light_sensitivity"])
 
 
-def get_online_control_units(skip=[]):
+def get_online_control_units(connected_ports=set(), unused_ports=set()):
     """ :returns new_ports, down_ports """
 
+    @retry_on_given_exception(SerialException, 5)
     def test_if_port_is_control_unit(port):
-        with ser.connect(port, baudrate=BAUDRATE, timeout=1) as conn:
-            for i in range(15):
+        with ser.connect(port, baudrate=BAUDRATE, timeout=0.2) as conn:
+            for i in range(20):
                 conn.write("PING")
                 data = conn.readbuffer()
+
                 if "PONG" in data:
                     return port
                 time.sleep(0.1)
 
     all_ports = ser.get_com_ports()
-    unconnected_ports = set(all_ports) - set(skip)
-    down_ports = set(skip) - set(all_ports)
+    new_ports = set(all_ports) - set(connected_ports) - set(unused_ports)
+    down_ports = set(connected_ports) - set(all_ports) - set(unused_ports)
 
-    with ThreadPoolExecutor() as executor:
-        results = executor.map(test_if_port_is_control_unit, unconnected_ports)
-        return list(filter(None, results)), down_ports
+    unconnected_ports = []
+    failed_ports = []
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures_to_ports = {executor.submit(test_if_port_is_control_unit, port): port for port in new_ports}
+        for future in concurrent.futures.as_completed(futures_to_ports):
+            port = futures_to_ports[future]
+            try:
+                result = future.result()
+                unconnected_ports.append(result)
+            except SerialException as e:
+                failed_ports.append(port)
+
+    unconnected_ports = list(filter(None, unconnected_ports))
+
+    invalid_ports = set(all_ports) - set(unconnected_ports) - set(connected_ports) \
+                    - set(unused_ports) - set(failed_ports)
+
+    return unconnected_ports, down_ports, invalid_ports
 
 
-def online_control_unit_service(controlunit_manager):
+def online_control_unit_service(controlunit_manager, interval=0.5):
+    unused_ports = set()
+
     while True:
         connected_ports = controlunit_manager.get_connected_ports()
+        # print("connected ports:", connected_ports)
+        new_ports, down_ports, invalid_ports = get_online_control_units(
+            connected_ports=connected_ports, unused_ports=unused_ports)
 
-        new_ports, down_ports = get_online_control_units(skip=connected_ports)
+        # print("new_ports:", new_ports)
+        # print("down_ports:", down_ports)
+        # print("invalid_ports:", invalid_ports)
+        # print("unused_ports:", unused_ports)
+
+        unused_ports |= invalid_ports
 
         for port in down_ports:
             controlunit_manager.remove_unit(port)
@@ -53,13 +84,15 @@ def online_control_unit_service(controlunit_manager):
 
             comm = ControlUnitCommunication(port)
 
-            id_ = comm.get_id()
-            if not id_:
-                comm.set_id(util.generate_id())
+            # id_ = comm.get_id()
+            # if not id_:
+            #     comm.set_id(util.generate_id())
 
-            model = ControlUnitModel(id_)
+            model = ControlUnitModel(util.generate_id())
 
             controlunit_manager.add_unit(port, comm, model)
+
+        time.sleep(interval)
 
 
 EXCEPT_RETRIES = 5
@@ -74,11 +107,11 @@ class ControlUnitCommunication:
         self.com_port = port
         self._conn = None
 
-    @retry_on_except(retries=EXCEPT_RETRIES)
+    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_up_time(self):
         return self._get_command("GET_UP_TIME")
 
-    @retry_on_except(retries=EXCEPT_RETRIES)
+    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_id(self):
         return self._get_command("GET_ID")
 
@@ -89,7 +122,7 @@ class ControlUnitCommunication:
     def is_online(self):
         pass
 
-    @retry_on_except(retries=EXCEPT_RETRIES)
+    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_sensor_data(self):
         data = self._get_command("GET_LS_THRESHOLD")
 
@@ -129,7 +162,7 @@ class ControlUnitCommunication:
     def set_manual(self, boolean):
         return self._set_command("SET_MANUAL", boolean)
 
-    @retry_on_except(retries=EXCEPT_RETRIES)
+    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _set_command(self, command, arg=None):
         conn = self._get_connection()
         data = None
@@ -149,7 +182,7 @@ class ControlUnitCommunication:
 
         return True if f"{command}=OK" in data else False
 
-    @retry_on_except(retries=EXCEPT_RETRIES)
+    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _get_command(self, command):
         conn = self._get_connection()
 
@@ -171,42 +204,6 @@ class ControlUnitCommunication:
 
     def close(self):
         if self._conn: self._conn.close()
-
-
-class ControlUnitManager:
-    def __init__(self):
-        self._units = OrderedDict()
-
-    def add_unit(self, port, communication, model):
-        self._units[port] = (communication, model)
-
-    def remove_unit(self, port):
-        del self._units[port]
-
-    def get_units(self):
-        return self._units
-
-    def is_port_connected(self, port):
-        return port in self._units
-
-    def get_connected_ports(self):
-        return list(self._units.keys())
-
-    def update_models(self):
-        for i, unit in enumerate(self._units.copy()):
-            comm, model = unit
-
-            data = comm.get_sensor_data()
-
-            if not data:
-                del self._units[i]
-
-            model.add_measurement(data)
-
-    def close_connections(self):
-        for unit in self._units.items():
-            comm, model = unit
-            comm.close()
 
 
 if __name__ == "__main__":
