@@ -36,5 +36,5 @@ class ControlUnitsController(mvc.Controller):
 
         for port, unit in new_units.items():
             comm, model = unit
-            unit_view = ControlUnitView(self.get_view())
-            wx.CallAfter(lambda: self.get_view().render_unit(model.get_id(), unit_view))
+            # unit_view = ControlUnitView()
+            wx.CallAfter(lambda: self.get_view().render_unit(model.get_id(), None))

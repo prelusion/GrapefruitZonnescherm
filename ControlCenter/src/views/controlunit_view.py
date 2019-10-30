@@ -4,7 +4,7 @@ import wx
 
 class ControlUnitView(wx.Panel):
     def __init__(self):
-        super().__init__(None, size=(450, 100))
+        super().__init__()  # size: size=(450, 100)
 
         # Create main panel for control unit
         unit = wx.Panel(self, style=wx.BORDER_RAISED)

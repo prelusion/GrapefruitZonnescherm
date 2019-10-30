@@ -1,6 +1,18 @@
 import wx
-
+import random
 from src import mvc
+
+
+UNIT_COLORS = (
+    (255, 0, 0),
+    (255, 123, 0),
+    (87, 6, 253),
+    (1, 209, 126),
+)
+
+
+def randcolor():
+    return random.choice(UNIT_COLORS)
 
 
 class ControlUnitsView(mvc.View):
@@ -16,19 +28,24 @@ class ControlUnitsView(mvc.View):
 
     def render_unit(self, id_, view):
         print("RENDER CONTROL UNIT:", id_)
-
-        self.unit_count += 1
-        btn = wx.Button(self, label="Hi")
+        btn = wx.Button(self, label=str(id_))
+        btn.SetBackgroundColour(randcolor())
         self.vbox.Add(btn, 0, wx.ALL, 5)
-
-        self.Layout()
-        self.parent.Layout()
-        self.parent.sizer.Layout()
+        self.units[id_] = self.unit_count
         self.vbox.Layout()
+        self.unit_count += 1
 
     def remove_unit(self, id_):
         print("REMOVE UNIT:", id_)
 
-        self.vbox.Hide(self.unit_count-1)
-        self.vbox.Remove(self.unit_count-1)
+        idx = self.units[id_]
+        self.vbox.Hide(self.units[id_])
+        self.vbox.Remove(self.units[id_])
         self.unit_count -= 1
+        self._update_indexes(idx)
+        self.vbox.Layout()
+
+    def _update_indexes(self, removed_index):
+        for i, id_ in enumerate(self.units):
+            if self.units[id_] > removed_index:
+                self.units[id_] -= 1
