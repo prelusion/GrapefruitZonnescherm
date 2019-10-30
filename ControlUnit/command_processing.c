@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <avr/io.h>
 #include <stdio.h>
+#include "data.h"
 
 // Storage includes.
 #include "storage/unit_id.h"
@@ -218,7 +219,15 @@ char* cmd_set_manual(char* parameters)
 
 char* cmd_get_sensor_data(char* parameters)
 {
-	return "NOT_IMPLEMENTED";
+	char* result = malloc(16);
+	
+	int8_t current_temperature = get_current_temperature();
+	uint8_t current_light_intensity = get_current_light_intensity();
+	ShutterStatus current_shutter_status = get_current_shutter_status();
+	
+	sprintf(result, "%d,%u,%u", current_temperature, current_light_intensity, current_shutter_status);
+	
+	return result;
 }
 
 char* cmd_get_sensor_history(char* parameters)
