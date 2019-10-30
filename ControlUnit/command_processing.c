@@ -73,7 +73,8 @@ void process_input(char* input)
 	// Find the location of the = character.
 	char* startOfParameters = strchr(input, '=');
 	
-	if (!startOfParameters) {
+	if (!startOfParameters)
+	{
 		// When there is no = character there are no parameters, so we can use the entire input as command name.
 		execute_command(input, "");
 	} else {
@@ -95,7 +96,7 @@ void execute_command(char name[20], char* parameters)
 		if (strcmp(command.name, name) == 0)
 		{
 			char* result = command.function(parameters);
-			printf("%s=%s", name, result);
+			printf("%s=%s\n", name, result);
 			
 			// Result has been returned so we can free it :D
 			free(result);
@@ -108,7 +109,10 @@ void execute_command(char name[20], char* parameters)
 
 char* cmd_ping(char* parameters)
 {
-	return "PONG";
+	char* result = malloc(5);
+	strcpy(result, "PONG");
+	
+	return result;
 }
 
 char* cmd_get_id(char* parameters)
@@ -122,16 +126,19 @@ char* cmd_get_id(char* parameters)
 char* cmd_set_id(char* parameters)
 {
 	uint32_t unit_id = atol(parameters);
+	char* result = malloc(6);
 	
 	if (unit_id)
 	{
 		set_unit_id(unit_id);
-		return "OK";
+		strcpy(result, "OK");
 	}
 	else
 	{
-		return "ERROR";
+		strcpy(result, "ERROR");
 	}
+	
+	return result;
 }
 
 char* cmd_get_window_height(char* parameters)
@@ -145,16 +152,19 @@ char* cmd_get_window_height(char* parameters)
 char* cmd_set_window_height(char* parameters)
 {
 	uint16_t window_height = atoi(parameters);
+	char* result = malloc(6);
 	
 	if (window_height)
 	{
 		set_window_height(window_height);
-		return "OK";
+		strcpy(result, "OK");
 	}
 	else
 	{
-		return "ERROR";
+		strcpy(result, "ERROR");
 	}
+	
+	return result;
 }
 
 char* cmd_get_temperature_threshold(char* parameters)
@@ -168,16 +178,19 @@ char* cmd_get_temperature_threshold(char* parameters)
 char* cmd_set_temperature_threshold(char* parameters)
 {
 	int8_t temperature_threshold = atoi(parameters);
+	char* result = malloc(6);
 	
 	if (temperature_threshold)
 	{
 		set_temperature_threshold(temperature_threshold);
-		return "OK";
+		strcpy(result, "OK");
 	}
 	else
 	{
-		return "ERROR";
+		strcpy(result, "ERROR");
 	}
+	
+	return result;
 }
 
 char* cmd_get_light_intensity_threshold(char* parameters)
@@ -191,16 +204,19 @@ char* cmd_get_light_intensity_threshold(char* parameters)
 char* cmd_set_light_intensity_threshold(char* parameters)
 {
 	uint8_t light_intensity_threshold = atoi(parameters);
+	char* result = malloc(6);
 	
 	if (light_intensity_threshold)
 	{
 		set_light_intensity_threshold(light_intensity_threshold);
-		return "OK";
+		strcpy(result, "OK");
 	}
 	else
 	{
-		return "ERROR";
+		strcpy(result, "ERROR");
 	}
+	
+	return result;
 }
 
 char* cmd_get_manual(char* parameters)
@@ -208,13 +224,16 @@ char* cmd_get_manual(char* parameters)
 	char* result = malloc(4);
 	sprintf(result, "%u", get_manual());
 	
-	return result ? "1" : "0";
+	return result;
 }
 
 char* cmd_set_manual(char* parameters)
 {
-	set_manual(atoi(parameters) ? 1 : 0);
-	return "OK";
+	set_manual(atoi(parameters));
+	char* result = malloc(3);
+	strcpy(result, "OK");
+	
+	return result;
 }
 
 char* cmd_get_sensor_data(char* parameters)
@@ -232,15 +251,24 @@ char* cmd_get_sensor_data(char* parameters)
 
 char* cmd_get_sensor_history(char* parameters)
 {
-	return "NOT_IMPLEMENTED";
+	char* result = malloc(16);
+	strcpy(result, "NOT_IMPLEMENTED");
+	
+	return result;
 }
 
 char* cmd_roll_up(char* parameters)
 {
-	return "NOT_IMPLEMENTED";
+	char* result = malloc(16);
+	strcpy(result, "NOT_IMPLEMENTED");
+	
+	return result;
 }
 
 char* cmd_roll_down(char* parameters)
 {
-	return "NOT_IMPLEMENTED";
+	char* result = malloc(16);
+	strcpy(result, "NOT_IMPLEMENTED");
+	
+	return result;
 }

@@ -63,14 +63,9 @@ def online_control_unit_service(controlunit_manager, interval=0.5):
 
     while True:
         connected_ports = controlunit_manager.get_connected_ports()
-        # print("connected ports:", connected_ports)
+
         new_ports, down_ports, invalid_ports = get_online_control_units(
             connected_ports=connected_ports, unused_ports=unused_ports)
-
-        # print("new_ports:", new_ports)
-        # print("down_ports:", down_ports)
-        # print("invalid_ports:", invalid_ports)
-        # print("unused_ports:", unused_ports)
 
         unused_ports |= invalid_ports
 
@@ -84,9 +79,7 @@ def online_control_unit_service(controlunit_manager, interval=0.5):
 
             comm = ControlUnitCommunication(port)
 
-            # id_ = comm.get_id()
-            # if not id_:
-            #     comm.set_id(util.generate_id())
+            # TODO: Check for id, otherwise generate id
 
             model = ControlUnitModel(util.generate_id())
 
