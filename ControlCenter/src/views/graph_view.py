@@ -1,23 +1,29 @@
+import datetime
 import random
-
 from src import mvc
 import wxmplot
 import wx
+from src import controlunit
+from src.controlunit import Measurement
+from src.models.controlunit import ControlUnitModel
 
 
 class GraphView(wxmplot.PlotPanel):
     def __init__(self, parent):
         super().__init__(parent, pos=(150, 150))
+        self.framecolor = "LightGrey"
         self.x = []
         self.y = []
-
+        self.controlUnits = []
         self.SetTestData()
-        self.oplot(self.x, self.y, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor="LightGrey")
+        #self.oplot(self.x, self.y, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor, color="Green")
+        self.SetTestData()
+        self.clear()
+        #self.oplot(self.x, self.y, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor, color="Red", drawstyle="steps-pre", marker="diamond")
         self.Show()
 
-    def AddControlUnit(self, x, y):
-        self.x = x
-        self.y = y
+    def AddControlUnit(self, controlUnit:ControlUnitModel):
+        self.controlUnits.append(controlUnit)
 
     def SetTestData(self):
         x = []
@@ -25,7 +31,53 @@ class GraphView(wxmplot.PlotPanel):
         for i in range(30):
             x.append(i)
             y.append(random.randint(1,30))
-        self.SetData(self.x, self.y)
+        self.x = x
+        self.y = y
+
+        testUnit = ControlUnitModel(1)
+        testUnit.set_name("TestUnit")
+        testUnit.set_online(True)
+        self.controlUnits = []
+        for c in range(2):
+            measurements = []
+            for i in range(100):
+                measurements.append(Measurement(timestamp=datetime.datetime.now(), temperature=random.randint(1,30), shutter_status=random.randint(0,1), light_sensitivity=0))
+            self.controlUnits.append(measurements)
+
+        test = "test"
+    def drawControlUnits(self):
+        self.test = 0
+        for controlunit in self.controlUnits:
+            self.drawControlUnit(controlunit)
+            counter = 0
+            self.test += 1
+
+
+    def drawControlUnit(self, controlUnit):
+        dates = []
+        temps = []
+        status = []
+        xaxis = []
+        x = 0
+
+        for measurement in controlUnit:
+            dates.append(measurement.timestamp)
+            if self.test > 0 and x > 50:
+                break
+            else:
+                temps.append(measurement.temperature)
+                x += 1
+            status.append(measurement.shutter_status)
+            xaxis.append(x)
+
+        test = "test"
+
+
+
+        self.oplot(xaxis, temps, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor)
+        self.oplot(xaxis, status, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor, style="dashed")
+        #self.oplot(xaxis, dates, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor)
+        #self.plot_many(self.x, self.y, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor)
 
 if __name__ == "__main__":
 
@@ -44,7 +96,10 @@ if __name__ == "__main__":
     graphPanelSizer.Add(graph, 0 ,wx.EXPAND,0)
     graphPanelSizer.Add(bottomPanel, 0 , wx.EXPAND, 0)
     frame.Show()
+    graph.drawControlUnits()
+    graph.SetTestData()
     app.MainLoop()
+
 
 #app = wx.App(redirect=True)
 #top = wx.Frame(None, title="Hello World", size=(300, 200))

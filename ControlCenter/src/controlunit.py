@@ -10,7 +10,7 @@ from src.models.controlunit import ControlUnitModel
 
 BAUDRATE = 38400
 
-Measurement = namedtuple("SensorData", ["timestamp",
+Measurement = namedtuple("Measurement", ["timestamp",
                                         "temperature",
                                         "shutter_status",
                                         "light_sensitivity"])

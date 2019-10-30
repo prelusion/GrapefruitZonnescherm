@@ -34,5 +34,5 @@ class ControlUnitModel(mvc.Model):
             measurements.pop(0)
         self._measurements.set(measurements.append(measurement))
 
-    def get_measurements(self):
+    def get_measurements(self, interval=60, limit=1000):
         return self._measurements
