@@ -2,7 +2,7 @@
 #include <avr/eeprom.h>
 
 // The window height will be stored in EEPROM at address 0x0002 and 0x0003.
-#define WINDOW_HEIGHT_ADDRESS 0x0002
+#define WINDOW_HEIGHT_ADDRESS 0x0004
 
 uint16_t get_window_height(void)
 {

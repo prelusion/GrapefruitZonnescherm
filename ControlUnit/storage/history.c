@@ -3,10 +3,10 @@
 #include <stdlib.h>
 
 // The history start index will be stored in EEPROM at address 0x0006 and 0x0007.
-#define HISTORY_START_INDEX_ADDRESS 0x0006
+#define HISTORY_START_INDEX_ADDRESS 0x0008
 
 // The history start index will be stored in EEPROM at address 0x0008 and 0x0009.
-#define HISTORY_SIZE_ADDRESS 0x0008
+#define HISTORY_SIZE_ADDRESS 0x000A
 
 // The history will be stored in EEPROM at address 0x0020 until end of memory.
 #define HISTORY_ADDRESS 0x0020

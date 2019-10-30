@@ -101,7 +101,10 @@ char* cmd_ping(char* parameters)
 
 char* cmd_get_id(char* parameters)
 {
-	return (char*)sprintf("%i", get_unit_id());
+	char result[11];
+	sprintf(result, sizeof(result), "%lu", get_unit_id());
+	
+	return result;
 }
 
 char* cmd_set_id(char* parameters)
@@ -111,7 +114,7 @@ char* cmd_set_id(char* parameters)
 
 char* cmd_get_window_height(char* parameters)
 {
-	return (char*)"";
+	return (char*)sprintf("%u", get_window_height());
 }
 
 char* cmd_set_window_height(char* parameters)
@@ -121,7 +124,7 @@ char* cmd_set_window_height(char* parameters)
 
 char* cmd_get_temperature_threshold(char* parameters)
 {
-	return (char*)"";
+	return (char*)sprintf("%d", get_temperature_threshold());
 }
 
 char* cmd_set_temperature_threshold(char* parameters)
@@ -131,7 +134,7 @@ char* cmd_set_temperature_threshold(char* parameters)
 
 char* cmd_get_light_intensity_threshold(char* parameters)
 {
-	return (char*)"";
+	return (char*)sprintf("%u", get_light_intensity_threshold());
 }
 
 char* cmd_set_light_intensity_threshold(char* parameters)
