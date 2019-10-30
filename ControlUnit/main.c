@@ -71,8 +71,8 @@ int main(void)
 	ser_init();
 	if (!has_unit_id()) {
 		// TODO don't operate but listen for initialization.
-		control_unit_status = INITIALIZING;
-		return 1;
+		//control_unit_status = INITIALIZING;
+		//return 1;
 	}
 	
 	// Check if all sensors are connected.
@@ -80,8 +80,8 @@ int main(void)
 	{
 		// TODO show the error with blinking LEDs.
 		// TODO maybe save which sensor is not connected.
-		control_unit_status = ERROR;
-		return 1;
+		//control_unit_status = ERROR;
+		//return 1;
 	}
 	
 	// Load the configuration into RAM for quick access.
@@ -93,7 +93,7 @@ int main(void)
 	// Initialize the timer.
 	timer_init();
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
-	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
+	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)30); // 3000 * 10ms = 30sec
 	timer_start();
 	
 	// TODO handle serial communication, maybe do this in the infinite loop.
