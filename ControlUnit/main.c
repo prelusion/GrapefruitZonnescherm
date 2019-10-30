@@ -70,7 +70,7 @@ int main(void)
 	adc_init();
 	ser_init();
 	if (!has_unit_id()) {
-		// TODO don't operate but listen for initialisation.
+		// TODO don't operate but listen for initialization.
 		control_unit_status = INITIALIZING;
 		return 1;
 	}
@@ -89,7 +89,7 @@ int main(void)
 	control_unit_configuration.window_height = get_window_height();
 	control_unit_configuration.temperature_threshold = get_temperature_threshold();
 	control_unit_configuration.light_intensity_threshold = get_light_intensity_threshold();
-	
+		
 	// Initialize the timer.
 	timer_init();
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
@@ -100,7 +100,6 @@ int main(void)
 	
 	// Initializating and sensor check passed, serial communication is ready and scheduler is ready.
 	control_unit_status = OPERATING;
-	uint8_t init_data;
     while (1) 
     {
 		timer_dispatch_tasks();
