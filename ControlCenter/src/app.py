@@ -1,17 +1,16 @@
 import os
+import threading
 
 import wx
 
 from src import const
-from src.views.controlunits_view import ControlUnitsView
+from src import controlunit
+from src.controllers.controlunits_controller import ControlUnitsController
+from src.models.controlunit_manager import ControlUnitManager
+from src.models.filter import FilterModel
 from src.views.filter_view import FilterView
 from src.views.graph_view import GraphView
 from src.views.tab_view import TabView
-from src.models.controlunit_manager import ControlUnitManager
-from src.models.filter import FilterModel
-from src.controllers.controlunits_controller import ControlUnitsController
-from src import controlunit
-import threading
 
 
 class App(wx.App):

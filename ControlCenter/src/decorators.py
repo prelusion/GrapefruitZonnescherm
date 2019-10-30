@@ -29,11 +29,11 @@ def retry_on_any_exception(retries, sleep=0, ignored=None):
                     raise
 
         return wrapper
+
     return decorator
 
 
 def retry_on_given_exception(exceptions, retries, sleep=0):
-
     if not isinstance(exceptions, tuple) and not isinstance(exceptions, list):
         exceptions = (exceptions,)
 
@@ -45,8 +45,7 @@ def retry_on_given_exception(exceptions, retries, sleep=0):
                 try:
                     return fn(*args, **kwargs)
                 except Exception as e:
-                    print("Exception:", e)
-                    print("RETRY")
+
                     if e.__class__ not in exceptions:
                         raise
 
@@ -58,4 +57,5 @@ def retry_on_given_exception(exceptions, retries, sleep=0):
                     raise
 
         return wrapper
+
     return decorator

@@ -1,4 +1,3 @@
-from src import mvc
 import wx
 
 
@@ -65,7 +64,6 @@ class ControlUnitView(wx.Panel):
         font = font.Bold()
         self.status_label.SetFont(font)
 
-
         # align  statuslabel to center
         h_sizer = wx.BoxSizer(wx.HORIZONTAL)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -127,20 +125,20 @@ class ControlUnitView(wx.Panel):
         grid.Add(connection_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         grid.Add(mode_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
-    def setTemperature(self, temp):
+    def set_temperature(self, temp):
         self.temp_label.SetLabelText(str(temp))
 
-    def setName(self, name):
+    def set_name(self, name):
         self.name_label.SetLabelText(str(name))
 
-    def setStatus(self, status):
+    def set_status(self, status):
         self.status_label.SetLabelText(str(status))
 
-    def setDeviceCol(self, *color_tuple):
+    def set_device_color(self, *color_tuple):
         self.color_panel.SetBackgroundColour(color_tuple)
 
-    def setConnection(self, connection):
+    def set_connection(self, connection):
         self.connection_label.SetLabelText(str(connection))
 
-    def setMode(self, mode):
+    def set_mode(self, mode):
         self.mode_label.SetLabelText(str(mode))

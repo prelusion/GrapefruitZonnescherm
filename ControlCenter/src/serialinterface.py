@@ -1,6 +1,7 @@
 from contextlib import contextmanager
-from serial.serialutil import SerialException
+
 import serial as pyserial
+from serial.serialutil import SerialException
 from serial.tools import list_ports
 
 

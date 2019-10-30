@@ -1,7 +1,8 @@
-import wx
 import random
-from src import mvc
 
+import wx
+
+from src import mvc
 
 UNIT_COLORS = (
     (255, 0, 0),
@@ -27,7 +28,6 @@ class ControlUnitsView(mvc.View):
         self.SetSizer(self.vbox)
 
     def render_unit(self, id_, view):
-        print("RENDER CONTROL UNIT:", id_)
         btn = wx.Button(self, label=str(id_))
         btn.SetBackgroundColour(randcolor())
         self.vbox.Add(btn, 0, wx.ALL, 5)
@@ -36,8 +36,6 @@ class ControlUnitsView(mvc.View):
         self.unit_count += 1
 
     def remove_unit(self, id_):
-        print("REMOVE UNIT:", id_)
-
         idx = self.units[id_]
         self.vbox.Hide(self.units[id_])
         self.vbox.Remove(self.units[id_])

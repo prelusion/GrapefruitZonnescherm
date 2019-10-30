@@ -1,6 +1,7 @@
 from abc import ABC
-import wx
 from copy import deepcopy
+
+import wx
 
 
 class Model(ABC):
