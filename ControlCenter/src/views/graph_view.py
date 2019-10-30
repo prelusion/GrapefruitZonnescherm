@@ -1,5 +1,6 @@
 import datetime
 import random
+import matplotlib
 from src import mvc
 import wxmplot
 import wx
@@ -30,7 +31,7 @@ class GraphView(wxmplot.PlotPanel):
         y = []
         for i in range(30):
             x.append(i)
-            y.append(random.randint(1,30))
+            y.append(random.randint(-10,20))
         self.x = x
         self.y = y
 
@@ -41,7 +42,7 @@ class GraphView(wxmplot.PlotPanel):
         for c in range(2):
             measurements = []
             for i in range(100):
-                measurements.append(Measurement(timestamp=datetime.datetime.now(), temperature=random.randint(1,30), shutter_status=random.randint(0,1), light_sensitivity=0))
+                measurements.append(Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)), temperature=random.randint(-10,20), shutter_status=random.randint(0,1), light_sensitivity=0))
             self.controlUnits.append(measurements)
 
         test = "test"
@@ -61,21 +62,17 @@ class GraphView(wxmplot.PlotPanel):
         x = 0
 
         for measurement in controlUnit:
-            dates.append(measurement.timestamp)
-            if self.test > 0 and x > 50:
-                break
-            else:
-                temps.append(measurement.temperature)
-                x += 1
+            #dates.append(matplotlib.dates.date2num(measurement.timestamp))
+            time = int(measurement.timestamp)
+            dates.append(time)
+            temps.append(measurement.temperature)
             status.append(measurement.shutter_status)
             xaxis.append(x)
 
         test = "test"
 
-
-
-        self.oplot(xaxis, temps, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor)
-        self.oplot(xaxis, status, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor, style="dashed")
+        self.plot(dates, temps, side='left', linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor, use_dates=True)
+        #self.plot(dates, status, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor, style="dashed")
         #self.oplot(xaxis, dates, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor)
         #self.plot_many(self.x, self.y, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor)
 
