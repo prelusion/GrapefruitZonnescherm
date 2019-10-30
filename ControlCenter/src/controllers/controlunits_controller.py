@@ -23,9 +23,9 @@ class ControlUnitsController(mvc.Controller):
         self.controlunits_manager.units.add_callback(self.on_units_changed)
 
     def on_units_changed(self, prevstate, state):
-        print("ON UNITS CHANGED:")
-        print("prev:", prevstate)
-        print("new: ", state)
+        # print("ON UNITS CHANGED:")
+        # print("prev:", prevstate)
+        # print("new: ", state)
         down_units = {k: prevstate[k] for k in set(prevstate) - set(state)}
         new_units = {k: state[k] for k in set(state) - set(prevstate)}
         print("down:", down_units)
@@ -35,8 +35,6 @@ class ControlUnitsController(mvc.Controller):
             wx.CallAfter(lambda: self.get_view().remove_unit(model.get_id()))
 
         for port, unit in new_units.items():
-            print("for new unit:", unit)
             comm, model = unit
             unit_view = ControlUnitView(self.get_view())
-            print(self.get_view())
             wx.CallAfter(lambda: self.get_view().render_unit(model.get_id(), unit_view))

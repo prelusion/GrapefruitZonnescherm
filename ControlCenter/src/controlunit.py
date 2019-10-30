@@ -49,12 +49,13 @@ def get_online_control_units(skip=set()):
             except SerialException as e:
                 failed_ports.append(port)
 
+    unconnected_ports = list(filter(None, unconnected_ports))
     invalid_ports = set(all_ports) - set(unconnected_ports) - set(skip) - set(failed_ports)
 
     return unconnected_ports, down_ports, invalid_ports
 
 
-def online_control_unit_service(controlunit_manager, interval=0.05):
+def online_control_unit_service(controlunit_manager, interval=0.5):
     unused_ports = set()
 
     while True:

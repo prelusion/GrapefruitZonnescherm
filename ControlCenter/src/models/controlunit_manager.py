@@ -7,12 +7,13 @@ class ControlUnitManager:
         self.units = mvc.Observable(OrderedDict())  # "port": <communication, model>
 
     def add_unit(self, port, communication, model):
+        print("CU Manager add:", port)
         units = self.units.get()
         units[port] = (communication, model)
         self.units.set(units)
 
     def remove_unit(self, port):
-        print("removing unit with port from manager:", port)
+        print("CU Manager remove:", port)
         units = self.units.get()
         comm, model = units[port]
         comm.close()
