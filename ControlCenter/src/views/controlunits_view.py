@@ -31,6 +31,10 @@ class ControlUnitsView(mvc.View):
 
     def remove_unit(self, id_):
         print("REMOVE UNIT:", id_)
+        self.vbox.Hide(self.unit_count-1)
+        self.vbox.Remove(self.unit_count-1)
+        self.unit_count -= 1
+
         # count = self.units[id_]
         # self.vbox.Remove(count)
 

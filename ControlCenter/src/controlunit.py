@@ -1,5 +1,5 @@
 import time
-from collections import namedtuple, OrderedDict
+from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 
@@ -16,17 +16,17 @@ Measurement = namedtuple("SensorData", ["timestamp",
                                         "light_sensitivity"])
 
 
-def get_online_control_units(skip=[]):
+def get_online_control_units(skip=set()):
     """ :returns new_ports, down_ports """
 
     def test_if_port_is_control_unit(port):
         with ser.connect(port, baudrate=BAUDRATE, timeout=0.5) as conn:
-            for i in range(10):
+            for i in range(20):
                 conn.write("PING")
                 data = conn.readbuffer()
                 if "PONG" in data:
                     return port
-                time.sleep(0.05)
+                time.sleep(0.1)
 
     all_ports = ser.get_com_ports()
     new_ports = set(all_ports) - set(skip)
@@ -36,17 +36,21 @@ def get_online_control_units(skip=[]):
         results = executor.map(test_if_port_is_control_unit, new_ports)
 
     unconnected_ports = list(filter(None, results))
-    invalid_ports = set(all_ports) - set(unconnected_ports)
+    invalid_ports = set(all_ports) - set(unconnected_ports) - set(skip)
 
     return unconnected_ports, down_ports, invalid_ports
 
 
-def online_control_unit_service(controlunit_manager):
+def online_control_unit_service(controlunit_manager, interval=0.05):
+    unused_ports = set()
+
     while True:
-        print("scanning")
         connected_ports = controlunit_manager.get_connected_ports()
 
-        new_ports, down_ports = get_online_control_units(skip=connected_ports)
+        new_ports, down_ports, invalid_ports = get_online_control_units(
+            skip=unused_ports.union(connected_ports))
+
+        unused_ports |= invalid_ports
 
         for port in down_ports:
             controlunit_manager.remove_unit(port)
@@ -65,6 +69,8 @@ def online_control_unit_service(controlunit_manager):
             model = ControlUnitModel(util.generate_id())
 
             controlunit_manager.add_unit(port, comm, model)
+
+        time.sleep(interval)
 
 
 EXCEPT_RETRIES = 5
