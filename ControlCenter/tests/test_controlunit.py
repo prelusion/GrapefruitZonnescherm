@@ -8,6 +8,12 @@ from src import util
 
 class TestSuite(unittest.TestCase):
 
+    def test_comm_get_sensor_data(self):
+        comm = controlunit.ControlUnitCommunication("/dev/ttyACM1")
+        result = comm.get_sensor_data()
+        print("result", result)
+
+    @unittest.skip
     def test_control_unit_connection_checker(self):
         controlunit_manager = controlunit.ControlUnitManager()
 
