@@ -43,6 +43,8 @@ class MainView(wx.Frame):
         right_panel = wx.Panel(main_panel)
         right_panel.SetBackgroundColour((0, 0, 255))
 
+        left_panel.sizer = left_panel_sizer_vbox
+
         controlunits_controller = ControlUnitsController(left_panel, self.app.controlunit_manager)
         filter_view = FilterView(left_panel)
 

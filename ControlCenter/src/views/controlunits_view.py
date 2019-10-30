@@ -18,23 +18,12 @@ class ControlUnitsView(mvc.View):
 
         self.unit_count += 1
         btn = wx.Button(self, -1, str(id_))
-        self.vbox.Add(btn, 0, wx.ALL, 5)
-        # self.parent.fSizer().Layout()
-        # self.parent.Fit()
-        # btn = wx.Button(self, -1, str(id_))
-        #
-        # self.units[id_] = self.unit_count
-        # self.unit_count += 1
-        # print("button made")
-        # self.vbox.Add(btn, wx.ID_ANY, wx.ALIGN_CENTER)
-        # print("add button")
+        self.vbox.Add(btn, 0)
+        self.Layout()
 
     def remove_unit(self, id_):
         print("REMOVE UNIT:", id_)
+
         self.vbox.Hide(self.unit_count-1)
         self.vbox.Remove(self.unit_count-1)
         self.unit_count -= 1
-
-        # count = self.units[id_]
-        # self.vbox.Remove(count)
-

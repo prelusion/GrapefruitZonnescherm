@@ -19,7 +19,7 @@ Measurement = namedtuple("SensorData", ["timestamp",
                                         "light_sensitivity"])
 
 
-def get_online_control_units(skip=set()):
+def get_online_control_units(connected_ports=set(), unused_ports=set()):
     """ :returns new_ports, down_ports """
 
     @retry_on_given_exception(SerialException, 5)
@@ -33,8 +33,8 @@ def get_online_control_units(skip=set()):
                 time.sleep(0.1)
 
     all_ports = ser.get_com_ports()
-    new_ports = set(all_ports) - set(skip)
-    down_ports = set(skip) - set(all_ports)
+    new_ports = set(all_ports) - set(connected_ports) - set(unused_ports)
+    down_ports = set(connected_ports) - set(all_ports) - set(unused_ports)
 
     unconnected_ports = []
     failed_ports = []
@@ -50,7 +50,9 @@ def get_online_control_units(skip=set()):
                 failed_ports.append(port)
 
     unconnected_ports = list(filter(None, unconnected_ports))
-    invalid_ports = set(all_ports) - set(unconnected_ports) - set(skip) - set(failed_ports)
+
+    invalid_ports = set(all_ports) - set(unconnected_ports) - set(connected_ports) \
+                    - set(unused_ports) - set(failed_ports)
 
     return unconnected_ports, down_ports, invalid_ports
 
@@ -60,13 +62,14 @@ def online_control_unit_service(controlunit_manager, interval=0.5):
 
     while True:
         connected_ports = controlunit_manager.get_connected_ports()
-
+        print("connected ports:", connected_ports)
         new_ports, down_ports, invalid_ports = get_online_control_units(
-            skip=unused_ports.union(connected_ports))
+            connected_ports=connected_ports, unused_ports=unused_ports)
 
-        # print("new_ports:", new_ports)
-        # print("down_ports:", down_ports)
-        # print("invalid_ports:", invalid_ports)
+        print("new_ports:", new_ports)
+        print("down_ports:", down_ports)
+        print("invalid_ports:", invalid_ports)
+        print("unused_ports:", unused_ports)
 
         unused_ports |= invalid_ports
 

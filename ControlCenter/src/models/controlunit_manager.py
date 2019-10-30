@@ -1,5 +1,8 @@
 from src import mvc
 from collections import OrderedDict
+from logging import getLogger
+
+logger = getLogger(__name__)
 
 
 class ControlUnitManager:
@@ -15,6 +18,9 @@ class ControlUnitManager:
     def remove_unit(self, port):
         print("CU Manager remove:", port)
         units = self.units.get()
+        if port not in units:
+            logger.warning(f"trying to remove unexisting port: {port}")
+            return
         comm, model = units[port]
         comm.close()
         del units[port]
