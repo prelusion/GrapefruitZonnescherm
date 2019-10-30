@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-
+from serial.serialutil import SerialException
 import serial as pyserial
 from serial.tools import list_ports
 
@@ -33,8 +33,12 @@ class Connection:
             parity=pyserial.PARITY_NONE, stopbits=pyserial.STOPBITS_ONE, timeout=self._timeout)
 
     def close(self):
-        self._interface.close()
-        self._interface = None
+        try:
+            if self._interface:
+                self._interface.close()
+            self._interface = None
+        except SerialException:
+            pass
 
     def write(self, data):
         if not self._interface:

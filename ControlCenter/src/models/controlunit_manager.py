@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 class ControlUnitManager:
     def __init__(self):
-        self.units = mvc.Observable(OrderedDict())
+        self.units = mvc.Observable(OrderedDict())  # "port": <communication, model>
 
     def add_unit(self, port, communication, model):
         units = self.units.get()
@@ -12,7 +12,10 @@ class ControlUnitManager:
         self.units.set(units)
 
     def remove_unit(self, port):
+        print("removing unit with port from manager:", port)
         units = self.units.get()
+        comm, model = units[port]
+        comm.close()
         del units[port]
         self.units.set(units)
 

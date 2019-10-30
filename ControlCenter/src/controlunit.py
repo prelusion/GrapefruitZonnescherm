@@ -1,8 +1,10 @@
+import concurrent
 import time
-from serial.serialutil import SerialException
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
+
+from serial.serialutil import SerialException
 
 from src import serialinterface as ser
 from src import util
@@ -34,11 +36,20 @@ def get_online_control_units(skip=set()):
     new_ports = set(all_ports) - set(skip)
     down_ports = set(skip) - set(all_ports)
 
-    with ThreadPoolExecutor() as executor:
-        results = executor.map(test_if_port_is_control_unit, new_ports)
+    unconnected_ports = []
+    failed_ports = []
 
-    unconnected_ports = list(filter(None, results))
-    invalid_ports = set(all_ports) - set(unconnected_ports) - set(skip)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures_to_ports = {executor.submit(test_if_port_is_control_unit, port): port for port in new_ports}
+        for future in concurrent.futures.as_completed(futures_to_ports):
+            port = futures_to_ports[future]
+            try:
+                result = future.result()
+                unconnected_ports.append(result)
+            except SerialException as e:
+                failed_ports.append(port)
+
+    invalid_ports = set(all_ports) - set(unconnected_ports) - set(skip) - set(failed_ports)
 
     return unconnected_ports, down_ports, invalid_ports
 
@@ -51,6 +62,10 @@ def online_control_unit_service(controlunit_manager, interval=0.05):
 
         new_ports, down_ports, invalid_ports = get_online_control_units(
             skip=unused_ports.union(connected_ports))
+
+        # print("new_ports:", new_ports)
+        # print("down_ports:", down_ports)
+        # print("invalid_ports:", invalid_ports)
 
         unused_ports |= invalid_ports
 
