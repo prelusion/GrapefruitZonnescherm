@@ -2,6 +2,13 @@
 
 #include "scheduler.h"
 
+//serial includes
+#include "serial/serial.h"
+
+//ports includes
+#include "ports/adc.h"
+#include "ports/ports.h"
+
 // Sensor includes
 #include "sensors/distance.h"
 #include "sensors/light_intensity.h"
@@ -59,8 +66,10 @@ void update_distance(void)
 
 int main(void)
 {
-	if (!has_unit_id())
-	{
+	init_ports();
+	adc_init();
+	ser_init();
+	if (!has_unit_id()) {
 		// TODO don't operate but listen for initialisation.
 		control_unit_status = INITIALIZING;
 		return 1;
@@ -92,7 +101,6 @@ int main(void)
 	// Initializating and sensor check passed, serial communication is ready and scheduler is ready.
 	control_unit_status = OPERATING;
 	uint8_t init_data;
-	
     while (1) 
     {
 		timer_dispatch_tasks();
