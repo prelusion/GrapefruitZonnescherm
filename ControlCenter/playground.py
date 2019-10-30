@@ -4,10 +4,10 @@ import wx
 class test(wx.Frame):
 
     def __init__(self, title):
-        super().__init__(None, title=title, size=(500, 150))
+        super().__init__(None, title=title, size=(550, 150))
         self.temperature = "12°C"
         self.name = "arduino 1"
-        self.status = "Up"
+        self.status = "shutter down"
         self.devicecol = (255, 50, 1)
         self.connection = "Connected"
         self.mode = "automatic"
