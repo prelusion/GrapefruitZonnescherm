@@ -6,10 +6,10 @@
 
 uint16_t get_window_height(void)
 {
-	return eeprom_read_byte((uint16_t*)WINDOW_HEIGHT_ADDRESS);
+	return eeprom_read_word((uint16_t*)WINDOW_HEIGHT_ADDRESS);
 }
 
 void set_window_height(uint16_t window_height)
 {
-	eeprom_write_byte((uint16_t*)WINDOW_HEIGHT_ADDRESS, window_height);
+	eeprom_write_word((uint16_t*)WINDOW_HEIGHT_ADDRESS, window_height);
 }

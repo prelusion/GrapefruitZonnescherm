@@ -168,6 +168,12 @@
     <Compile Include="storage\light_intensity_threshold.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="storage\manual.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\unit_id.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="storage\temperature_threshold.c">
       <SubType>compile</SubType>
     </Compile>
@@ -177,7 +183,7 @@
     <Compile Include="storage\unit_id.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="storage\unit_id.h">
+    <Compile Include="storage\manual.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="storage\window_height.c">

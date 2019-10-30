@@ -4,6 +4,14 @@
 #include <avr/io.h>
 #include <stdio.h>
 
+// Storage includes.
+#include "storage/unit_id.h"
+#include "storage/window_height.h"
+#include "storage/temperature_threshold.h"
+#include "storage/light_intensity_threshold.h"
+#include "storage/history.h"
+#include "storage/manual.h"
+
 // Predefined command amount.
 #define COMMAND_AMOUNT 15
 
@@ -86,7 +94,10 @@ void execute_command(char name[20], char* parameters)
 		if (strcmp(command.name, name) == 0)
 		{
 			char* result = command.function(parameters);
-			fprintf("%s=%s", name, result);
+			printf("%s=%s", name, result);
+			
+			// Result has been returned so we can free it :D
+			free(result);
 		}
 	}
 	
@@ -96,78 +107,131 @@ void execute_command(char name[20], char* parameters)
 
 char* cmd_ping(char* parameters)
 {
-	return (char*)"PONG";
+	return "PONG";
 }
 
 char* cmd_get_id(char* parameters)
 {
-	char result[11];
-	sprintf(result, sizeof(result), "%lu", get_unit_id());
+	char* result = malloc(11);
+	sprintf(result, "%lu", get_unit_id());
 	
 	return result;
 }
 
 char* cmd_set_id(char* parameters)
 {
-	return (char*)"";
+	uint32_t unit_id = atol(parameters);
+	
+	if (unit_id)
+	{
+		set_unit_id(unit_id);
+		return "OK";
+	}
+	else
+	{
+		return "ERROR";
+	}
 }
 
 char* cmd_get_window_height(char* parameters)
 {
-	return (char*)sprintf("%u", get_window_height());
+	char* result = malloc(6);
+	sprintf(result, "%u", get_window_height());
+	
+	return result;
 }
 
 char* cmd_set_window_height(char* parameters)
 {
-	return (char*)"";
+	uint16_t window_height = atoi(parameters);
+	
+	if (window_height)
+	{
+		set_window_height(window_height);
+		return "OK";
+	}
+	else
+	{
+		return "ERROR";
+	}
 }
 
 char* cmd_get_temperature_threshold(char* parameters)
 {
-	return (char*)sprintf("%d", get_temperature_threshold());
+	char* result = malloc(5);
+	sprintf(result, "%d", get_temperature_threshold());
+	
+	return result;
 }
 
 char* cmd_set_temperature_threshold(char* parameters)
 {
-	return (char*)"";
+	int8_t temperature_threshold = atoi(parameters);
+	
+	if (temperature_threshold)
+	{
+		set_temperature_threshold(temperature_threshold);
+		return "OK";
+	}
+	else
+	{
+		return "ERROR";
+	}
 }
 
 char* cmd_get_light_intensity_threshold(char* parameters)
 {
-	return (char*)sprintf("%u", get_light_intensity_threshold());
+	char* result = malloc(4);
+	sprintf(result, "%u", get_light_intensity_threshold());
+	
+	return result;
 }
 
 char* cmd_set_light_intensity_threshold(char* parameters)
 {
-	return (char*)"";
+	uint8_t light_intensity_threshold = atoi(parameters);
+	
+	if (light_intensity_threshold)
+	{
+		set_light_intensity_threshold(light_intensity_threshold);
+		return "OK";
+	}
+	else
+	{
+		return "ERROR";
+	}
 }
 
 char* cmd_get_manual(char* parameters)
 {
-	return (char*)"";
+	char* result = malloc(4);
+	sprintf(result, "%u", get_manual());
+	
+	return result ? "1" : "0";
 }
 
 char* cmd_set_manual(char* parameters)
 {
-	return (char*)"";
+	set_manual(atoi(parameters) ? 1 : 0);
+	return "OK";
 }
 
 char* cmd_get_sensor_data(char* parameters)
 {
-	return (char*)"";
+	return "NOT_IMPLEMENTED";
 }
 
 char* cmd_get_sensor_history(char* parameters)
 {
-	return (char*)"";
+	return "NOT_IMPLEMENTED";
 }
 
 char* cmd_roll_up(char* parameters)
 {
-	return (char*)"";
+	return "NOT_IMPLEMENTED";
 }
 
 char* cmd_roll_down(char* parameters)
 {
-	return (char*)"";
+	return "NOT_IMPLEMENTED";
 }
