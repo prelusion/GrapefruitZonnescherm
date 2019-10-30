@@ -3,6 +3,7 @@ import random
 import wx
 
 from src import mvc
+from src.views.controlunit_view import ControlUnitView
 
 UNIT_COLORS = (
     (255, 0, 0),
@@ -23,8 +24,11 @@ class ControlUnitsView(mvc.View):
         self.units = {}
         self.unit_count = 0
 
-        self.SetBackgroundColour((0, 255, 0))
         self.vbox = wx.BoxSizer(wx.VERTICAL)
+        self.SetBackgroundColour((0, 255, 0))
+
+        controlunit_view = ControlUnitView(self.parent)
+        self.vbox.Add(controlunit_view, 0, wx.EXPAND | wx.ALL, 5)
         self.SetSizer(self.vbox)
 
     def render_unit(self, id_, view):

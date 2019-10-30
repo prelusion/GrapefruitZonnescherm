@@ -1,9 +1,12 @@
 import wx
 
 
+# size: size=(450, 100)
+
+
 class ControlUnitView(wx.Panel):
-    def __init__(self):
-        super().__init__()  # size: size=(450, 100)
+    def __init__(self, parent):
+        super().__init__(parent)
 
         # Create main panel for control unit
         unit = wx.Panel(self, style=wx.BORDER_RAISED)
