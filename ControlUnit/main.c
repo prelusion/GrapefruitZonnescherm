@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <stdio.h>
 
 #include "scheduler.h"
 
@@ -64,11 +65,19 @@ void update_distance(void)
 	control_unit_data.distance = get_distance();
 }
 
+void process_serial(void)
+{
+	char buffer[255];
+	serial_readln(buffer, sizeof(buffer));
+	
+	process_input(buffer);
+}
+
 int main(void)
 {
 	init_ports();
 	adc_init();
-	ser_init();
+	serial_init();
 	if (!has_unit_id()) {
 		// TODO don't operate but listen for initialisation.
 		control_unit_status = INITIALIZING;
@@ -92,6 +101,7 @@ int main(void)
 	
 	// Initialize the timer.
 	timer_init();
+	timer_add_task(&process_serial, (uint16_t)0, (uint16_t)2); // 2 * 10ms = 20ms
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
 	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
 	timer_start();
@@ -100,7 +110,7 @@ int main(void)
 	
 	// Initializating and sensor check passed, serial communication is ready and scheduler is ready.
 	control_unit_status = OPERATING;
-	uint8_t init_data;
+	
     while (1) 
     {
 		timer_dispatch_tasks();
