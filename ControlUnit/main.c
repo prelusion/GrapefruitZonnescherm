@@ -46,7 +46,7 @@ void update_temperature(void)
 
 /**
  * \brief 
- * Update the light sensitivity in the current_unit_statistics struct.
+ * Update the light intensity in the current_unit_statistics struct.
  */	
 void update_light_intensity(void)
 {
