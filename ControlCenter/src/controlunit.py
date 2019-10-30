@@ -112,10 +112,10 @@ class ControlUnitCommunication:
         return self._set_command("SET_TEMP_THRESHOLD", value)
 
     def get_light_intensity_threshold(self):
-        return self._get_command("GET_IS_THRESHOLD")
+        return self._get_command("GET_LI_THRESHOLD")
 
     def set_light_intensity_threshold(self, value):
-        return self._set_command("SET_IS_THRESHOLD", value)
+        return self._set_command("SET_LI_THRESHOLD", value)
 
     def roll_up(self):
         return self._set_command("ROLL_UP")
