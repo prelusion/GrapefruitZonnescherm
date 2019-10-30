@@ -11,7 +11,7 @@ from src import util
 from src.decorators import retry_on_any_exception, retry_on_given_exception
 from src.models.controlunit import ControlUnitModel
 
-BAUDRATE = 38400
+BAUDRATE = 19200
 
 Measurement = namedtuple("SensorData", ["timestamp",
                                         "temperature",
@@ -24,10 +24,11 @@ def get_online_control_units(connected_ports=set(), unused_ports=set()):
 
     @retry_on_given_exception(SerialException, 5)
     def test_if_port_is_control_unit(port):
-        with ser.connect(port, baudrate=BAUDRATE, timeout=0.5) as conn:
+        with ser.connect(port, baudrate=BAUDRATE, timeout=0.2) as conn:
             for i in range(20):
                 conn.write("PING")
                 data = conn.readbuffer()
+
                 if "PONG" in data:
                     return port
                 time.sleep(0.1)
@@ -62,14 +63,14 @@ def online_control_unit_service(controlunit_manager, interval=0.5):
 
     while True:
         connected_ports = controlunit_manager.get_connected_ports()
-        print("connected ports:", connected_ports)
+        # print("connected ports:", connected_ports)
         new_ports, down_ports, invalid_ports = get_online_control_units(
             connected_ports=connected_ports, unused_ports=unused_ports)
 
-        print("new_ports:", new_ports)
-        print("down_ports:", down_ports)
-        print("invalid_ports:", invalid_ports)
-        print("unused_ports:", unused_ports)
+        # print("new_ports:", new_ports)
+        # print("down_ports:", down_ports)
+        # print("invalid_ports:", invalid_ports)
+        # print("unused_ports:", unused_ports)
 
         unused_ports |= invalid_ports
 
