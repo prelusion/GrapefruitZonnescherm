@@ -83,7 +83,7 @@ class ControlUnitCommunication:
         return self._get_command("GET_ID")
 
     def set_id(self, id_):
-        """ id is a 16-bit int. """
+        """ id is a 32-bit int. """
         return self._set_command("SET_ID", id_)
 
     def is_online(self):
