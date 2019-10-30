@@ -12,24 +12,26 @@ class test(wx.Frame):
         self.connection = "Connected"
         self.mode = "automatic"
 
+        # Create main panel for control unit
         unit = wx.Panel(self, style=wx.BORDER_RAISED)
         unit.SetSize(500, 150)
 
+        # Add gridsizer to main panel, 2 rows, 3 columns, 0 borders
         grid = wx.GridSizer(2, 3, 0, 0)
         unit.SetSizer(grid)
 
-        # Panel for device name
+        # Create panel for device name
         namepanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
         namepanel.SetBackgroundColour((255, 255, 255))
 
-        # Initialize name label
+        # Create namelabel
         namelabel = wx.StaticText(namepanel, wx.ID_ANY, label=str(self.name), style=wx.ALIGN_CENTER)
         font = namelabel.GetFont()
         font.PointSize += 10
         font = font.Bold()
         namelabel.SetFont(font)
 
-        # align name label to middle of namepanel
+        # align name label to center
         h_sizer = wx.BoxSizer(wx.HORIZONTAL)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         h_sizer.Add(namelabel, 0, wx.CENTER)
@@ -42,14 +44,14 @@ class test(wx.Frame):
         temppanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
         temppanel.SetBackgroundColour((255,255,255))
 
-        # initialize temperature label
+        # initialize temperaturelabel
         templabel = wx.StaticText(temppanel, wx.ID_ANY, label=str(self.temperature), style=wx.ALIGN_CENTER)
         font = templabel.GetFont()
         font.PointSize += 10
         font = font.Bold()
         templabel.SetFont(font)
 
-        # align temperature label to middle of temppanel
+        # align temperature label to center
         h_sizer = wx.BoxSizer(wx.HORIZONTAL)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         h_sizer.Add(templabel, 0, wx.CENTER)
@@ -58,20 +60,18 @@ class test(wx.Frame):
         main_sizer.Add((0, 0), 1, wx.EXPAND)
         temppanel.SetSizer(main_sizer)
 
-
-
-        # Panel for device status
+        # Create panel for device status
         statuspanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
         statuspanel.SetBackgroundColour((255, 255, 255))
 
-        # Initialize status label
+        # Create statuslabel
         statuslabel = wx.StaticText(statuspanel, wx.ID_ANY, label=str(self.status), style=wx.ALIGN_CENTER)
         font = statuslabel.GetFont()
         font.PointSize += 10
         font = font.Bold()
         statuslabel.SetFont(font)
 
-        # align temperature label to middle of temppanel
+        # align  statuslabel to center
         h_sizer = wx.BoxSizer(wx.HORIZONTAL)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         h_sizer.Add(statuslabel, 0, wx.CENTER)
@@ -80,11 +80,11 @@ class test(wx.Frame):
         main_sizer.Add((0, 0), 1, wx.EXPAND)
         statuspanel.SetSizer(main_sizer)
 
-        # Panel for device color (no label or positioning initializing needed)
+        # Create panel for device color (no label or positioning initializing needed)
         colorpanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
         colorpanel.SetBackgroundColour(self.devicecol)
 
-        # Panel for connection status
+        # Create panel for connection status
         connectionpanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
         connectionpanel.SetBackgroundColour((255, 255, 255))
 
@@ -95,7 +95,7 @@ class test(wx.Frame):
         font = font.Bold()
         connectionlabel.SetFont(font)
 
-        # Align connection label
+        # Align connection label to center
         h_sizer = wx.BoxSizer(wx.HORIZONTAL)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         h_sizer.Add(connectionlabel, 0, wx.CENTER)
@@ -104,18 +104,18 @@ class test(wx.Frame):
         main_sizer.Add((0, 0), 1, wx.EXPAND)
         connectionpanel.SetSizer(main_sizer)
 
-        # Mode panel
+        # Create mode panel
         modepanel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
         modepanel.SetBackgroundColour((255, 255, 255))
 
-        # Initialize connection label
+        # Create mode label
         modelabel = wx.StaticText(modepanel, wx.ID_ANY, label=str(self.mode), style=wx.ALIGN_CENTER)
         font = modelabel.GetFont()
         font.PointSize += 10
         font = font.Bold()
         modelabel.SetFont(font)
 
-        # Align connection label
+        # Align mode label to center
         h_sizer = wx.BoxSizer(wx.HORIZONTAL)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         h_sizer.Add(modelabel, 0, wx.CENTER)
@@ -124,8 +124,7 @@ class test(wx.Frame):
         main_sizer.Add((0, 0), 1, wx.EXPAND)
         modepanel.SetSizer(main_sizer)
 
-
-
+        # Add all panels to main device panel grid
         grid.Add(namepanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         grid.Add(temppanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         grid.Add(statuspanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
