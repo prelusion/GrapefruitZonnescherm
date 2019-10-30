@@ -9,14 +9,7 @@ class Model(ABC):
 
 
 class Controller(ABC):
-    def __init__(self):
-        self.view = None
-
-    def set_view(self, view):
-        self.view = view
-
-    def get_view(self):
-        return self.view
+    pass
 
 
 class View(wx.Panel):

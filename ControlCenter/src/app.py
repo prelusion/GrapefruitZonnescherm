@@ -6,6 +6,7 @@ import wx
 from src import const
 from src import controlunit
 from src.controllers.controlunits_controller import ControlUnitsController
+from src.controllers.filterview_controller import FilterViewController
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.filter import FilterModel
 from src.views.filter_view import FilterView
@@ -50,10 +51,10 @@ class MainView(wx.Frame):
         left_panel.sizer = left_panel_sizer_vbox
 
         controlunits_controller = ControlUnitsController(left_panel, self.app.controlunit_manager)
-        filter_view = FilterView(left_panel)
+        filterview_controller = FilterViewController(left_panel, self.app.filter_model)
+        left_panel_sizer_vbox.Add(controlunits_controller.view, 3, wx.EXPAND | wx.ALL)
+        left_panel_sizer_vbox.Add(filterview_controller.view, 1, wx.EXPAND | wx.ALL)
 
-        left_panel_sizer_vbox.Add(controlunits_controller.get_view(), 3, wx.EXPAND | wx.ALL)
-        left_panel_sizer_vbox.Add(filter_view, 1, wx.EXPAND | wx.ALL)
         left_panel.SetSizer(left_panel_sizer_vbox)
 
         tab_view = TabView(right_panel)
