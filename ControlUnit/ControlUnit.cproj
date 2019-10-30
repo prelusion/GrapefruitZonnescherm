@@ -144,6 +144,12 @@
     <Compile Include="ports\ports.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="scheduler.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="scheduler.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="storage\history.c">
       <SubType>compile</SubType>
     </Compile>

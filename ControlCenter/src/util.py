@@ -6,5 +6,4 @@ QUANTIZE_ONE_DIGIT = Decimal(10) ** -1  # e.g. Decimal(temp).quantize(util.QUANT
 
 
 def generate_id():
-
     return randint(1, 2**16)

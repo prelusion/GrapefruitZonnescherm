@@ -94,7 +94,7 @@ class ControlUnitCommunication:
         return self._get_command("GET_ID")
 
     def set_id(self, id_):
-        """ id is a 16-bit int. """
+        """ id is a 32-bit int. """
         return self._set_command("SET_ID", id_)
 
     def is_online(self):
@@ -123,10 +123,10 @@ class ControlUnitCommunication:
         return self._set_command("SET_TEMP_THRESHOLD", value)
 
     def get_light_intensity_threshold(self):
-        return self._get_command("GET_LS_THRESHOLD")
+        return self._get_command("GET_LI_THRESHOLD")
 
     def set_light_intensity_threshold(self, value):
-        return self._set_command("SET_LS_THRESHOLD", value)
+        return self._set_command("SET_LI_THRESHOLD", value)
 
     def roll_up(self):
         return self._set_command("ROLL_UP")
