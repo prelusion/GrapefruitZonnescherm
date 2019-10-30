@@ -21,6 +21,7 @@ class ControlUnitManager:
         if port not in units:
             logger.warning(f"trying to remove unexisting port: {port}")
             return
+
         comm, model = units[port]
         comm.close()
         del units[port]
