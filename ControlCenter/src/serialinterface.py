@@ -8,7 +8,7 @@ def get_com_ports():
     """ Get all serial ports in ((port, name), (port, name)) format. """
     ports = list(list_ports.comports())
     ports = [str(i) for i in ports]
-    ports = [tuple(i.split(" - ")) for i in ports]
+    ports = [tuple(i.split(" - "))[0] for i in ports]
     return tuple(ports)
 
 
@@ -44,6 +44,12 @@ class Connection:
             data += '\r'
 
         self._interface.write(data.encode())
+
+    def readbuffer(self):
+        if not self._interface:
+            raise IOError("Connection must be opened before reading")
+
+        return self._interface.read(self._interface.inWaiting()).decode()
 
     def readline(self):
         if not self._interface:
