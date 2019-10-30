@@ -4,7 +4,7 @@ import wx
 class test(wx.Frame):
 
     def __init__(self, title):
-        super().__init__(None, title=title, size=(550, 150))
+        super().__init__(None, title=title, size=(450, 100))
         # Create main panel for control unit
         unit = wx.Panel(self, style=wx.BORDER_RAISED)
         unit.SetSize(500, 150)
@@ -20,7 +20,7 @@ class test(wx.Frame):
         # Create namelabel
         self.namelabel = wx.StaticText(namepanel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
         font = self.namelabel.GetFont()
-        font.PointSize += 10
+        font.PointSize += 5
         font = font.Bold()
         self.namelabel.SetFont(font)
 
@@ -40,7 +40,7 @@ class test(wx.Frame):
         # initialize temperaturelabel
         self.templabel = wx.StaticText(temppanel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
         font = self.templabel.GetFont()
-        font.PointSize += 10
+        font.PointSize += 5
         font = font.Bold()
         self.templabel.SetFont(font)
 
@@ -60,7 +60,7 @@ class test(wx.Frame):
         # Create statuslabel
         self.statuslabel = wx.StaticText(statuspanel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
         font = self.statuslabel.GetFont()
-        font.PointSize += 10
+        font.PointSize += 5
         font = font.Bold()
         self.statuslabel.SetFont(font)
 
@@ -84,7 +84,7 @@ class test(wx.Frame):
         # Initialize connection label
         self.connectionlabel = wx.StaticText(connectionpanel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
         font = self.connectionlabel.GetFont()
-        font.PointSize += 10
+        font.PointSize += 5
         font = font.Bold()
         self.connectionlabel.SetFont(font)
 
@@ -104,7 +104,7 @@ class test(wx.Frame):
         # Create mode label
         self.modelabel = wx.StaticText(modepanel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
         font = self.modelabel.GetFont()
-        font.PointSize += 10
+        font.PointSize += 5
         font = font.Bold()
         self.modelabel.SetFont(font)
 
@@ -147,10 +147,10 @@ class test(wx.Frame):
 app = wx.App(False)
 mainview = test("Grapefruit controlpanel")
 mainview.SetBackgroundColour((23,55,76))
-mainview.setConnection("connected")
+mainview.setConnection("disconnected")
 mainview.setMode("automatic")
-mainview.setStatus("shutter up")
-mainview.setName("arduino 1")
+mainview.setStatus("shutter down")
+mainview.setName("arduino 100")
 mainview.setTemperature(12)
 mainview.Show()
 app.MainLoop()
