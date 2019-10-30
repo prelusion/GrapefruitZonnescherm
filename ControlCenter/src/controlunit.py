@@ -20,25 +20,30 @@ def get_online_control_units(skip=[]):
     """ :returns new_ports, down_ports """
 
     def test_if_port_is_control_unit(port):
-        with ser.connect(port, baudrate=BAUDRATE, timeout=1) as conn:
-            for i in range(15):
+        with ser.connect(port, baudrate=BAUDRATE, timeout=0.5) as conn:
+            for i in range(10):
                 conn.write("PING")
                 data = conn.readbuffer()
                 if "PONG" in data:
                     return port
-                time.sleep(0.1)
+                time.sleep(0.05)
 
     all_ports = ser.get_com_ports()
-    unconnected_ports = set(all_ports) - set(skip)
+    new_ports = set(all_ports) - set(skip)
     down_ports = set(skip) - set(all_ports)
 
     with ThreadPoolExecutor() as executor:
-        results = executor.map(test_if_port_is_control_unit, unconnected_ports)
-        return list(filter(None, results)), down_ports
+        results = executor.map(test_if_port_is_control_unit, new_ports)
+
+    unconnected_ports = list(filter(None, results))
+    invalid_ports = set(all_ports) - set(unconnected_ports)
+
+    return unconnected_ports, down_ports, invalid_ports
 
 
 def online_control_unit_service(controlunit_manager):
     while True:
+        print("scanning")
         connected_ports = controlunit_manager.get_connected_ports()
 
         new_ports, down_ports = get_online_control_units(skip=connected_ports)
