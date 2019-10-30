@@ -4,7 +4,7 @@ import wx
 
 class ControlUnitView(wx.Panel):
     def __init__(self):
-        super().__init__(None, size=(550, 150))
+        super().__init__(None, size=(450, 100))
 
         # Create main panel for control unit
         unit = wx.Panel(self, style=wx.BORDER_RAISED)
@@ -21,7 +21,7 @@ class ControlUnitView(wx.Panel):
         # Create namelabel
         self.name_label = wx.StaticText(name_panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
         font = self.name_label.GetFont()
-        font.PointSize += 10
+        font.PointSize += 5
         font = font.Bold()
         self.name_label.SetFont(font)
 
@@ -41,7 +41,7 @@ class ControlUnitView(wx.Panel):
         # initialize temperaturelabel
         self.temp_label = wx.StaticText(temp_panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
         font = self.temp_label.GetFont()
-        font.PointSize += 10
+        font.PointSize += 5
         font = font.Bold()
         self.temp_label.SetFont(font)
 
@@ -61,7 +61,7 @@ class ControlUnitView(wx.Panel):
         # Create statuslabel
         self.status_label = wx.StaticText(status_panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
         font = self.status_label.GetFont()
-        font.PointSize += 10
+        font.PointSize += 5
         font = font.Bold()
         self.status_label.SetFont(font)
 
@@ -86,7 +86,7 @@ class ControlUnitView(wx.Panel):
         # Initialize connection label
         self.connection_label = wx.StaticText(connection_panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
         font = self.connection_label.GetFont()
-        font.PointSize += 10
+        font.PointSize += 5
         font = font.Bold()
         self.connection_label.SetFont(font)
 
@@ -106,7 +106,7 @@ class ControlUnitView(wx.Panel):
         # Create mode label
         self.mode_label = wx.StaticText(mode_panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
         font = self.mode_label.GetFont()
-        font.PointSize += 10
+        font.PointSize += 5
         font = font.Bold()
         self.mode_label.SetFont(font)
 
