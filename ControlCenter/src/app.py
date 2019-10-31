@@ -13,6 +13,8 @@ from src.models.filter import FilterModel
 from src.views.tab_view import TabView
 
 from src import util
+
+
 class App(wx.App):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,6 +33,13 @@ class App(wx.App):
 
         app_data = util.load_json_from_file(const.APP_DATA_FILE)
 
+        if "id" not in app_data:
+            app_data["id"] = util.generate_16bit_int()
+            util.save_json_to_file(const.APP_DATA_FILE, app_data)
+
+        self.app_id = app_data["id"]
+
+        print(self.app_id)
 
     def start_background_services(self):
         t = threading.Thread(target=controlunit.online_control_unit_service,
@@ -71,7 +80,7 @@ class MainView(wx.Frame):
 
         # Right panel components
         tab_view = TabView(right_panel)
-        graphview_controller = GraphViewController(right_panel, self.app.filter_model)
+        graphview_controller = GraphViewController(right_panel, self.app.filter_model, self.app.controlunit_manager)
         right_panel_sizer_vbox.Add(tab_view, 1, wx.EXPAND | wx.ALL)
         right_panel_sizer_vbox.Add(graphview_controller.view, 10, wx.EXPAND | wx.ALL)
         main_sizer_hbox.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
