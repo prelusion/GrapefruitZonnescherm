@@ -9,95 +9,87 @@ from src.controlunit import Measurement
 from src.models.controlunit import ControlUnitModel
 
 
-class GraphView(wxmplot.PlotPanel):
+
+class GraphView(mvc.View):
     def __init__(self, parent):
-        super().__init__(parent, pos=(150, 150))
+        super().__init__(parent)
+        self.graph = Graph(self)
+        self.graph_sizer = wx.GridSizer(1,1,1,1)
+        self.SetSizer(self.graph_sizer)
+        self.graph_sizer.Add(self.graph, 0, wx.EXPAND, 0)
+
         self.framecolor = "LightGrey"
-        self.x_max =  0
+        self.units = []
+        self.x_max = 0
         self.y_min = -20
         self.y_max = 40
-        self.show_temps = True
-        self.show_status = False
-        self.controlUnits = []
-        self.SetTestData()
-        self.Show()
 
-    def update(self):
-        self.SetTestData()
-        self.update()
-        s
-
-    def toggle_show_temps(self):
-        self.show_temps is not self.show_temps
-
-    def toggle__show_status(self):
-        self.show_status is not self.show_status
-
-    def add_controlUnit(self, controlUnit:ControlUnitModel):
-        self.controlUnits.append(controlUnit)
-
-    def del_ontrolUnit(self, id):
-        for controlUnit in self.controlUnits:
-            if controlUnit.get_id == id:
-                self.controlUnits.remove(controlUnit)
-
-    def get_controlUnit(self, id):
-        for controlUnit in self.controlUnits:
-            if controlUnit.get_id == id:
-                return controlUnit
-    def get_controlUnits(self):
-        return self.controlUnits
-
-    def SetTestData(self):
-        testUnit = ControlUnitModel(1)
-        testUnit.set_name("TestUnit")
-        testUnit.set_online(True)
-        self.controlUnits = []
-        for c in range(1):
-            for i in range(100):
-                testUnit.add_measurement(Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)), temperature=random.uniform(-10,20), shutter_status=random.randint(0,1), light_sensitivity=0))
-        self.add_controlUnit(testUnit)
-
-    def drawControlUnits(self):
-        for controlunit in self.controlUnits:
-            self.drawControlUnit(controlunit)
-
-
-
-    def drawControlUnit(self, control_unit:ControlUnitModel, temp = True,status = False, light = False ):
-        measurements = control_unit.get_measurements()
+    def update_graph(self):
         dates = []
         temps = []
         status = []
         xdata = []
         x = 0
 
-        for measurement in measurements.get():
-            time = int(measurement.timestamp)
-            dates.append(time)
-            temps.append(measurement.temperature)
-            status.append(measurement.shutter_status)
-            xdata.append(x)
-
         first_drawn = True
-        if temp:
-            self.plot(dates, temps, ylabel="Temperature in °C", side='left', linewidth=1, labelfontsize=5,
-                      legendfontsize=6, autoscale=True, framecolor=self.framecolor, use_dates=True,
-                      color=control_unit.get_colour())
-            first_drawn = False
+        for unit in self.units:
+            if unit["visible"]:
+                for measurement in unit["measurements"]:
+                    time = int(measurement.timestamp)
+                    dates.append(time)
+                    temps.append(measurement.temperature)
+                    status.append(measurement.shutter_status)
+                    xdata.append(x)
+                if first_drawn:
+                    self.graph.plot(dates, temps, ylabel="Temperature in °C", side='left', linewidth=1, labelfontsize=5,
+                            legendfontsize=6, autoscale=True, framecolor=self.framecolor, use_dates=True,
+                            color=unit["color"])
+                else:
+                    self.graph.oplot(dates, temps, side='left', linewidth=1, color=unit["color"])
 
-        if status:
-            if first_drawn:
-                self.plot(dates, status, style="dotted", side='left', linewidth=1, labelfontsize=5, legendfontsize=6,
-                        autoscale=True, framecolor=self.framecolor, use_dates=True, color=control_unit.get_colour())
-            else:
-                self.oplot(dates, status, style="dotted", side='left', linewidth=1, labelfontsize=5, legendfontsize=6,
-                        autoscale=True,  use_dates=True, color=control_unit.get_colour())
+
+    def find_unit(self, id):
+        for unit in self.units:
+            if unit[id] == id:
+                return unit
+
+    def set_unit(self, id, measurements):
+        new_unit = {
+            "id":id,
+            "measurements":measurements,
+            "color":"Green",
+            "visible":True,
+        }
+        for unit in self.units:
+            if unit[id] == id:
+                unit = new_unit
+                return
+        self.units.append(new_unit)
+
+    def toggle_visible(self, id):
+        unit = self.find_unit(id)
+        unit["visible"] = not unit["visible"]
+
+    def change_color(self, id, color):
+        unit = self.find_unit(id)
+        unit["color"] = color
+
+class Graph(wxmplot.PlotPanel):
+    def __init__(self, parent):
+        super().__init__(parent, pos=(150, 150))
+        self.Show()
 
 # For testing purposes, please ignore
 def update():
     graph.update()
-    
+
+def SetTestData(graph_view:GraphView):
+    measurements = []
+    temp = 20.000
+    for i in range(100):
+        temp += random.uniform(-3,3)
+        measurements.append(Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)), temperature=temp, shutter_status=random.randint(0,1), light_sensitivity=0))
+    graph_view.set_unit(1,measurements)
 
 if __name__ == "__main__":
 
@@ -116,11 +108,9 @@ if __name__ == "__main__":
     graphPanelSizer.Add(graph, 0 ,wx.EXPAND,0)
     graphPanelSizer.Add(bottomPanel, 0 , wx.EXPAND, 0)
     frame.Show()
-    graph.drawControlUnits()
-    #app.root.after(2000,update)
-    #app.MainLoop()
-    test = "test"
-
+    SetTestData(graph)
+    graph.update_graph()
+    app.MainLoop()
 
 #app = wx.App(redirect=True)
 #top = wx.Frame(None, title="Hello World", size=(300, 200))
