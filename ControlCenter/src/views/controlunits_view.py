@@ -5,17 +5,27 @@ import wx
 from src import mvc
 from src.views.controlunit_view import ControlUnitView
 
-UNIT_COLORS = (
+tmp = []
+unit_colors = [
     (255, 0, 0),
     (255, 123, 0),
     (87, 6, 253),
     (1, 209, 126),
-)
+    (255, 33, 55),
+    (21, 130, 10),
+    (8, 16, 230),
+]
 
 
 def randcolor():
-    return random.choice(UNIT_COLORS)
-
+    global tmp, unit_colors
+    result = random.choice(unit_colors)
+    tmp.append(result)
+    unit_colors.remove(result)
+    if len(unit_colors) == 0:
+        unit_colors = tmp.copy()
+        tmp = []
+    return result
 
 class ControlUnitsView(mvc.View):
     def __init__(self, parent):
@@ -24,23 +34,25 @@ class ControlUnitsView(mvc.View):
         self.units = {}
         self.unit_count = 0
 
-        self.SetBackgroundColour((0, 255, 0))
-        self.vbox = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(self.vbox)
+        self.SetBackgroundColour((173, 166, 166))
+        self.main_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(self.main_sizer)
 
     def render_unit(self, id_, view):
-        self.vbox.Add(view, 0, wx.ALL, 5)
+        view.set_device_color(randcolor())
+        self.main_sizer.Add(view,  0, wx.CENTER)
         self.units[id_] = self.unit_count
-        self.vbox.Layout()
+        self.main_sizer.Layout()
         self.unit_count += 1
+
 
     def remove_unit(self, id_):
         idx = self.units[id_]
-        self.vbox.Hide(self.units[id_])
-        self.vbox.Remove(self.units[id_])
+        self.main_sizer.Hide(self.units[id_])
+        self.main_sizer.Remove(self.units[id_])
         self.unit_count -= 1
         self._update_indexes(idx)
-        self.vbox.Layout()
+        self.main_sizer.Layout()
 
     def _update_indexes(self, removed_index):
         for i, id_ in enumerate(self.units):

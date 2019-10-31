@@ -3,7 +3,8 @@ import time
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
-from random import randint
+from logging import getLogger
+
 from serial.serialutil import SerialException
 
 from src import serialinterface as ser
@@ -11,6 +12,7 @@ from src import util
 from src.decorators import retry_on_any_exception, retry_on_given_exception
 from src.models.controlunit import ControlUnitModel
 
+logger = getLogger(__name__)
 BAUDRATE = 19200
 
 Measurement = namedtuple("Measurement", ["timestamp",
@@ -58,11 +60,7 @@ def get_online_control_units(connected_ports=set(), unused_ports=set()):
     return unconnected_ports, down_ports, invalid_ports
 
 
-def generate_id():
-    return randint(1, 2 ** 16)
-
-
-def online_control_unit_service(controlunit_manager, interval=0.5):
+def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
     unused_ports = set()
 
     while True:
@@ -81,14 +79,17 @@ def online_control_unit_service(controlunit_manager, interval=0.5):
             if controlunit_manager.is_port_connected(port):
                 continue
 
+            logger.info(f"control unit connected on port: '{port}'")
             comm = ControlUnitCommunication(port)
 
-            # TODO: Check for id, otherwise generate id
             current_id = comm.get_id()
-            print("current id before:", current_id)
-            if current_id != 5:
-                current_id = generate_id()
-            print("current id after:", current_id)
+
+            if not current_id:
+                unit_id = util.generate_16bit_int()
+                current_id = util.encode_controlunit_id(app_id, unit_id)
+                comm.set_id(current_id)
+
+            logger.info(f"control unit with port '{port}' has id: {current_id}")
             model = ControlUnitModel(current_id)
 
             controlunit_manager.add_unit(port, comm, model)
@@ -118,7 +119,7 @@ class ControlUnitCommunication:
 
     def set_id(self, id_):
         """ id is a 32-bit int. """
-        return self._set_command("SET_ID", id_)
+        return self._set_command("SET_ID", str(id_))
 
     def is_online(self):
         pass

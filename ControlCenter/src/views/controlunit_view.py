@@ -128,6 +128,8 @@ class ControlUnitView(wx.Panel):
         grid.Add(connection_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         grid.Add(mode_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
+        unit.Layout()
+
     def set_temperature(self, temp):
         self.temp_label.SetLabelText(str(temp))
 
@@ -137,7 +139,7 @@ class ControlUnitView(wx.Panel):
     def set_status(self, status):
         self.status_label.SetLabelText(str(status))
 
-    def set_device_color(self, *color_tuple):
+    def set_device_color(self, color_tuple):
         self.color_panel.SetBackgroundColour(color_tuple)
 
     def set_connection(self, connection):

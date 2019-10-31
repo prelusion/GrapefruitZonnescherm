@@ -1,7 +1,7 @@
 import wx
 
 from src import mvc
-from src.views.graph_view import GraphView
+from src.views.tab_data_view import GraphView
 
 
 class GraphViewController(mvc.Controller):
@@ -18,7 +18,7 @@ class GraphViewController(mvc.Controller):
         self.filter_model.filter_shutter_up.add_callback(self.on_filter_connected_change)
         self.filter_model.filter_shutter_down.add_callback(self.on_filter_connected_change)
 
-        self.controlunit_manager.units.add_callback(self.on_controlunits_change)
+        # self.controlunit_manager.units.add_callback(self.on_controlunits_change)
 
     def on_filter_connected_change(self, model, prevstate, newstate):
         pass

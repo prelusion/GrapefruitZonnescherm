@@ -13,6 +13,8 @@ from src.models.filter import FilterModel
 from src.views.tab_view import TabView
 
 from src import util
+
+
 class App(wx.App):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,10 +33,15 @@ class App(wx.App):
 
         app_data = util.load_json_from_file(const.APP_DATA_FILE)
 
+        if "id" not in app_data:
+            app_data["id"] = util.generate_16bit_int()
+            util.save_json_to_file(const.APP_DATA_FILE, app_data)
+
+        self.app_id = app_data["id"]
 
     def start_background_services(self):
         t = threading.Thread(target=controlunit.online_control_unit_service,
-                             args=(self.controlunit_manager,), daemon=True)
+                             args=(self.app_id, self.controlunit_manager,), daemon=True)
         t.start()
 
 
@@ -52,13 +59,11 @@ class MainView(wx.Frame):
 
         # Init left panel
         left_panel = wx.Panel(main_panel)
-        left_panel.SetBackgroundColour((1, 1, 1))
         left_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
         left_panel.SetSizer(left_panel_sizer_vbox)
 
         # Init right panel
         right_panel = wx.Panel(main_panel)
-        right_panel.SetBackgroundColour((0, 0, 255))
         right_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
         right_panel.SetSizer(right_panel_sizer_vbox)
 
@@ -71,7 +76,7 @@ class MainView(wx.Frame):
 
         # Right panel components
         tab_view = TabView(right_panel)
-        graphview_controller = GraphViewController(right_panel, self.app.filter_model)
+        graphview_controller = GraphViewController(right_panel, self.app.filter_model, self.app.controlunit_manager)
         right_panel_sizer_vbox.Add(tab_view, 1, wx.EXPAND | wx.ALL)
         right_panel_sizer_vbox.Add(graphview_controller.view, 10, wx.EXPAND | wx.ALL)
         main_sizer_hbox.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)

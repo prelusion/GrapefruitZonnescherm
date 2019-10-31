@@ -138,6 +138,12 @@
     <Compile Include="command_processing.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="data.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="data.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="ports\adc.c">
       <SubType>compile</SubType>
     </Compile>

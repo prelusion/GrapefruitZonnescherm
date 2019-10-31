@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "scheduler.h"
+#include "data.h"
 
 //serial includes
 #include "serial/serial.h"
@@ -23,28 +24,13 @@
 
 // Enum that indicates the unit status.
 enum unit_status{STARTING, OPERATING, INITIALIZING, ERROR} control_unit_status = STARTING;
-
-struct ControlUnitConfiguration {
-	uint16_t	unit_id;
-	uint8_t		window_height;
-	int8_t		temperature_threshold;
-	uint8_t		light_intensity_threshold;
-} control_unit_configuration;
-
-struct ControlUnitData { 
-	int8_t		temperature;
-	uint8_t		light_intensity;
-	uint8_t		distance;
-	uint8_t		screen_status;
-} control_unit_data;
-
 /**
  * \brief 
  * Update the temperature in the current_unit_statistics struct.
  */
 void update_temperature(void)
 {
-	control_unit_data.temperature = get_temperature();
+	set_current_temperature(get_temperature());
 }
 
 /**
@@ -53,7 +39,7 @@ void update_temperature(void)
  */	
 void update_light_intensity(void)
 {
-	control_unit_data.light_intensity = get_light_intensity();
+	set_current_light_intensity(get_light_intensity());
 }
 
 /**
@@ -62,7 +48,7 @@ void update_light_intensity(void)
  */	
 void update_distance(void)
 {
-	control_unit_data.distance = get_distance();
+	set_current_distance(get_distance());
 }
 
 void process_serial(void)
@@ -93,12 +79,6 @@ int main(void)
 		control_unit_status = ERROR;
 		return 1;
 	}
-	
-	// Load the configuration into RAM for quick access.
-	control_unit_configuration.unit_id = get_unit_id();
-	control_unit_configuration.window_height = get_window_height();
-	control_unit_configuration.temperature_threshold = get_temperature_threshold();
-	control_unit_configuration.light_intensity_threshold = get_light_intensity_threshold();
 		
 	// Initialize the timer.
 	timer_init();
