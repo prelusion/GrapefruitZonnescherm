@@ -1,21 +1,14 @@
-import wx
+import random
+
+UNIT_COLORS = (
+    (255, 0, 0),
+    (255, 123, 0),
+    (87, 6, 253),
+    (1, 209, 126),
+)
 
 
-class test(wx.Frame):
+def randcolor():
+    return random.choice(UNIT_COLORS)
 
-    def __init__(self, title):
-        super().__init__(None, title=title, size=(607, 100))
-        # Create main panel for control unit
-        unit = wx.Panel(self, style=wx.BORDER_RAISED)
-
-        main_panel = wx.Panel(unit)
-        main_panel.SetBackgroundColour((1,1,1))
-
-
-
-app = wx.App(False)
-mainview = test("Grapefruit controlpanel")
-mainview.Show()
-app.MainLoop()
-
-
+print(randcolor())
