@@ -1,5 +1,4 @@
 #include <avr/io.h>
-#include <stdio.h>
 
 // output on USB = PD1 = board pin 1
 // datasheet p.190; F_OSC = 16 MHz & baud rate = 19.200

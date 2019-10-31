@@ -1,7 +1,6 @@
 #include "command_processing.h"
 #include <string.h>
 #include <stdlib.h>
-#include <avr/io.h>
 #include <stdio.h>
 #include "data.h"
 
