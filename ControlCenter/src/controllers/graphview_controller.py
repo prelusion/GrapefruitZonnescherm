@@ -32,16 +32,16 @@ class GraphViewController(mvc.Controller):
 
         # self.controlunit_manager.units.add_callback(self.on_controlunits_change)
 
-    def on_filter_connected_change(self, model, prevstate, newstate):
+    def on_filter_connected_change(self, model, data):
         pass
 
-    def on_filter_select_all_change(self, model, prevstate, newstate):
+    def on_filter_select_all_change(self, model, data):
         pass
 
-    def on_filter_shutter_up_change(self, model, prevstate, newstate):
+    def on_filter_shutter_up_change(self, model, data):
         pass
 
-    def on_filter_shutter_down_change(self, model, prevstate, newstate):
+    def on_filter_shutter_down_change(self, model, data):
         pass
 
     def on_controlunits_change(self, model, prevstate, newstate):
