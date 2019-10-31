@@ -18,9 +18,9 @@ class ControlUnitsController(mvc.Controller):
 
         self.controlunits_manager.units.add_callback(self.on_units_changed)
 
-    def on_units_changed(self, prevstate, state):
-        down_units = {k: prevstate[k] for k in set(prevstate) - set(state)}
-        new_units = {k: state[k] for k in set(state) - set(prevstate)}
+    def on_units_changed(self, prevstate, newstate):
+        down_units = {k: prevstate[k] for k in set(prevstate) - set(newstate)}
+        new_units = {k: newstate[k] for k in set(newstate) - set(prevstate)}
 
         for port, unit in down_units.items():
             comm, model = unit

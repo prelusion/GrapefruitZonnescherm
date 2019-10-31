@@ -27,14 +27,14 @@ class ControlUnitsView(mvc.View):
         self.vbox = wx.BoxSizer(wx.VERTICAL)
         self.SetBackgroundColour((0, 255, 0))
 
-        controlunit_view = ControlUnitView(self.parent)
-        self.vbox.Add(controlunit_view, 0, wx.EXPAND | wx.ALL, 5)
+        # controlunit_view = ControlUnitView(self.parent)
+        # self.vbox.Add(controlunit_view, 0, wx.EXPAND | wx.ALL, 5)
         self.SetSizer(self.vbox)
 
     def render_unit(self, id_, view):
-        btn = wx.Button(self, label=str(id_))
-        btn.SetBackgroundColour(randcolor())
-        self.vbox.Add(btn, 0, wx.ALL, 5)
+        # btn = wx.Button(self, label=str(id_))
+        # btn.SetBackgroundColour(randcolor())
+        self.vbox.Add(view, 0, wx.ALL, 5)
         self.units[id_] = self.unit_count
         self.vbox.Layout()
         self.unit_count += 1
