@@ -26,7 +26,6 @@ class ControlUnitsView(mvc.View):
 
         self.SetBackgroundColour((173, 166, 166))
         self.vbox = wx.BoxSizer(wx.VERTICAL)
-        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.SetSizer(self.vbox)
 
     def render_unit(self, id_, view):
