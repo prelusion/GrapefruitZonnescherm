@@ -21,7 +21,7 @@ class ControlUnitsController(mvc.Controller):
 
         self.controlunits_manager.units.add_callback(self.on_units_changed)
 
-    def on_units_changed(self, prevstate, newstate):
+    def on_units_changed(self, model, prevstate, newstate):
         down_units = {k: prevstate[k] for k in set(prevstate) - set(newstate)}
         new_units = {k: newstate[k] for k in set(newstate) - set(prevstate)}
 

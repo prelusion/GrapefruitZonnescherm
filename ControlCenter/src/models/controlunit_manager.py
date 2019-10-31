@@ -7,16 +7,14 @@ logger = getLogger(__name__)
 
 class ControlUnitManager:
     def __init__(self):
-        self.units = mvc.Observable(OrderedDict())  # "port": <communication, model>
+        self.units = mvc.Observable(self, OrderedDict())  # "port": <ControlUnitCommunication, ControlUnitModel>
 
     def add_unit(self, port, communication, model):
-        print("CU Manager add:", port)
         units = self.units.get()
         units[port] = (communication, model)
         self.units.set(units)
 
     def remove_unit(self, port):
-        print("CU Manager remove:", port)
         units = self.units.get()
         if port not in units:
             logger.warning(f"trying to remove unexisting port: {port}")

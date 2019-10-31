@@ -1,6 +1,6 @@
 import os
 import threading
-
+import json
 import wx
 
 from src import const
@@ -12,19 +12,36 @@ from src.models.controlunit_manager import ControlUnitManager
 from src.models.filter import FilterModel
 from src.views.tab_view import TabView
 
+from src import util
+
 
 class App(wx.App):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.app_id = None
+
         self.controlunit_manager = ControlUnitManager()
         self.filter_model = FilterModel()
 
+        self.init()
         self.start_background_services()
+
+    def init(self):
+        if not os.path.exists(const.DATA_DIR):
+            os.makedirs(const.DATA_DIR)
+
+        app_data = util.load_json_from_file(const.APP_DATA_FILE)
+
+        if "id" not in app_data:
+            app_data["id"] = util.generate_16bit_int()
+            util.save_json_to_file(const.APP_DATA_FILE, app_data)
+
+        self.app_id = app_data["id"]
 
     def start_background_services(self):
         t = threading.Thread(target=controlunit.online_control_unit_service,
-                             args=(self.controlunit_manager,), daemon=True)
+                             args=(self.app_id, self.controlunit_manager,), daemon=True)
         t.start()
 
 
@@ -61,7 +78,7 @@ class MainView(wx.Frame):
 
         # Right panel components
         tab_view = TabView(right_panel)
-        graphview_controller = GraphViewController(right_panel, self.app.filter_model)
+        graphview_controller = GraphViewController(right_panel, self.app.filter_model, self.app.controlunit_manager)
         right_panel_sizer_vbox.Add(tab_view, 1, wx.EXPAND | wx.ALL)
         right_panel_sizer_vbox.Add(graphview_controller.view, 10, wx.EXPAND | wx.ALL)
         main_sizer_hbox.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
