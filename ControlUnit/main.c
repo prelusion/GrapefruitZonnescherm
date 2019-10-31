@@ -93,7 +93,7 @@ int main(void)
 	// Initialize the timer.
 	timer_init();
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
-	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)30); // 3000 * 10ms = 30sec
+	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
 	timer_start();
 	
 	// TODO handle serial communication, maybe do this in the infinite loop.
