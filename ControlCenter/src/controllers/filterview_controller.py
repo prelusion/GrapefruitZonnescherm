@@ -12,7 +12,7 @@ class FilterViewController(mvc.Controller):
 
         self.view = FilterView(view_parent)
 
-        self.view.Bind(wx.EVT_CHECKBOX,self.on_checkbox_change)
+        self.view.Bind(wx.EVT_CHECKBOX, self.on_checkbox_change)
 
     def on_checkbox_change(self, event):
         e = event.GetEventObject()

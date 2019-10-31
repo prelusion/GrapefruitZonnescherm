@@ -3,7 +3,7 @@ import time
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
-
+from random import randint
 from serial.serialutil import SerialException
 
 from src import serialinterface as ser
@@ -58,6 +58,10 @@ def get_online_control_units(connected_ports=set(), unused_ports=set()):
     return unconnected_ports, down_ports, invalid_ports
 
 
+def generate_id():
+    return randint(1, 2 ** 16)
+
+
 def online_control_unit_service(controlunit_manager, interval=0.5):
     unused_ports = set()
 
@@ -80,8 +84,12 @@ def online_control_unit_service(controlunit_manager, interval=0.5):
             comm = ControlUnitCommunication(port)
 
             # TODO: Check for id, otherwise generate id
-
-            model = ControlUnitModel(util.generate_id())
+            current_id = comm.get_id()
+            print("current id before:", current_id)
+            if current_id != 5:
+                current_id = generate_id()
+            print("current id after:", current_id)
+            model = ControlUnitModel(current_id)
 
             controlunit_manager.add_unit(port, comm, model)
 
@@ -106,7 +114,7 @@ class ControlUnitCommunication:
 
     @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_id(self):
-        return self._get_command("GET_ID")
+        return int(self._get_command("GET_ID"))
 
     def set_id(self, id_):
         """ id is a 32-bit int. """

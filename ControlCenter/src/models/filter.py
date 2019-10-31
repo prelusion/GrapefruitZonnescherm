@@ -3,10 +3,10 @@ from src import mvc
 
 class FilterModel(mvc.Model):
     def __init__(self):
-        self.filter_connected = mvc.Observable(False)
-        self.filter_shutter_up = mvc.Observable(False)
-        self.filter_shutter_down = mvc.Observable(False)
-        self.filter_select_all = mvc.Observable(False)
+        self.filter_connected = mvc.Observable(self, False)
+        self.filter_shutter_up = mvc.Observable(self, False)
+        self.filter_shutter_down = mvc.Observable(self, False)
+        self.filter_select_all = mvc.Observable(self, False)
 
     def set_filter_connected(self, boolean):
         self.filter_connected.set(boolean)

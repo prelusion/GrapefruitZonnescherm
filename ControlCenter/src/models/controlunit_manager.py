@@ -7,7 +7,7 @@ logger = getLogger(__name__)
 
 class ControlUnitManager:
     def __init__(self):
-        self.units = mvc.Observable(OrderedDict())  # "port": <communication, model>
+        self.units = mvc.Observable(self, OrderedDict())  # "port": <ControlUnitCommunication, ControlUnitModel>
 
     def add_unit(self, port, communication, model):
         print("CU Manager add:", port)
