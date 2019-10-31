@@ -17,7 +17,7 @@ def encode_controlunit_id(app_id, controlunit_id):
     :param controlunit_id: int
     :return: 32-bit binary
     """
-    return bin(app_id << 16 | controlunit_id)
+    return int(bin(app_id << 16 | controlunit_id), 2)
 
 
 def decode_controlunit_id(id_):
@@ -25,7 +25,7 @@ def decode_controlunit_id(id_):
     :param id_: 32-bit binary
     :return: app_id: int, controlunit_id: int
     """
-    return int(id_, 2) >> 16, int(id_, 2) & 0b1111111111111111
+    return id_ >> 16, id_ & 0b1111111111111111
 
 
 def load_json_from_file(filepath):

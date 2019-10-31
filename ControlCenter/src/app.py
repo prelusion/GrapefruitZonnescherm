@@ -39,11 +39,9 @@ class App(wx.App):
 
         self.app_id = app_data["id"]
 
-        print(self.app_id)
-
     def start_background_services(self):
         t = threading.Thread(target=controlunit.online_control_unit_service,
-                             args=(self.controlunit_manager,), daemon=True)
+                             args=(self.app_id, self.controlunit_manager,), daemon=True)
         t.start()
 
 
