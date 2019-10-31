@@ -1,8 +1,8 @@
 #include <avr/io.h>
 
-uint8_t temperature;
 int8_t get_temperature(void)
 {
+	uint8_t temperature;
 	//calculates the correct temperature with the following formula
 	temperature = ((adc_read(PINC0)*(5.0/1024.0))-0.5)*100;
 	return temperature;
@@ -11,6 +11,7 @@ int8_t get_temperature(void)
 //If the temperature is not within the threshold return 0 else return 1
 uint8_t temperature_sensor_connected(void)
 {
+	uint8_t temperature;
 	temperature = get_temperature();
 	if (temperature > 63 || temperature < -64)
 	{
