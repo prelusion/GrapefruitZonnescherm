@@ -1,7 +1,8 @@
 import wx
 
 from src import mvc
-from src.views.tab_data_view import GraphView
+from src.controlunit import Measurement
+from src.views.graph_view import GraphView
 
 
 class GraphViewController(mvc.Controller):
@@ -10,8 +11,19 @@ class GraphViewController(mvc.Controller):
 
         self.filter_model = filter_model
         self.controlunit_manager = controlunit_manager
+        self.data={
+            "dates":[],
+            "temperatures":[],
+            "status":[],
+            "light":[]
+        }
 
-        self.view = GraphView(view_parent)
+        #self.graphs_view = src.views.tab_data_view.GraphView(view_parent)
+
+        self.temp_view = GraphView()
+        self.status_view = GraphView()
+        self.light_view = GraphView()
+
 
         self.filter_model.filter_connected.add_callback(self.on_filter_connected_change)
         self.filter_model.filter_select_all.add_callback(self.on_filter_connected_change)
@@ -38,8 +50,16 @@ class GraphViewController(mvc.Controller):
             unit.measurements.add_callback(self.on_controlunit_measurement_change)
             unit.color.add_callback(self.on_controlunit_color_change)
 
-    def on_controlunit_measurement_change(self, model, prevstate, newstate):
+    def on_controlunit_measurement_change(self, model, prevstate, newstate:Measurement):
+        self.data={
+            "dates":newstate.timestamp,
+            "temperatures":newstate.temperature,
+            "status":newstate.shutter_status,
+            "light":newstate.light_sensitivity
+        }
+
         self.view.set_measurements(model.get_id(), newstate)
 
     def on_controlunit_color_change(self, model, prevstate, newstate):
+        self.
         self.view.set_measurements(model.get_id(), newstate)
