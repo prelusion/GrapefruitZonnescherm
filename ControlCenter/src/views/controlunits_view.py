@@ -27,6 +27,7 @@ def randcolor():
         tmp = []
     return result
 
+
 class ControlUnitsView(mvc.View):
     def __init__(self, parent):
         super().__init__(parent)
@@ -38,13 +39,17 @@ class ControlUnitsView(mvc.View):
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.main_sizer)
 
+        debug = True
+        if debug:
+            self.render_unit(1, ControlUnitView(self))
+            self.render_unit(2, ControlUnitView(self))
+
     def render_unit(self, id_, view):
         view.set_device_color(randcolor())
         self.main_sizer.Add(view,  0, wx.CENTER)
         self.units[id_] = self.unit_count
         self.main_sizer.Layout()
         self.unit_count += 1
-
 
     def remove_unit(self, id_):
         idx = self.units[id_]
