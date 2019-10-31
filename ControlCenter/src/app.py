@@ -1,18 +1,17 @@
 import os
 import threading
-import json
+
 import wx
 
 from src import const
 from src import controlunit
+from src import util
 from src.controllers.controlunits_controller import ControlUnitsController
 from src.controllers.filterview_controller import FilterViewController
 from src.controllers.graphview_controller import GraphViewController
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.filter import FilterModel
 from src.views.tab_view import TabView
-
-from src import util
 
 
 class App(wx.App):
