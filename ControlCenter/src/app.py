@@ -70,7 +70,7 @@ class MainView(wx.Frame):
         # Left panel components
         controlunits_controller = ControlUnitsController(left_panel, self.app.controlunit_manager)
         filterview_controller = FilterViewController(left_panel, self.app.filter_model)
-        left_panel_sizer_vbox.Add(controlunits_controller.view, 3, wx.EXPAND | wx.ALL)
+        left_panel_sizer_vbox.Add(controlunits_controller.view, 3, wx.EXPAND | wx.ALL, 10)
         left_panel_sizer_vbox.Add(filterview_controller.view, 1, wx.EXPAND | wx.ALL)
         main_sizer_hbox.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 

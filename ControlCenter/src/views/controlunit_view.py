@@ -9,141 +9,47 @@ class ControlUnitView(wx.Panel):
         super().__init__(parent)
 
         # Create main panel for control unit
-        unit = wx.Panel(self, style=wx.BORDER_RAISED)
-        unit.SetSize(500, 150)
+        main_panel = wx.Panel(self, style=wx.BORDER_RAISED, size=(500, 120))
+        grid = wx.GridSizer(2, 3, 0, 0)  # Add gridsizer to main panel, 2 rows, 3 columns, 0 borders
+        main_panel.SetSizer(grid)
 
-        # Add gridsizer to main panel, 2 rows, 3 columns, 0 borders
-        grid = wx.GridSizer(2, 3, 0, 0)
-        unit.SetSizer(grid)
+        panels = ("name", "temperature", "status", "color", "connection", "mode")
+        for i in panels:
+            panel = wx.Panel(main_panel, style=wx.SUNKEN_BORDER)
+            panel.SetBackgroundColour((255, 255, 255))
+            self.name_label = wx.StaticText(panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
+            self.name_label.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
+            h_sizer = wx.BoxSizer(wx.HORIZONTAL)
+            v_sizer = wx.BoxSizer(wx.VERTICAL)
+            h_sizer.Add(self.name_label, 0, wx.CENTER)
+            v_sizer.Add((0, 0), 1, wx.EXPAND)
+            v_sizer.Add(h_sizer, 0, wx.CENTER)
+            v_sizer.Add((0, 0), 1, wx.EXPAND)
+            panel.SetSizer(v_sizer)
+            grid.Add(panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
-        # Create panel for device name
-        name_panel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
-        name_panel.SetBackgroundColour((255, 255, 255))
-
-        # Create namelabel
-        self.name_label = wx.StaticText(name_panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
-        font = self.name_label.GetFont()
-        font.PointSize += 5
-        font = font.Bold()
-        self.name_label.SetFont(font)
-
-        # align name label to center
-        h_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        h_sizer.Add(self.name_label, 0, wx.CENTER)
-        main_sizer.Add((0, 0), 1, wx.EXPAND)
-        main_sizer.Add(h_sizer, 0, wx.CENTER)
-        main_sizer.Add((0, 0), 1, wx.EXPAND)
-        name_panel.SetSizer(main_sizer)
-
-        # Panel for temperature readings
-        temp_panel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
-        temp_panel.SetBackgroundColour((255, 255, 255))
-
-        # initialize temperaturelabel
-        self.temp_label = wx.StaticText(temp_panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
-        font = self.temp_label.GetFont()
-        font.PointSize += 5
-        font = font.Bold()
-        self.temp_label.SetFont(font)
-
-        # align temperature label to center
-        h_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        h_sizer.Add(self.temp_label, 0, wx.CENTER)
-        main_sizer.Add((0, 0), 1, wx.EXPAND)
-        main_sizer.Add(h_sizer, 0, wx.CENTER)
-        main_sizer.Add((0, 0), 1, wx.EXPAND)
-        temp_panel.SetSizer(main_sizer)
-
-        # Create panel for device status
-        status_panel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
-        status_panel.SetBackgroundColour((255, 255, 255))
-
-        # Create statuslabel
-        self.status_label = wx.StaticText(status_panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
-        font = self.status_label.GetFont()
-        font.PointSize += 5
-        font = font.Bold()
-        self.status_label.SetFont(font)
-
-        # align  statuslabel to center
-        h_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        h_sizer.Add(self.status_label, 0, wx.CENTER)
-        main_sizer.Add((0, 0), 1, wx.EXPAND)
-        main_sizer.Add(h_sizer, 0, wx.CENTER)
-        main_sizer.Add((0, 0), 1, wx.EXPAND)
-        status_panel.SetSizer(main_sizer)
-
-        # Create panel for device color (no label or positioning initializing needed)
-        self.color_panel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
-        self.color_panel.SetBackgroundColour((1, 1, 1))
-
-        # Create panel for connection status
-        connection_panel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
-        connection_panel.SetBackgroundColour((255, 255, 255))
-
-        # Initialize connection label
-        self.connection_label = wx.StaticText(connection_panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
-        font = self.connection_label.GetFont()
-        font.PointSize += 5
-        font = font.Bold()
-        self.connection_label.SetFont(font)
-
-        # Align connection label to center
-        h_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        h_sizer.Add(self.connection_label, 0, wx.CENTER)
-        main_sizer.Add((0, 0), 1, wx.EXPAND)
-        main_sizer.Add(h_sizer, 0, wx.CENTER)
-        main_sizer.Add((0, 0), 1, wx.EXPAND)
-        connection_panel.SetSizer(main_sizer)
-
-        # Create mode panel
-        mode_panel = wx.Panel(unit, style=wx.SUNKEN_BORDER)
-        mode_panel.SetBackgroundColour((255, 255, 255))
-
-        # Create mode label
-        self.mode_label = wx.StaticText(mode_panel, wx.ID_ANY, label="0", style=wx.ALIGN_CENTER)
-        font = self.mode_label.GetFont()
-        font.PointSize += 5
-        font = font.Bold()
-        self.mode_label.SetFont(font)
-
-        # Align mode label to center
-        h_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        h_sizer.Add(self.mode_label, 0, wx.CENTER)
-        main_sizer.Add((0, 0), 1, wx.EXPAND)
-        main_sizer.Add(h_sizer, 0, wx.CENTER)
-        main_sizer.Add((0, 0), 1, wx.EXPAND)
-        mode_panel.SetSizer(main_sizer)
-
-        # Add all panels to main device panel grid
-        grid.Add(name_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        grid.Add(temp_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        grid.Add(status_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        grid.Add(self.color_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        grid.Add(connection_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        grid.Add(mode_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-
-        unit.Layout()
+        main_panel.Layout()
 
     def set_temperature(self, temp):
+        return
         self.temp_label.SetLabelText(str(temp))
 
     def set_name(self, name):
+        return
         self.name_label.SetLabelText(str(name))
 
     def set_status(self, status):
+        return
         self.status_label.SetLabelText(str(status))
 
     def set_device_color(self, color_tuple):
+        return
         self.color_panel.SetBackgroundColour(color_tuple)
 
     def set_connection(self, connection):
+        return
         self.connection_label.SetLabelText(str(connection))
 
     def set_mode(self, mode):
+        return
         self.mode_label.SetLabelText(str(mode))
