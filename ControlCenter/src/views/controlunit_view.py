@@ -128,6 +128,8 @@ class ControlUnitView(wx.Panel):
         grid.Add(connection_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         grid.Add(mode_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
+        unit.Layout()
+
     def set_temperature(self, temp):
         self.temp_label.SetLabelText(str(temp))
 

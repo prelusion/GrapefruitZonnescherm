@@ -24,8 +24,9 @@ class ControlUnitsView(mvc.View):
         self.units = {}
         self.unit_count = 0
 
-        self.SetBackgroundColour((0, 255, 0))
+        self.SetBackgroundColour((173, 166, 166))
         self.vbox = wx.BoxSizer(wx.VERTICAL)
+        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.SetSizer(self.vbox)
 
     def render_unit(self, id_, view):
@@ -33,6 +34,7 @@ class ControlUnitsView(mvc.View):
         self.units[id_] = self.unit_count
         self.vbox.Layout()
         self.unit_count += 1
+
 
     def remove_unit(self, id_):
         idx = self.units[id_]
