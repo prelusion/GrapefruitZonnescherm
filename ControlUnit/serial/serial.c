@@ -1,3 +1,4 @@
+#include "serial.h"
 #include <avr/io.h>
 #include <stdio.h>
 
