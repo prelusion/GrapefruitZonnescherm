@@ -10,8 +10,9 @@ from src.models.controlunit import ControlUnitModel
 
 
 class GraphView(mvc.View):
-    def __init__(self, parent):
+    def __init__(self, parent, title, unit):
         super().__init__(parent)
+        self.measure_unit = unit
         self.graph = Graph(self)
         self.graph_sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(self.graph_sizer)
@@ -40,7 +41,7 @@ class GraphView(mvc.View):
                     status.append(measurement.shutter_status)
                     xdata.append(x)
                 if first_drawn:
-                    self.graph.plot(dates, temps, ylabel="Temperature in °C", side='left', linewidth=1, labelfontsize=5,
+                    self.graph.plot(dates, temps, ylabel=self.measure_unit , side='left', linewidth=1, labelfontsize=5,
                                     legendfontsize=6, autoscale=True, framecolor=self.framecolor, use_dates=True,
                                     color=unit["color"])
                 else:

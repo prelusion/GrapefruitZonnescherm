@@ -1,34 +1,55 @@
+from src.controlunit import Measurement
+import datetime
 from src.mvc import View
 from src.views import graph_view
+import random
 import wx
 
 class graph_tab_view(View):
     def __init__(self, parent):
         super().__init__(parent)
-        self.SetBackgroundColour(colour=(255,0,0))
+        #self.SetBackgroundColour(colour=(255,0,0))
         self.sizer = wx.BoxSizer()
         self.SetSizer(self.sizer)
 
         self.tab_panel = wx.Notebook(self)
-        self.temps_tab = wx.Panel(self.tab_panel)
-        self.status_tab = wx.Panel(self.tab_panel)
-        self.light_tab = wx.Panel(self.tab_panel)
-        self.tab_panel.SetBackgroundColour(colour=(0,255,0))
+
+        self.temps_tab = graph_tab(self.tab_panel, "Temperatures", "Temperature in °C")
+        self.status_tab = graph_tab(self.tab_panel, "Shutter status", "Shutter status: Up or Down")
+        self.light_tab = graph_tab(self.tab_panel, "Light intensity", "Light intensity in //TODO")
 
         self.tab_panel.AddPage(self.temps_tab, "Temps")
         self.tab_panel.AddPage(self.status_tab, "Status")
         self.tab_panel.AddPage(self.light_tab, "Light")
 
+        #self.tab_panel.AddPage(self.status_tab, "Status")
+        #self.tab_panel.AddPage(self.light_tab, "Light")
+
 
         self.sizer.Add(self.tab_panel, 1, wx.EXPAND)
 
-        self.sizer.Add(self.)
-        self.temp_view = graph_view.GraphView(self.temps_tab)
-        self.status_view = graph_view.GraphView(self.status_tab)
-        self.light_view = graph_view.GraphView(self.light_tab)
 
 class graph_tab(View):
-    def __init__(self):
+    def __init__(self, parent, title, unit):
+        super().__init__(parent)
+        graph = graph_view.GraphView(self, title, unit)
+        sizer = wx.GridSizer(1,1,1,1)
+        self.SetSizer(sizer)
+        sizer.Add(graph, 0, wx.EXPAND, 0)
+        self.SetBackgroundColour(colour=(0,255,0))
+        graph.SetSize(200,200)
+        SetTestData(graph)
+        graph.update_graph()
+
+def SetTestData(graph_view: graph_view.GraphView):
+    measurements = []
+    temp = 20.000
+    for i in range(100):
+        temp += random.uniform(-3, 3)
+        measurements.append(
+            Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)),
+                        temperature=temp, shutter_status=random.randint(0, 1), light_intensity=0))
+    graph_view.set_unit(1, measurements)
 
 
 if __name__ == "__main__":
