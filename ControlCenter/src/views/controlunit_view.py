@@ -139,7 +139,7 @@ class ControlUnitView(wx.Panel):
     def set_status(self, status):
         self.status_label.SetLabelText(str(status))
 
-    def set_device_color(self, *color_tuple):
+    def set_device_color(self, color_tuple):
         self.color_panel.SetBackgroundColour(color_tuple)
 
     def set_connection(self, connection):

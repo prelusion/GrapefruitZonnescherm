@@ -1,7 +1,7 @@
 import wx
 
 from src import mvc
-from src.views.graph_view import GraphView
+from src.views.tab_data_view import GraphView
 
 
 class GraphViewController(mvc.Controller):

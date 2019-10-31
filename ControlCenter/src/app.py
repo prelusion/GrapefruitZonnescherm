@@ -42,13 +42,11 @@ class MainView(wx.Frame):
 
         # Init left panel
         left_panel = wx.Panel(main_panel)
-        left_panel.SetBackgroundColour((1, 1, 1))
         left_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
         left_panel.SetSizer(left_panel_sizer_vbox)
 
         # Init right panel
         right_panel = wx.Panel(main_panel)
-        right_panel.SetBackgroundColour((0, 0, 255))
         right_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
         right_panel.SetSizer(right_panel_sizer_vbox)
 

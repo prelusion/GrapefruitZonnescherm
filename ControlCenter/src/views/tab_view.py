@@ -6,7 +6,7 @@ class TabView(mvc.View):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.SetBackgroundColour((255, 100, 75))
+        self.SetBackgroundColour((121, 122, 122))
 
         # Add sizer to tab_panel
         tab_sizer = wx.GridSizer(1, 3, 0, 0)
