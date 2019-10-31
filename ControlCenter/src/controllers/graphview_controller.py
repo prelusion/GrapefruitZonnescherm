@@ -36,7 +36,10 @@ class GraphViewController(mvc.Controller):
         for port, unit in newstate:
             comm, model = unit
             unit.measurements.add_callback(self.on_controlunit_measurement_change)
+            unit.color.add_callback(self.on_controlunit_color_change)
 
     def on_controlunit_measurement_change(self, model, prevstate, newstate):
-        unit_id = model.get_id()
-        measurements = newstate
+        self.view.set_measurements(model.get_id(), newstate)
+
+    def on_controlunit_color_change(self, model, prevstate, newstate):
+        self.view.set_measurements(model.get_id(), newstate)
