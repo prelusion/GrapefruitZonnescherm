@@ -7,7 +7,19 @@ QUANTIZE_ONE_DIGIT = Decimal(10) ** -1  # e.g. Decimal(temp).quantize(util.QUANT
 
 
 def generate_16bit_int():
-    return randint(5, 99)
+    return randint(1, 2 ** 16)
+
+
+def encode_controlunit_id(app_id, controlunit_id):
+    return bin(app_id << 16 | controlunit_id)
+
+
+def decode_controlunit_id(id_):
+    """
+    :param binary_id: 32-bit int
+    :return: app_id, controlunit_id
+    """
+    return int(bin(int(id_, 2) >> 16), 2), int(bin(int(id_, 2) & 0b1111111111111111), 2)
 
 
 def load_json_from_file(filepath):
