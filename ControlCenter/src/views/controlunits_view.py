@@ -5,17 +5,27 @@ import wx
 from src import mvc
 from src.views.controlunit_view import ControlUnitView
 
-UNIT_COLORS = (
+tmp = []
+unit_colors = [
     (255, 0, 0),
     (255, 123, 0),
     (87, 6, 253),
     (1, 209, 126),
-)
+    (255, 33, 55),
+    (21, 130, 10),
+    (8, 16, 230),
+]
 
 
 def randcolor():
-    return random.choice(UNIT_COLORS)
-
+    global tmp, unit_colors
+    result = random.choice(unit_colors)
+    tmp.append(result)
+    unit_colors.remove(result)
+    if len(unit_colors) == 0:
+        unit_colors = tmp.copy()
+        tmp = []
+    return result
 
 class ControlUnitsView(mvc.View):
     def __init__(self, parent):
