@@ -1,31 +1,9 @@
 import random
 
 import wx
-
-from src import mvc
 from src.views.controlunit_view import ControlUnitView
 
-tmp = []
-unit_colors = [
-    (255, 0, 0),
-    (255, 123, 0),
-    (87, 6, 253),
-    (1, 209, 126),
-    (255, 33, 55),
-    (21, 130, 10),
-    (8, 16, 230),
-]
-
-
-def randcolor():
-    global tmp, unit_colors
-    result = random.choice(unit_colors)
-    tmp.append(result)
-    unit_colors.remove(result)
-    if len(unit_colors) == 0:
-        unit_colors = tmp.copy()
-        tmp = []
-    return result
+from src import mvc
 
 
 class ControlUnitsView(mvc.View):
@@ -38,26 +16,25 @@ class ControlUnitsView(mvc.View):
         self.SetBackgroundColour((173, 166, 166))
 
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.SetSizer(self.main_sizer)
 
         self.unit_sizer = wx.BoxSizer(wx.VERTICAL)
         self.unit_sizer.AddSpacer(20)
 
         self.main_sizer.Add(self.unit_sizer, 0, wx.CENTER, border=50)
+        self.SetSizer(self.main_sizer)
 
-        debug = True
+        debug = False
         if debug:
-            self.render_unit(1, ControlUnitView(self))
-            self.render_unit(2, ControlUnitView(self))
-            self.render_unit(3, ControlUnitView(self))
-            self.render_unit(4, ControlUnitView(self))
+            for i in range(2):
+                view = ControlUnitView(self)
+                self.render_unit(1, view)
 
     def render_unit(self, id_, view):
-        view.set_device_color(randcolor())
         self.unit_sizer.Add(view, 0, wx.EXPAND | wx.ALL, 10)
         self.units[id_] = self.unit_count
         self.unit_sizer.Layout()
         self.unit_count += 1
+        self.main_sizer.Layout()
 
     def remove_unit(self, id_):
         idx = self.units[id_]

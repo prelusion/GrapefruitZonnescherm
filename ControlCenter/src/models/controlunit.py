@@ -6,9 +6,12 @@ class ControlUnitModel(mvc.Model):
 
     def __init__(self, id):
         self.id = mvc.Observable(self, id)
-        self.name = mvc.Observable(self, None)
+        self.name = mvc.Observable(self, "unnamed")
         self.online = mvc.Observable(self, False)
+        self.mode = mvc.Observable(self, "auto")
+        self.color = mvc.Observable(self, None)
         self.measurements = mvc.Observable(self, [])
+        self.shutter_status = mvc.Observable(self, "up")
 
     def set_id(self, id):
         self.id.set(id)
@@ -23,16 +26,28 @@ class ControlUnitModel(mvc.Model):
         return self.name.get()
 
     def set_colour(self, colour):
-        self._colour.set(colour)
+        self.color.set(colour)
 
     def get_colour(self):
-        return self._colour.get()
+        return self.color.get()
 
     def set_online(self, boolean):
         self.online.set(boolean)
 
     def get_online(self):
         return self.online.get()
+
+    def set_mode(self, boolean):
+        self.mode.set(boolean)
+
+    def get_mode(self):
+        return self.mode.get()
+
+    def set_shutter_status(self, value):
+        self.shutter_status.set(value)
+
+    def get_shutter_status(self):
+        return self.shutter_status.get()
 
     def add_measurement(self, measurement):
         measurements = self.measurements.get()
@@ -42,3 +57,6 @@ class ControlUnitModel(mvc.Model):
 
     def get_measurements(self):
         return self.measurements
+
+    def get_current_temperature(self):
+        return "23.5"
