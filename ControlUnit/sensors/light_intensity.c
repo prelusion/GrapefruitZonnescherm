@@ -7,7 +7,7 @@ uint8_t get_light_intensity(void)
 }
 
 uint8_t light_intensity_sensor_connected(void)
-{
-	// TODO check if port A1 is 0.
-	return 1;	
+{	
+	
+	return 1;
 }

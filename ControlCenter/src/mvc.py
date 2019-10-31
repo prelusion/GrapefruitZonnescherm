@@ -1,4 +1,6 @@
 from abc import ABC
+from copy import deepcopy
+
 import wx
 
 
@@ -7,8 +9,7 @@ class Model(ABC):
 
 
 class Controller(ABC):
-    def __init__(self, app):
-        self.app = app
+    pass
 
 
 class View(wx.Panel):
@@ -26,15 +27,16 @@ class Observable:
     def del_callback(self, func):
         del self.callbacks[func]
 
-    def _docallbacks(self):
-        [func(self.data) for func in self.callbacks]
+    def _docallbacks(self, prevstate, state):
+        [func(prevstate, state) for func in self.callbacks]
 
     def set(self, data):
+        prevstate = deepcopy(self.data)  # test this first without deepcopy, if weird bugs try deepcopy
         self.data = data
-        self._docallbacks()
+        self._docallbacks(prevstate, self.data)
 
     def get(self):
-        return self.data
+        return deepcopy(self.data)
 
     def unset(self):
         self.data = None

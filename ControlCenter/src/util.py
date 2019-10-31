@@ -1,9 +1,8 @@
-from random import randint
 from decimal import Decimal
-
+from random import randint
 
 QUANTIZE_ONE_DIGIT = Decimal(10) ** -1  # e.g. Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT)
 
 
 def generate_id():
-    return randint(10000000, 99999999)
+    return randint(1, 2 ** 16)

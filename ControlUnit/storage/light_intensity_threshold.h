@@ -1,6 +1,8 @@
 #ifndef _STORAGE_LIGHT_INTENSITY_H_
 #define _STORAGE_LIGHT_INTENSITY_H_
 
+#include <avr/io.h>
+
 /**
  * \brief 
  * Get the current light intensity threshold.

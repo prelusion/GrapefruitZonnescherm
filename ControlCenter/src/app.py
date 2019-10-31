@@ -1,53 +1,75 @@
+import os
+import threading
+
 import wx
-from pubsub import pub
+
+from src import const
+from src import controlunit
+from src.controllers.controlunits_controller import ControlUnitsController
+from src.controllers.filterview_controller import FilterViewController
+from src.controllers.graphview_controller import GraphViewController
+from src.models.controlunit_manager import ControlUnitManager
+from src.models.filter import FilterModel
+from src.views.tab_view import TabView
 
 
-EVENT_MONEY_CHANGED = "money_changed"
-EVENT_CHANGE_MONEY = "change_money"
+class App(wx.App):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.controlunit_manager = ControlUnitManager()
+        self.filter_model = FilterModel()
+
+        self.start_background_services()
+
+    def start_background_services(self):
+        t = threading.Thread(target=controlunit.online_control_unit_service,
+                             args=(self.controlunit_manager,), daemon=True)
+        t.start()
 
 
 class MainView(wx.Frame):
-    def __init__(self, title):
-        super().__init__(None, title=title, pos=(150, 150), size=(350, 200))
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
+    def __init__(self, app, title):
+        super().__init__(None, title=title, size=(1200, 700))
 
-        menuBar = wx.MenuBar()
-        menu = wx.Menu()
-        m_exit = menu.Append(wx.ID_EXIT, "E&xit\tAlt-X", "Close window and exit program.")
-        self.Bind(wx.EVT_MENU, self.OnClose, m_exit)
-        menuBar.Append(menu, "&File")
-        self.SetMenuBar(menuBar)
+        self.app = app
+        self.SetIcon(wx.Icon(os.path.join(const.ROOT_DIR, "Assets", "Icons", "logo.ico")))
 
-        self.statusbar = self.CreateStatusBar()
+        # Init main panel
+        main_panel = wx.Panel(self)
+        main_sizer_hbox = wx.BoxSizer(wx.HORIZONTAL)
+        main_panel.SetSizer(main_sizer_hbox)
 
-        panel = wx.Panel(self)
-        box = wx.BoxSizer(wx.VERTICAL)
+        # Init left panel
+        left_panel = wx.Panel(main_panel)
+        left_panel.SetBackgroundColour((1, 1, 1))
+        left_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
+        left_panel.SetSizer(left_panel_sizer_vbox)
 
-        m_text = wx.StaticText(panel, -1, "Hello World!")
-        m_text.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
-        m_text.SetSize(m_text.GetBestSize())
-        box.Add(m_text, 0, wx.ALL, 10)
+        # Init right panel
+        right_panel = wx.Panel(main_panel)
+        right_panel.SetBackgroundColour((0, 0, 255))
+        right_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
+        right_panel.SetSizer(right_panel_sizer_vbox)
 
-        m_close = wx.Button(panel, wx.ID_CLOSE, "Close")
-        m_close.Bind(wx.EVT_BUTTON, self.OnClose)
-        box.Add(m_close, 0, wx.ALL, 10)
+        # Left panel components
+        controlunits_controller = ControlUnitsController(left_panel, self.app.controlunit_manager)
+        filterview_controller = FilterViewController(left_panel, self.app.filter_model)
+        left_panel_sizer_vbox.Add(controlunits_controller.view, 3, wx.EXPAND | wx.ALL)
+        left_panel_sizer_vbox.Add(filterview_controller.view, 1, wx.EXPAND | wx.ALL)
+        main_sizer_hbox.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
-        panel.SetSizer(box)
-        panel.Layout()
-
-    def OnClose(self, event):
-        dlg = wx.MessageDialog(self,
-                               "Do you really want to close this application?",
-                               "Confirm Exit", wx.OK | wx.CANCEL | wx.ICON_QUESTION)
-        result = dlg.ShowModal()
-        dlg.Destroy()
-        if result == wx.ID_OK:
-            self.Destroy()
+        # Right panel components
+        tab_view = TabView(right_panel)
+        graphview_controller = GraphViewController(right_panel, self.app.filter_model)
+        right_panel_sizer_vbox.Add(tab_view, 1, wx.EXPAND | wx.ALL)
+        right_panel_sizer_vbox.Add(graphview_controller.view, 10, wx.EXPAND | wx.ALL)
+        main_sizer_hbox.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
 
 def mainloop():
-    app = wx.App(False)
-    mainview = MainView("My title")
+    app = App(False)
+    mainview = MainView(app, "Grapefruit controlpanel")
     mainview.Show()
     app.MainLoop()
 

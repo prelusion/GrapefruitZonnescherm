@@ -1,7 +1,8 @@
+#include "light_intensity_threshold.h"
 #include <avr/eeprom.h>
 
 // The light intensity threshold will be stored in EEPROM at address 0x0005.
-#define LIGHT_INTENSITY_THRESHOLD_ADDRESS 0x0005
+#define LIGHT_INTENSITY_THRESHOLD_ADDRESS 0x0007
 
 uint8_t get_light_intensity_threshold(void)
 {

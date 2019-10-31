@@ -3,9 +3,9 @@
 
 #include <avr/io.h>
 
-typedef struct History {
+typedef struct {
 	uint16_t	size; // The data size.
-	uint8_t*	data; // Pointer to data.
+	uint16_t*	data; // Pointer to data.
 } History;
 
 /**
@@ -35,6 +35,6 @@ void clear_history(void);
  *
  * \param value
  */
-void write_measurement(uint8_t value);
+void write_measurement(uint16_t value);
 
 #endif

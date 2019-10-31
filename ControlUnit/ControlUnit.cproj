@@ -132,6 +132,36 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="command_processing.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="command_processing.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ports\adc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ports\adc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ports\ports.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="ports\ports.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="serial\serial.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="serial\serial.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="scheduler.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="scheduler.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="storage\history.c">
       <SubType>compile</SubType>
     </Compile>
@@ -144,6 +174,12 @@
     <Compile Include="storage\light_intensity_threshold.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="storage\manual.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\unit_id.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="storage\temperature_threshold.c">
       <SubType>compile</SubType>
     </Compile>
@@ -153,7 +189,7 @@
     <Compile Include="storage\unit_id.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="storage\unit_id.h">
+    <Compile Include="storage\manual.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="storage\window_height.c">
@@ -185,6 +221,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="serial" />
+    <Folder Include="ports" />
     <Folder Include="storage" />
     <Folder Include="sensors" />
   </ItemGroup>

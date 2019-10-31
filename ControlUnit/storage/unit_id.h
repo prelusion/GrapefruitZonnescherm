@@ -1,13 +1,15 @@
 #ifndef _STORAGE_UNIT_ID_H_
 #define _STORAGE_UNIT_ID_H_
 
+#include <avr/io.h>
+
 /**
  * \brief 
  * Get the current unit id.
  * 
  * \return uint8_t The current unit id, 0 if no unit id is set
  */
-uint16_t get_unit_id(void);
+uint32_t get_unit_id(void);
 
 /**
  * \brief
@@ -15,7 +17,7 @@ uint16_t get_unit_id(void);
  * 
  * \param unit_id The unit id to set
  */
-void set_unit_id(uint16_t unit_id);
+void set_unit_id(uint32_t unit_id);
 
 /**
  * \brief 
