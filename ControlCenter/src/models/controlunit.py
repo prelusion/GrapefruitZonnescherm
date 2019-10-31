@@ -7,6 +7,7 @@ class ControlUnitModel(mvc.Model):
     def __init__(self, id):
         self._id = mvc.Observable(id)
         self._name = mvc.Observable()
+        self._colour = mvc.Observable("#fc03df")
         self._online = mvc.Observable(False)
         self._measurements = mvc.Observable([])
 
@@ -22,6 +23,12 @@ class ControlUnitModel(mvc.Model):
     def get_name(self):
         return self._name.get()
 
+    def set_colour(self, colour):
+        self._colour.set(colour)
+
+    def get_colour(self):
+        return self._colour.get()
+
     def set_online(self, boolean):
         self._online.set(boolean)
 
@@ -32,7 +39,8 @@ class ControlUnitModel(mvc.Model):
         measurements = self._measurements.get()
         if len(measurements) > self.MEMORY_COUNT_THRESHOLD:
             measurements.pop(0)
-        self._measurements.set(measurements.append(measurement))
+        measurements.append(measurement)
+        self._measurements.set(measurements)
 
     def get_measurements(self, interval=60, limit=1000):
         return self._measurements

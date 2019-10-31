@@ -13,68 +13,91 @@ class GraphView(wxmplot.PlotPanel):
     def __init__(self, parent):
         super().__init__(parent, pos=(150, 150))
         self.framecolor = "LightGrey"
-        self.x = []
-        self.y = []
+        self.x_max =  0
+        self.y_min = -20
+        self.y_max = 40
+        self.show_temps = True
+        self.show_status = False
         self.controlUnits = []
         self.SetTestData()
-        #self.oplot(self.x, self.y, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor, color="Green")
-        self.SetTestData()
-        self.clear()
-        #self.oplot(self.x, self.y, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor, color="Red", drawstyle="steps-pre", marker="diamond")
         self.Show()
 
-    def AddControlUnit(self, controlUnit:ControlUnitModel):
+    def update(self):
+        self.SetTestData()
+        self.update()
+        s
+
+    def toggle_show_temps(self):
+        self.show_temps is not self.show_temps
+
+    def toggle__show_status(self):
+        self.show_status is not self.show_status
+
+    def add_controlUnit(self, controlUnit:ControlUnitModel):
         self.controlUnits.append(controlUnit)
 
-    def SetTestData(self):
-        x = []
-        y = []
-        for i in range(30):
-            x.append(i)
-            y.append(random.randint(-10,20))
-        self.x = x
-        self.y = y
+    def del_ontrolUnit(self, id):
+        for controlUnit in self.controlUnits:
+            if controlUnit.get_id == id:
+                self.controlUnits.remove(controlUnit)
 
+    def get_controlUnit(self, id):
+        for controlUnit in self.controlUnits:
+            if controlUnit.get_id == id:
+                return controlUnit
+    def get_controlUnits(self):
+        return self.controlUnits
+
+    def SetTestData(self):
         testUnit = ControlUnitModel(1)
         testUnit.set_name("TestUnit")
         testUnit.set_online(True)
         self.controlUnits = []
-        for c in range(2):
-            measurements = []
+        for c in range(1):
             for i in range(100):
-                measurements.append(Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)), temperature=random.randint(-10,20), shutter_status=random.randint(0,1), light_sensitivity=0))
-            self.controlUnits.append(measurements)
+                testUnit.add_measurement(Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)), temperature=random.uniform(-10,20), shutter_status=random.randint(0,1), light_sensitivity=0))
+        self.add_controlUnit(testUnit)
 
-        test = "test"
     def drawControlUnits(self):
-        self.test = 0
         for controlunit in self.controlUnits:
             self.drawControlUnit(controlunit)
-            counter = 0
-            self.test += 1
 
 
-    def drawControlUnit(self, controlUnit):
+
+    def drawControlUnit(self, control_unit:ControlUnitModel, temp = True,status = False, light = False ):
+        measurements = control_unit.get_measurements()
         dates = []
         temps = []
         status = []
-        xaxis = []
+        xdata = []
         x = 0
 
-        for measurement in controlUnit:
-            #dates.append(matplotlib.dates.date2num(measurement.timestamp))
+        for measurement in measurements.get():
             time = int(measurement.timestamp)
             dates.append(time)
             temps.append(measurement.temperature)
             status.append(measurement.shutter_status)
-            xaxis.append(x)
+            xdata.append(x)
 
-        test = "test"
+        first_drawn = True
+        if temp:
+            self.plot(dates, temps, ylabel="Temperature in °C", side='left', linewidth=1, labelfontsize=5,
+                      legendfontsize=6, autoscale=True, framecolor=self.framecolor, use_dates=True,
+                      color=control_unit.get_colour())
+            first_drawn = False
 
-        self.plot(dates, temps, side='left', linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor, use_dates=True)
-        #self.plot(dates, status, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor, style="dashed")
-        #self.oplot(xaxis, dates, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor)
-        #self.plot_many(self.x, self.y, side='left', ymin=0, linewidth=1, labelfontsize=6, legendfontsize=6, autoscale=True, framecolor=self.framecolor)
+        if status:
+            if first_drawn:
+                self.plot(dates, status, style="dotted", side='left', linewidth=1, labelfontsize=5, legendfontsize=6,
+                        autoscale=True, framecolor=self.framecolor, use_dates=True, color=control_unit.get_colour())
+            else:
+                self.oplot(dates, status, style="dotted", side='left', linewidth=1, labelfontsize=5, legendfontsize=6,
+                        autoscale=True,  use_dates=True, color=control_unit.get_colour())
+
+# For testing purposes, please ignore
+def update():
+    graph.update()
+    
 
 if __name__ == "__main__":
 
@@ -94,8 +117,9 @@ if __name__ == "__main__":
     graphPanelSizer.Add(bottomPanel, 0 , wx.EXPAND, 0)
     frame.Show()
     graph.drawControlUnits()
-    graph.SetTestData()
-    app.MainLoop()
+    #app.root.after(2000,update)
+    #app.MainLoop()
+    test = "test"
 
 
 #app = wx.App(redirect=True)
