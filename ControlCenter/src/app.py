@@ -46,10 +46,11 @@ class App(wx.App):
 
 class MainView(wx.Frame):
     def __init__(self, app, title):
-        super().__init__(None, title=title, size=(1200, 700))
+        super().__init__(None, title=title, size=(1600, 900))
 
         self.app = app
         self.SetIcon(wx.Icon(os.path.join(const.ROOT_DIR, "Assets", "Icons", "logo.ico")))
+        self.Center()
 
         # Init main panel
         main_panel = wx.Panel(self)
@@ -69,7 +70,7 @@ class MainView(wx.Frame):
         # Left panel components
         controlunits_controller = ControlUnitsController(left_panel, self.app.controlunit_manager)
         filterview_controller = FilterViewController(left_panel, self.app.filter_model)
-        left_panel_sizer_vbox.Add(controlunits_controller.view, 3, wx.EXPAND | wx.ALL)
+        left_panel_sizer_vbox.Add(controlunits_controller.view, 3, wx.EXPAND | wx.ALL, 10)
         left_panel_sizer_vbox.Add(filterview_controller.view, 1, wx.EXPAND | wx.ALL)
         main_sizer_hbox.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
