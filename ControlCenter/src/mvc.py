@@ -17,7 +17,8 @@ class View(wx.Panel):
 
 
 class Observable:
-    def __init__(self, value=None):
+    def __init__(self, model, value=None):
+        self.model = model
         self.data = value
         self.callbacks = {}
 
@@ -28,7 +29,7 @@ class Observable:
         del self.callbacks[func]
 
     def _docallbacks(self, prevstate, state):
-        [func(prevstate, state) for func in self.callbacks]
+        [func(self.model, prevstate, state) for func in self.callbacks]
 
     def set(self, data):
         prevstate = deepcopy(self.data)  # test this first without deepcopy, if weird bugs try deepcopy

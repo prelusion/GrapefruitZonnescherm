@@ -1,6 +1,6 @@
 import os
 import threading
-
+import json
 import wx
 
 from src import const
@@ -12,15 +12,25 @@ from src.models.controlunit_manager import ControlUnitManager
 from src.models.filter import FilterModel
 from src.views.tab_view import TabView
 
-
+from src import util
 class App(wx.App):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.app_id = None
+
         self.controlunit_manager = ControlUnitManager()
         self.filter_model = FilterModel()
 
+        self.init()
         self.start_background_services()
+
+    def init(self):
+        if not os.path.exists(const.DATA_DIR):
+            os.makedirs(const.DATA_DIR)
+
+        app_data = util.load_json_from_file(const.APP_DATA_FILE)
+
 
     def start_background_services(self):
         t = threading.Thread(target=controlunit.online_control_unit_service,
