@@ -8,11 +8,8 @@ from src import controlunit
 from src.controllers.controlunits_controller import ControlUnitsController
 from src.controllers.filterview_controller import FilterViewController
 from src.controllers.graphview_controller import GraphViewController
-
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.filter import FilterModel
-from src.views.filter_view import FilterView
-from src.views.graph_view import GraphView
 from src.views.tab_view import TabView
 
 
@@ -36,37 +33,38 @@ class MainView(wx.Frame):
         super().__init__(None, title=title, size=(1200, 700))
 
         self.app = app
-
         self.SetIcon(wx.Icon(os.path.join(const.ROOT_DIR, "Assets", "Icons", "logo.ico")))
 
+        # Init main panel
         main_panel = wx.Panel(self)
-
         main_sizer_hbox = wx.BoxSizer(wx.HORIZONTAL)
-        left_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
-        right_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
+        main_panel.SetSizer(main_sizer_hbox)
 
+        # Init left panel
         left_panel = wx.Panel(main_panel)
         left_panel.SetBackgroundColour((1, 1, 1))
+        left_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
+        left_panel.SetSizer(left_panel_sizer_vbox)
+
+        # Init right panel
         right_panel = wx.Panel(main_panel)
         right_panel.SetBackgroundColour((0, 0, 255))
+        right_panel_sizer_vbox = wx.BoxSizer(wx.VERTICAL)
+        right_panel.SetSizer(right_panel_sizer_vbox)
 
+        # Left panel components
         controlunits_controller = ControlUnitsController(left_panel, self.app.controlunit_manager)
         filterview_controller = FilterViewController(left_panel, self.app.filter_model)
         left_panel_sizer_vbox.Add(controlunits_controller.view, 3, wx.EXPAND | wx.ALL)
         left_panel_sizer_vbox.Add(filterview_controller.view, 1, wx.EXPAND | wx.ALL)
-        left_panel.SetSizer(left_panel_sizer_vbox)
+        main_sizer_hbox.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
+        # Right panel components
         tab_view = TabView(right_panel)
         graphview_controller = GraphViewController(right_panel, self.app.filter_model)
-
         right_panel_sizer_vbox.Add(tab_view, 1, wx.EXPAND | wx.ALL)
         right_panel_sizer_vbox.Add(graphview_controller.view, 10, wx.EXPAND | wx.ALL)
-        right_panel.SetSizer(right_panel_sizer_vbox)
-
-        main_sizer_hbox.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         main_sizer_hbox.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-
-        main_panel.SetSizer(main_sizer_hbox)
 
 
 def mainloop():
