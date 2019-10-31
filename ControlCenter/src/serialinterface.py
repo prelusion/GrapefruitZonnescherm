@@ -38,7 +38,7 @@ class Connection:
             if self._interface:
                 self._interface.close()
             self._interface = None
-        except SerialException:
+        except (OSError, SerialException):
             pass
 
     def write(self, data):
