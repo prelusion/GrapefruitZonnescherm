@@ -3,6 +3,7 @@ import wx
 from src import mvc
 from src.controlunit import Measurement
 from src.views.graph_view import GraphView
+from src.views.graph_tab_view import graph_tab_view
 
 
 class GraphViewController(mvc.Controller):
@@ -11,19 +12,12 @@ class GraphViewController(mvc.Controller):
 
         self.filter_model = filter_model
         self.controlunit_manager = controlunit_manager
-        self.data={
-            "dates":[],
-            "temperatures":[],
-            "status":[],
-            "light":[]
-        }
 
-        #self.graphs_view = src.views.tab_data_view.GraphView(view_parent)
-
-        self.temp_view = GraphView()
-        self.status_view = GraphView()
-        self.light_view = GraphView()
-
+        # self.graphs_view = src.views.tab_data_view.GraphView(view_parent)
+        self.temp_view = GraphView(view_parent)
+        self.status_view = GraphView(view_parent)
+        self.light_view = GraphView(view_parent)
+        self.view = graph_tab_view(self)
 
         self.filter_model.filter_connected.add_callback(self.on_filter_connected_change)
         self.filter_model.filter_select_all.add_callback(self.on_filter_connected_change)
@@ -44,22 +38,27 @@ class GraphViewController(mvc.Controller):
     def on_filter_shutter_down_change(self, model, data):
         pass
 
-    def on_controlunits_change(self, model, prevstate, newstate):
-        for port, unit in newstate:
+    def on_controlunits_change(self, model, data):
+        for port, unit in data:
             comm, model = unit
             unit.measurements.add_callback(self.on_controlunit_measurement_change)
             unit.color.add_callback(self.on_controlunit_color_change)
 
-    def on_controlunit_measurement_change(self, model, prevstate, newstate:Measurement):
-        self.data={
-            "dates":newstate.timestamp,
-            "temperatures":newstate.temperature,
-            "status":newstate.shutter_status,
-            "light":newstate.light_sensitivity
-        }
+    def on_controlunit_measurement_change(self, model, data):
+        dates = []
+        temps = []
+        status = []
+        light = []
 
-        self.view.set_measurements(model.get_id(), newstate)
+        for measurement in data:
+            dates.append(measurement.timestamp)
+            temps.append(measurement.temperature)
+            status.append(measurement.shutter_status)
+            light.append(measurement.light_intensity)
 
-    def on_controlunit_color_change(self, model, prevstate, newstate):
-        self.
-        self.view.set_measurements(model.get_id(), newstate)
+        self.temp_view.set_unit(model.get_id(),[dates,temps])
+        self.status_view.set_unit(model.get_id,[dates,status])
+        self.light_view.set_unit(model.get_id,[dates,light])
+
+    def on_controlunit_color_change(self, model, data):
+        self.view.set_measurements(model.get_id(), data)

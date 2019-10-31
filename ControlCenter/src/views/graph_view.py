@@ -9,12 +9,11 @@ from src.controlunit import Measurement
 from src.models.controlunit import ControlUnitModel
 
 
-
 class GraphView(mvc.View):
     def __init__(self, parent):
         super().__init__(parent)
         self.graph = Graph(self)
-        self.graph_sizer = wx.GridSizer(1,1,1,1)
+        self.graph_sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(self.graph_sizer)
         self.graph_sizer.Add(self.graph, 0, wx.EXPAND, 0)
 
@@ -42,11 +41,10 @@ class GraphView(mvc.View):
                     xdata.append(x)
                 if first_drawn:
                     self.graph.plot(dates, temps, ylabel="Temperature in °C", side='left', linewidth=1, labelfontsize=5,
-                            legendfontsize=6, autoscale=True, framecolor=self.framecolor, use_dates=True,
-                            color=unit["color"])
+                                    legendfontsize=6, autoscale=True, framecolor=self.framecolor, use_dates=True,
+                                    color=unit["color"])
                 else:
                     self.graph.oplot(dates, temps, side='left', linewidth=1, color=unit["color"])
-
 
     def find_unit(self, id):
         for unit in self.units:
@@ -55,10 +53,10 @@ class GraphView(mvc.View):
 
     def set_unit(self, id, measurements):
         new_unit = {
-            "id":id,
-            "measurements":measurements,
-            "color":"Green",
-            "visible":True,
+            "id": id,
+            "measurements": measurements,
+            "color": "Green",
+            "visible": True,
         }
         for unit in self.units:
             if unit[id] == id:
@@ -74,45 +72,50 @@ class GraphView(mvc.View):
         unit = self.find_unit(id)
         unit["color"] = color
 
+
 class Graph(wxmplot.PlotPanel):
     def __init__(self, parent):
         super().__init__(parent, pos=(150, 150))
         self.Show()
 
+
 # For testing purposes, please ignore
 def update():
     graph.update()
 
-def SetTestData(graph_view:GraphView):
+
+def SetTestData(graph_view: GraphView):
     measurements = []
     temp = 20.000
     for i in range(100):
-        temp += random.uniform(-3,3)
-        measurements.append(Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)), temperature=temp, shutter_status=random.randint(0,1), light_sensitivity=0))
-    graph_view.set_unit(1,measurements)
+        temp += random.uniform(-3, 3)
+        measurements.append(
+            Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)),
+                        temperature=temp, shutter_status=random.randint(0, 1), light_intensity=0))
+    graph_view.set_unit(1, measurements)
+
 
 if __name__ == "__main__":
-
     app = wx.App(redirect=True)
-    frame = wx.Frame(None, title="Test", size=(1500,900))
-    frameSizer = wx.GridSizer(1,2,1,1)
-    graphPanelSizer = wx.GridSizer(2,1,1,1)
+    frame = wx.Frame(None, title="Test", size=(1500, 900))
+    frameSizer = wx.GridSizer(1, 2, 1, 1)
+    graphPanelSizer = wx.GridSizer(2, 1, 1, 1)
     frame.SetSizer(frameSizer)
     panel = wx.Panel(parent=frame)
     panel.SetSizer(graphPanelSizer)
     bottomPanel = wx.Panel(parent=frame)
-    bottomPanel.SetBackgroundColour(colour=(0,255,0))
-    panel.SetBackgroundColour(colour=(255,0,0))
+    bottomPanel.SetBackgroundColour(colour=(0, 255, 0))
+    panel.SetBackgroundColour(colour=(255, 0, 0))
     frameSizer.Add(panel, 0, wx.EXPAND, 0)
     graph = GraphView(frame)
-    graphPanelSizer.Add(graph, 0 ,wx.EXPAND,0)
-    graphPanelSizer.Add(bottomPanel, 0 , wx.EXPAND, 0)
+    graphPanelSizer.Add(graph, 0, wx.EXPAND, 0)
+    graphPanelSizer.Add(bottomPanel, 0, wx.EXPAND, 0)
     frame.Show()
     SetTestData(graph)
     graph.update_graph()
     app.MainLoop()
 
-#app = wx.App(redirect=True)
-#top = wx.Frame(None, title="Hello World", size=(300, 200))
-#top.Show()
-#app.MainLoop()
+# app = wx.App(redirect=True)
+# top = wx.Frame(None, title="Hello World", size=(300, 200))
+# top.Show()
+# app.MainLoop()
