@@ -32,11 +32,14 @@ class GraphViewController(mvc.Controller):
     def on_filter_shutter_down_change(self, model, prevstate, newstate):
         pass
 
-    # def on_controlunits_change(self, manager_model, prevstate, newstate):
-    #     for port in newstate.keys():
-    #         comm, unit_model = newstate[port]
-    #         unit_model.measurements.add_callback(self.on_controlunit_measurement_change)
-    #
-    # def on_controlunit_measurement_change(self, model, prevstate, newstate):
-    #     unit_id = model.get_id()
-    #     measurements = newstate
+    def on_controlunits_change(self, model, prevstate, newstate):
+        for port, unit in newstate:
+            comm, model = unit
+            unit.measurements.add_callback(self.on_controlunit_measurement_change)
+            unit.color.add_callback(self.on_controlunit_color_change)
+
+    def on_controlunit_measurement_change(self, model, prevstate, newstate):
+        self.view.set_measurements(model.get_id(), newstate)
+
+    def on_controlunit_color_change(self, model, prevstate, newstate):
+        self.view.set_measurements(model.get_id(), newstate)

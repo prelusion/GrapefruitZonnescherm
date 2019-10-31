@@ -15,7 +15,7 @@ from src.models.controlunit import ControlUnitModel
 logger = getLogger(__name__)
 BAUDRATE = 19200
 
-Measurement = namedtuple("SensorData", ["timestamp",
+Measurement = namedtuple("Measurement", ["timestamp",
                                         "temperature",
                                         "shutter_status",
                                         "light_sensitivity"])

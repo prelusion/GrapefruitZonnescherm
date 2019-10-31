@@ -22,6 +22,12 @@ class ControlUnitModel(mvc.Model):
     def get_name(self):
         return self.name.get()
 
+    def set_colour(self, colour):
+        self._colour.set(colour)
+
+    def get_colour(self):
+        return self._colour.get()
+
     def set_online(self, boolean):
         self.online.set(boolean)
 
