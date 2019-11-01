@@ -17,7 +17,8 @@ class TopView(wx.Panel):
         left_panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
         left_panel.SetSizer(left_panel_sizer)
 
-        label = widgets.CenteredLabel(left_panel, "RICK ZIJN MOEDER")
+        label = widgets.CenteredLabel(left_panel, "Devices")
+        label.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
         left_panel_sizer.Add(label, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         # Right panel
