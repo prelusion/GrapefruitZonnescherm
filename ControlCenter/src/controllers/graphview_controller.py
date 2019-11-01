@@ -1,7 +1,9 @@
 import wx
 
 from src import mvc
-from src.views.tab_data_view import GraphView
+from src.controlunit import Measurement
+from src.views.graph_view import GraphView
+from src.views.graphtabview import GraphTabView
 
 
 class GraphViewController(mvc.Controller):
@@ -11,7 +13,8 @@ class GraphViewController(mvc.Controller):
         self.filter_model = filter_model
         self.controlunit_manager = controlunit_manager
 
-        self.view = GraphView(view_parent)
+        # self.graphs_view = src.views.tab_data_view.GraphView(view_parent)
+        self.view = GraphTabView(view_parent)
 
         self.filter_model.filter_connected.add_callback(self.on_filter_connected_change)
         self.filter_model.filter_select_all.add_callback(self.on_filter_connected_change)
@@ -32,14 +35,27 @@ class GraphViewController(mvc.Controller):
     def on_filter_shutter_down_change(self, model, data):
         pass
 
-    def on_controlunits_change(self, model, prevstate, newstate):
-        for port, unit in newstate:
+    def on_controlunits_change(self, model, data):
+        for port, unit in data:
             comm, model = unit
             unit.measurements.add_callback(self.on_controlunit_measurement_change)
             unit.color.add_callback(self.on_controlunit_color_change)
 
-    def on_controlunit_measurement_change(self, model, prevstate, newstate):
-        self.view.set_measurements(model.get_id(), newstate)
+    def on_controlunit_measurement_change(self, model, data):
+        dates = []
+        temps = []
+        status = []
+        light = []
 
-    def on_controlunit_color_change(self, model, prevstate, newstate):
-        self.view.set_measurements(model.get_id(), newstate)
+        for measurement in data:
+            dates.append(measurement.timestamp)
+            temps.append(measurement.temperature)
+            status.append(measurement.shutter_status)
+            light.append(measurement.light_intensity)
+
+        self.temp_view.set_unit(model.get_id(),[dates,temps])
+        self.status_view.set_unit(model.get_id,[dates,status])
+        self.light_view.set_unit(model.get_id,[dates,light])
+
+    def on_controlunit_color_change(self, model, data):
+        self.view.set_measurements(model.get_id(), data)
