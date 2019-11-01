@@ -1,8 +1,31 @@
 import wx
-
+import random
 from src import mvc
 from src.views.controlunits_view import ControlUnitsView
 from src.views.controlunit_view import ControlUnitView
+
+
+tmp = []
+unit_colors = [
+    (255, 0, 0),
+    (255, 123, 0),
+    (87, 6, 253),
+    (1, 209, 126),
+    (255, 33, 55),
+    (21, 130, 10),
+    (8, 16, 230),
+]
+
+
+def randcolor():
+    global tmp, unit_colors
+    result = random.choice(unit_colors)
+    tmp.append(result)
+    unit_colors.remove(result)
+    if len(unit_colors) == 0:
+        unit_colors = tmp.copy()
+        tmp = []
+    return result
 
 
 class ControlUnitsController(mvc.Controller):
@@ -23,9 +46,6 @@ class ControlUnitsController(mvc.Controller):
         self.controlunits_manager.units.add_callback(self.on_units_changed)
 
     def on_units_changed(self, model, data):
-        print("prevstate_two", self.prevstate)
-        print("newstate", data)
-
         down_units = {k: self.prevstate[k] for k in set(self.prevstate) - set(data)}
         new_units = {k: data[k] for k in set(data) - set(self.prevstate)}
 
@@ -35,6 +55,16 @@ class ControlUnitsController(mvc.Controller):
 
         for port, unit in new_units.items():
             comm, model = unit
-            wx.CallAfter(lambda: self.view.render_unit(model.get_id(), ControlUnitView(self.view)))
+            wx.CallAfter(lambda: self.create_control_unit_view(model))
 
         self.prevstate = data.copy()
+
+    def create_control_unit_view(self, model):
+        view = ControlUnitView(self.view)
+        view.set_connection(model.get_online())
+        view.set_name(model.get_id())
+        view.set_mode(model.get_mode())
+        view.set_status(model.get_shutter_status())
+        view.set_device_color(randcolor())
+        view.set_temperature(model.get_current_temperature())
+        self.view.render_unit(model.get_id(), view)

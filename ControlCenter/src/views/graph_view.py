@@ -1,12 +1,11 @@
 import datetime
 import random
-import matplotlib
-from src import mvc
-import wxmplot
+
 import wx
-from src import controlunit
+import wxmplot
+
+from src import mvc
 from src.controlunit import Measurement
-from src.models.controlunit import ControlUnitModel
 
 
 class GraphView(mvc.View):

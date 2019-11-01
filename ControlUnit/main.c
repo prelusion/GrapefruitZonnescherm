@@ -22,8 +22,6 @@
 
 #include "command_processing.h"
 
-// Enum that indicates the unit status.
-enum unit_status{STARTING, OPERATING, INITIALIZING, ERROR} control_unit_status = STARTING;
 /**
  * \brief 
  * Update the temperature in the current_unit_statistics struct.
@@ -64,21 +62,24 @@ int main(void)
 	init_ports();
 	adc_init();
 	serial_init();
+	
+	// Set unit status to starting.
+	set_current_unit_status(STARTING);
+	
 	if (!has_unit_id())
 	{
-		// TODO don't operate but listen for initialization.
-		control_unit_status = INITIALIZING;
-		return 1;
+		set_current_unit_status(INITIALIZING);
 	}
 	
+	#ifndef DISABLE_SENSOR_CHECK
 	// Check if all sensors are connected.
 	if (!(distance_sensor_connected() && light_intensity_sensor_connected() && temperature_sensor_connected()))
 	{
 		// TODO show the error with blinking LEDs.
 		// TODO maybe save which sensor is not connected.
-		control_unit_status = ERROR;
-		return 1;
+		set_current_unit_status(SENSOR_ERROR);
 	}
+	#endif
 		
 	// Initialize the timer.
 	timer_init();
@@ -90,7 +91,8 @@ int main(void)
 	// TODO handle serial communication, maybe do this in the infinite loop.
 	
 	// Initializating and sensor check passed, serial communication is ready and scheduler is ready.
-	control_unit_status = OPERATING;
+	set_current_unit_status(OPERATING);
+	
     while (1) 
     {
 		timer_dispatch_tasks();
