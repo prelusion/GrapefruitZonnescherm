@@ -36,6 +36,8 @@ void execute_command(char name[20], char* parameters);
 
 
 char* cmd_ping(char* parameters);
+char* cmd_initialize(char* parameters);
+char* cmd_reset(char* parameters);
 char* cmd_get_id(char* parameters);
 char* cmd_set_id(char* parameters);
 char* cmd_get_window_height(char* parameters);

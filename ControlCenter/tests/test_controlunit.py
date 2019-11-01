@@ -8,6 +8,11 @@ from src import util
 
 class TestSuite(unittest.TestCase):
 
+    def test_generate_id(self):
+        my_id = controlunit.generate_id()
+        print(my_id)
+
+    @unittest.skip
     def test_comm_get_sensor_data(self):
         comm = controlunit.ControlUnitCommunication("/dev/ttyACM1")
         result = comm.get_sensor_data()

@@ -13,7 +13,7 @@
 #include "storage/manual.h"
 
 // Predefined command amount.
-#define COMMAND_AMOUNT 15
+#define COMMAND_AMOUNT 17
 
 Command* get_available_commands()
 {
@@ -22,47 +22,53 @@ Command* get_available_commands()
 	strcpy(available_commands[0].name, "PING");
 	available_commands[0].function = &cmd_ping;
 	
-	strcpy(available_commands[1].name, "GET_ID");
-	available_commands[1].function = &cmd_get_id;
+	strcpy(available_commands[1].name, "INITIALIZE");
+	available_commands[1].function = &cmd_initialize;
 	
-	strcpy(available_commands[2].name, "SET_ID");
-	available_commands[2].function = &cmd_set_id;
+	strcpy(available_commands[2].name, "RESET");
+	available_commands[2].function = &cmd_reset;
 	
-	strcpy(available_commands[3].name, "GET_WINDOW_HEIGHT");
-	available_commands[3].function = &cmd_get_window_height;
+	strcpy(available_commands[3].name, "GET_ID");
+	available_commands[3].function = &cmd_get_id;
 	
-	strcpy(available_commands[4].name, "SET_WINDOW_HEIGHT");
-	available_commands[4].function = &cmd_set_window_height;
+	strcpy(available_commands[4].name, "SET_ID");
+	available_commands[4].function = &cmd_set_id;
 	
-	strcpy(available_commands[5].name, "GET_TEMP_THRESHOLD");
-	available_commands[5].function = &cmd_get_temperature_threshold;
+	strcpy(available_commands[6].name, "GET_WINDOW_HEIGHT");
+	available_commands[6].function = &cmd_get_window_height;
 	
-	strcpy(available_commands[6].name, "SET_TEMP_THRESHOLD");
-	available_commands[6].function = &cmd_set_temperature_threshold;
+	strcpy(available_commands[7].name, "SET_WINDOW_HEIGHT");
+	available_commands[7].function = &cmd_set_window_height;
 	
-	strcpy(available_commands[7].name, "GET_LI_THRESHOLD");
-	available_commands[7].function = &cmd_get_light_intensity_threshold;
+	strcpy(available_commands[8].name, "GET_TEMP_THRESHOLD");
+	available_commands[8].function = &cmd_get_temperature_threshold;
 	
-	strcpy(available_commands[8].name, "SET_LI_THRESHOLD");
-	available_commands[8].function = &cmd_set_light_intensity_threshold;
+	strcpy(available_commands[9].name, "SET_TEMP_THRESHOLD");
+	available_commands[9].function = &cmd_set_temperature_threshold;
 	
-	strcpy(available_commands[9].name, "GET_MANUAL");
-	available_commands[9].function = &cmd_get_manual;
+	strcpy(available_commands[10].name, "GET_LI_THRESHOLD");
+	available_commands[10].function = &cmd_get_light_intensity_threshold;
 	
-	strcpy(available_commands[10].name, "SET_MANUAL");
-	available_commands[10].function = &cmd_set_manual;
+	strcpy(available_commands[11].name, "SET_LI_THRESHOLD");
+	available_commands[11].function = &cmd_set_light_intensity_threshold;
 	
-	strcpy(available_commands[11].name, "GET_SENSOR_DATA");
-	available_commands[11].function = &cmd_get_sensor_data;
+	strcpy(available_commands[12].name, "GET_MANUAL");
+	available_commands[12].function = &cmd_get_manual;
 	
-	strcpy(available_commands[12].name, "GET_SENSOR_HISTORY");
-	available_commands[12].function = &cmd_get_sensor_history;
+	strcpy(available_commands[13].name, "SET_MANUAL");
+	available_commands[13].function = &cmd_set_manual;
 	
-	strcpy(available_commands[13].name, "ROLL_UP");
-	available_commands[13].function = &cmd_roll_up;
+	strcpy(available_commands[14].name, "GET_SENSOR_DATA");
+	available_commands[14].function = &cmd_get_sensor_data;
 	
-	strcpy(available_commands[14].name, "ROLL_DOWN");
-	available_commands[14].function = &cmd_roll_down;
+	strcpy(available_commands[15].name, "GET_SENSOR_HISTORY");
+	available_commands[15].function = &cmd_get_sensor_history;
+	
+	strcpy(available_commands[16].name, "ROLL_UP");
+	available_commands[16].function = &cmd_roll_up;
+	
+	strcpy(available_commands[17].name, "ROLL_DOWN");
+	available_commands[17].function = &cmd_roll_down;
 	
 	return available_commands;
 }
@@ -110,6 +116,60 @@ char* cmd_ping(char* parameters)
 {
 	char* result = malloc(5);
 	strcpy(result, "PONG");
+	
+	return result;
+}
+
+char* cmd_initialize(char* parameters)
+{
+	char* result = malloc(6);
+	
+	if (get_current_unit_status() != INITIALIZING) {
+		// Don't initialize the unit when it already is.
+		strcpy(result, "ERROR");
+		return result;
+	}
+	
+	char* parameter;
+	
+	parameter = strtok(parameters, ",");
+	free(cmd_set_id(parameter));
+	
+	parameter = strtok(NULL, ",");
+	free(cmd_set_temperature_threshold(parameter));
+	
+	parameter = strtok(NULL, ",");
+	free(cmd_set_light_intensity_threshold(parameter));
+	
+	parameter = strtok(NULL, ",");
+	free(cmd_set_manual(parameter));
+	
+	// If the last parameter contains a value the init was successful.
+	if (parameter)
+	{
+		strcpy(result, "OK");
+	}
+	else
+	{
+		free(cmd_reset(NULL));
+		strcpy(result, "ERROR");
+	}
+	
+	return result;
+}
+
+char* cmd_reset(char* parameters)
+{
+	set_unit_id(0);
+	set_temperature_threshold(0);
+	set_light_intensity_threshold(0);
+	set_manual(0);
+	set_window_height(0);
+	clear_history();
+	set_current_unit_status(INITIALIZING);
+	
+	char* result = malloc(3);
+	strcpy(result, "OK");
 	
 	return result;
 }
@@ -238,6 +298,13 @@ char* cmd_set_manual(char* parameters)
 char* cmd_get_sensor_data(char* parameters)
 {
 	char* result = malloc(16);
+	
+	// When the unit is initializing sensor data cannot be read.
+	if (get_current_unit_status() == INITIALIZING) {
+		strcpy(result, "ERROR");
+		
+		return result;
+	}
 	
 	int8_t current_temperature = get_current_temperature();
 	uint8_t current_light_intensity = get_current_light_intensity();

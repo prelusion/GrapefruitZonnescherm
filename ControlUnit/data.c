@@ -3,7 +3,8 @@
 int8_t current_temperature;
 uint8_t current_light_intensity;
 uint16_t current_distance;
-uint8_t current_shutter_status;
+ShutterStatus current_shutter_status;
+UnitStatus current_unit_status;
 
 int8_t get_current_temperature(void)
 {
@@ -43,4 +44,14 @@ ShutterStatus get_current_shutter_status(void)
 void set_current_shutter_status(ShutterStatus shutter_status)
 {
 	current_shutter_status = shutter_status;
+}
+
+UnitStatus get_current_unit_status(void)
+{
+	return current_unit_status;
+}
+
+void set_current_unit_status(UnitStatus unit_status)
+{
+	current_unit_status = unit_status;
 }

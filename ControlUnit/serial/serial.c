@@ -1,3 +1,4 @@
+#include "serial.h"
 #include <avr/io.h>
 
 // output on USB = PD1 = board pin 1
