@@ -8,7 +8,7 @@ import os
 import enum
 
 
-class graph_tab_view(View):
+class GraphTabView(View):
     def __init__(self, parent):
         super().__init__(parent)
         self.sizer = wx.BoxSizer()
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     sizer = wx.GridSizer(1,1,1,1)
     frame.SetSizer(sizer)
     #frame.Show()
-    graph_tab = graph_tab_view(frame)
+    graph_tab = GraphTabView(frame)
     sizer.Add(graph_tab,1 , wx.EXPAND)
     #graph_tab.SetSize(300,300)
     frame.Show()

@@ -3,7 +3,7 @@ import wx
 from src import mvc
 from src.controlunit import Measurement
 from src.views.graph_view import GraphView
-from src.views.graph_tab_view import graph_tab_view
+from src.views.graphtabview import GraphTabView
 
 
 class GraphViewController(mvc.Controller):
@@ -14,7 +14,7 @@ class GraphViewController(mvc.Controller):
         self.controlunit_manager = controlunit_manager
 
         # self.graphs_view = src.views.tab_data_view.GraphView(view_parent)
-        self.view = graph_tab_view(view_parent)
+        self.view = GraphTabView(view_parent)
 
         self.filter_model.filter_connected.add_callback(self.on_filter_connected_change)
         self.filter_model.filter_select_all.add_callback(self.on_filter_connected_change)
