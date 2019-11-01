@@ -24,14 +24,12 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         self.main_sizer.Add(self.unit_sizer, 0, wx.CENTER, border=50)
         self.SetSizer(self.main_sizer)
 
-
         debug = False
         if debug:
-            for i in range(5):
+            for i in range(3):
                 view = ControlUnitView(self)
                 self.render_unit(1, view)
 
-        self.SetupScrolling()
 
     def render_unit(self, id_, view):
         print("render unit:", id_)
@@ -40,6 +38,7 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         self.unit_sizer.Layout()
         self.unit_count += 1
         self.main_sizer.Layout()
+        self.SetupScrolling()
 
     def remove_unit(self, id_):
         print("remove unit:", id_)
@@ -49,6 +48,7 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         self.unit_count -= 1
         self._update_indexes(idx)
         self.unit_sizer.Layout()
+        self.SetupScrolling()
 
     def _update_indexes(self, removed_index):
         for i, id_ in enumerate(self.units):
