@@ -1,7 +1,7 @@
 #ifndef _SENSORS_TEMPERATURE_H_
 #define _SENSORS_TEMPERATURE_H_
 
-#include <avr/io.h>
+#include <stdint.h>
 
 /**
  * \brief 

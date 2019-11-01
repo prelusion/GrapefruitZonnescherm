@@ -1,7 +1,7 @@
 #ifndef _STORAGE_TEMPERATURE_THRESHOLD_H_
 #define _STORAGE_TEMPERATURE_THRESHOLD_H_
 
-#include <avr/io.h>
+#include <stdint.h>
 
 /**
  * \brief 

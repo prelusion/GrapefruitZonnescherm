@@ -1,5 +1,4 @@
 #include "scheduler.h"
-#include <avr/io.h>
 #include <avr/interrupt.h>
 
 // The array of tasks

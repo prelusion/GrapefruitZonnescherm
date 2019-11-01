@@ -1,7 +1,7 @@
 #ifndef _STORAGE_HISTORY_H_
 #define _STORAGE_HISTORY_H_
 
-#include <avr/io.h>
+#include <stdint.h>
 
 typedef struct {
 	uint16_t	size; // The data size.

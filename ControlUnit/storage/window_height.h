@@ -1,7 +1,7 @@
 #ifndef _STORAGE_WINDOW_HEIGHT_H_
 #define _STORAGE_WINDOW_HEIGHT_H_
 
-#include <avr/io.h>
+#include <stdint.h>
 
 /**
  * \brief 
