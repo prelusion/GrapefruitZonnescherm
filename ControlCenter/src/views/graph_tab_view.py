@@ -5,6 +5,12 @@ from src.views import graph_view
 import random
 import wx
 import os
+import enum
+
+class GraphMode(enum.Enum):
+   Temp = 1
+   Status = 2
+   Light = 3
 
 class graph_tab_view(View):
     def __init__(self, parent):
