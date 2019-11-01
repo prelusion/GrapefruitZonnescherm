@@ -16,9 +16,9 @@ logger = getLogger(__name__)
 BAUDRATE = 19200
 
 Measurement = namedtuple("Measurement", ["timestamp",
-                                        "temperature",
-                                        "shutter_status",
-                                        "light_sensitivity"])
+                                         "temperature",
+                                         "shutter_status",
+                                         "light_intensity"])
 
 
 def get_online_control_units(connected_ports=set(), unused_ports=set()):
@@ -97,6 +97,12 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
         time.sleep(interval)
 
 
+def sensor_data_service(controlunit_manager, interval):
+    while True:
+        controlunit_manager.update_sensor_data()
+        time.sleep(interval)
+
+
 EXCEPT_RETRIES = 5
 
 
@@ -126,13 +132,16 @@ class ControlUnitCommunication:
 
     @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_sensor_data(self):
-        data = self._get_command("GET_LS_THRESHOLD")
+        data = self._get_command("GET_SENSOR_DATA")
+
+        if not data:
+            return
 
         temp, light, shutter = data.split(",")
 
         return Measurement(
             time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
-            int(light), int(shutter))
+            int(shutter), int(light))
 
     def get_window_height(self):
         return self._get_command("GET_WINDOW_HEIGHT")

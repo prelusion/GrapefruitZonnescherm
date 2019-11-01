@@ -34,16 +34,18 @@ class ControlUnitManager:
     def get_connected_ports(self):
         return list(self.units.get().keys())
 
-    def update_models(self):
-        for i, unit in enumerate(self.units.get().copy()):
-            comm, model = unit
+    def update_sensor_data(self):
+        units = self.units.get().copy()
+
+        for i, port in enumerate(units):
+            comm, model = units[port]
 
             data = comm.get_sensor_data()
 
-            if not data:
-                del self.units[i]
-
             model.add_measurement(data)
+            model.set_temperature(data.temperature)
+            model.set_shutter_status(data.shutter_status)
+            model.set_light_intensity(data.light_intensity)
 
     def close_connections(self):
         for unit in self.units.get().items():
