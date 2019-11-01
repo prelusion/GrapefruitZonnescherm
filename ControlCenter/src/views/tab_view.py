@@ -1,7 +1,7 @@
 import os
 
 import wx
-
+import const
 from src import mvc
 
 
@@ -27,10 +27,9 @@ class TabView(mvc.View):
         tab_sizer.Add(graph_tab, wx.ID_ANY, wx.EXPAND | wx.ALL)
         tab_sizer.Add(settings_tab, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
-        IconsFolder = os.path.dirname(os.path.join(str.replace(os.getcwd(), "src", ""), "Assets", "Icons"))
-        icon0 = wx.Bitmap((os.path.join(IconsFolder, "manual.ico"), wx.BITMAP_TYPE_ICO))
-        icon1 = wx.Bitmap((os.path.join(IconsFolder, "graphs.ico"), wx.BITMAP_TYPE_ICO))
-        icon2 = wx.Bitmap((os.path.join(IconsFolder, "settings.ico"), wx.BITMAP_TYPE_ICO))
+        icon0 = wx.Bitmap(os.path.join(const.ICONS_DIR, "manual.ico"), wx.BITMAP_TYPE_ICO)
+        icon1 = wx.Bitmap(os.path.join(const.ICONS_DIR, "graphs.ico"), wx.BITMAP_TYPE_ICO)
+        icon2 = wx.Bitmap(os.path.join(const.ICONS_DIR, "settings.ico"), wx.BITMAP_TYPE_ICO)
 
         manual_tab.SetBitmap(icon0)
         graph_tab.SetBitmap(icon1)

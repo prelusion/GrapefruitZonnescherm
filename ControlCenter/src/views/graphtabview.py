@@ -7,6 +7,7 @@ import wx
 from src.controlunit import Measurement
 from src.mvc import View
 from src.views import graph_view
+from src import const
 
 
 class GraphTabView(View):
@@ -26,13 +27,11 @@ class GraphTabView(View):
         self.tab_panel.AddPage(self.status_tab, "Shutter status")
         self.tab_panel.AddPage(self.light_tab, "Light intensity")
 
-        IconsFolder = os.path.dirname(os.path.join(str.replace(os.getcwd(), "src", ""), "Assets", "Icons"))
-        print(IconsFolder)
         icons = wx.ImageList(16, 16)
         self.tab_panel.AssignImageList(icons)
-        icon0 = icons.Add(wx.Bitmap((os.path.join(IconsFolder, "small_temp.ico"), wx.BITMAP_TYPE_ICO)))
-        icon1 = icons.Add(wx.Bitmap((os.path.join(IconsFolder, "small_status.ico"), wx.BITMAP_TYPE_ICO)))
-        icon2 = icons.Add(wx.Bitmap((os.path.join(IconsFolder, "small_light.ico"), wx.BITMAP_TYPE_ICO)))
+        icon0 = icons.Add(wx.Bitmap(os.path.join(const.ICONS_DIR, "small_temp.ico"), wx.BITMAP_TYPE_ICO))
+        icon1 = icons.Add(wx.Bitmap(os.path.join(const.ICONS_DIR, "small_status.ico"), wx.BITMAP_TYPE_ICO))
+        icon2 = icons.Add(wx.Bitmap(os.path.join(const.ICONS_DIR, "small_light.ico"), wx.BITMAP_TYPE_ICO))
         self.tab_panel.SetPageImage(0, icon0)
         self.tab_panel.SetPageImage(1, icon1)
         self.tab_panel.SetPageImage(2, icon2)
