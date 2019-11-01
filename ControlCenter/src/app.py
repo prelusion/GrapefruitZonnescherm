@@ -11,7 +11,6 @@ from src.controllers.filterview_controller import FilterViewController
 from src.controllers.graphview_controller import GraphViewController
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.filter import FilterModel
-from src.views.tab_view import TabView
 from src.views.top_view import TopView
 
 
@@ -90,9 +89,7 @@ class MainView(wx.Frame):
         center_panel_sizer.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         # Right panel components
-        tab_view = TabView(right_panel)
         graphview_controller = GraphViewController(right_panel, self.app.filter_model, self.app.controlunit_manager)
-        right_panel_sizer_vbox.Add(tab_view, 1, wx.EXPAND | wx.ALL)
         right_panel_sizer_vbox.Add(graphview_controller.view, 10, wx.EXPAND | wx.ALL)
         center_panel_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
