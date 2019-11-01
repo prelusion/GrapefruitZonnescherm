@@ -1,7 +1,8 @@
 import os
 
-from src import mvc
 import wx
+
+from src import mvc
 
 
 class TabView(mvc.View):
@@ -23,13 +24,13 @@ class TabView(mvc.View):
         settings_tab.SetBackgroundColour((255, 255, 255))
 
         tab_sizer.Add(manual_tab, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        tab_sizer.Add(graph_tab,  wx.ID_ANY, wx.EXPAND | wx.ALL)
-        tab_sizer.Add(settings_tab,  wx.ID_ANY, wx.EXPAND | wx.ALL)\
+        tab_sizer.Add(graph_tab, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        tab_sizer.Add(settings_tab, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
-        IconsFolder = os.path.dirname(str.replace(os.getcwd(),"\\src", "") + "\\Assets\\Icons\\")
-        icon0 = wx.Bitmap((IconsFolder + "\\manual.ico"), wx.BITMAP_TYPE_ICO)
-        icon1 = wx.Bitmap((IconsFolder + "\\graphs.ico"), wx.BITMAP_TYPE_ICO)
-        icon2 = wx.Bitmap((IconsFolder + "\\settings.ico"), wx.BITMAP_TYPE_ICO)
+        IconsFolder = os.path.dirname(os.path.join(str.replace(os.getcwd(), "src", ""), "Assets", "Icons"))
+        icon0 = wx.Bitmap((os.path.join(IconsFolder, "manual.ico"), wx.BITMAP_TYPE_ICO))
+        icon1 = wx.Bitmap((os.path.join(IconsFolder, "graphs.ico"), wx.BITMAP_TYPE_ICO))
+        icon2 = wx.Bitmap((os.path.join(IconsFolder, "settings.ico"), wx.BITMAP_TYPE_ICO))
 
         manual_tab.SetBitmap(icon0)
         graph_tab.SetBitmap(icon1)
@@ -43,4 +44,3 @@ class TabView(mvc.View):
 
     def open_settings_tab(self):
         pass
-
