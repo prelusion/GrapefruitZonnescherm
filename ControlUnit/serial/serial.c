@@ -1,13 +1,14 @@
 #include "serial.h"
 #include <avr/io.h>
+#include <stdio.h>
 
 // output on USB = PD1 = board pin 1
 // datasheet p.190; F_OSC = 16 MHz & baud rate = 19.200
 #define UBBRVAL 51
 
-static int ser_stdio_putchar(char c, FILE *stream)
+static uint8_t ser_stdio_putchar(char c, FILE *stream)
 {
-	if (c=='\n')
+	if (c == '\n')
 	{
 		serial_transmit('\r');
 	}
@@ -50,7 +51,7 @@ uint8_t serial_receive()
     return UDR0;
 }
 
-void serial_readln(char* buf, int maxlength)
+void serial_readln(uint8_t* buffer, uint16_t maxlength)
 {
 	int i=0;
 	
@@ -64,9 +65,9 @@ void serial_readln(char* buf, int maxlength)
 		}
 		if (i < maxlength - 1)
 		{
-			buf[i++] = c;
+			buffer[i++] = c;
 		}
 	}
 	
-	buf[i]='\0';
+	buffer[i]='\0';
 }

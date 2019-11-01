@@ -2,7 +2,6 @@
 #define _STORAGE_MANUAL_H_
 
 #include <stdint.h>
-#include <avr/io.h>
 
 /**
  * \brief 
