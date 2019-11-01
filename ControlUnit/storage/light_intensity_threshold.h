@@ -1,7 +1,7 @@
 #ifndef _STORAGE_LIGHT_INTENSITY_H_
 #define _STORAGE_LIGHT_INTENSITY_H_
 
-#include <avr/io.h>
+#include <stdint.h>
 
 /**
  * \brief 

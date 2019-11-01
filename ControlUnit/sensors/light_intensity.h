@@ -1,7 +1,7 @@
 #ifndef _SENSORS_LIGHT_SENSITIVITY_H_
 #define _SENSORS_LIGHT_SENSITIVITY_H_
 
-#include <avr/io.h>
+#include <stdint.h>
 
 /**
  * \brief 

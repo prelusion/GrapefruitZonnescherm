@@ -1,4 +1,4 @@
-#include <avr/io.h>
+#include "distance.h"
 
 uint8_t get_distance(void)
 {

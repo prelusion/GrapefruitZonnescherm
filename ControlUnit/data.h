@@ -1,7 +1,7 @@
 #ifndef DATA_H_
 #define DATA_H_
 
-#include <avr/io.h>
+#include <stdint.h>
 
 typedef enum {
 	OPEN = 0,

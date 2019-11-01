@@ -1,6 +1,8 @@
 #ifndef _COMMAND_PROCESSING_H_
 #define _COMMAND_PROCESSING_H_
 
+#include <stdint.h>
+
 typedef struct {
 	char name[20];				// The command name. Max 20 characters.
 	char*(*function)(char*);	// Pointer to function that is associated with the command name.

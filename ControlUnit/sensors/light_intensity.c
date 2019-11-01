@@ -1,3 +1,4 @@
+#include "light_intensity.h"
 #include <avr/io.h>
 
 const uint16_t MINIMUM_LIGHT_INTENSITY = 0;

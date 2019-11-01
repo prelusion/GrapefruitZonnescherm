@@ -1,5 +1,4 @@
 #include "data.h"
-#include <avr/io.h>
 
 int8_t current_temperature;
 uint8_t current_light_intensity;

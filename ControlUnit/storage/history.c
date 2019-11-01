@@ -1,6 +1,5 @@
 #include "history.h"
 #include <avr/eeprom.h>
-#include <stdlib.h>
 
 // The history start index will be stored in EEPROM at address 0x0006 and 0x0007.
 #define HISTORY_START_INDEX_ADDRESS 0x0009

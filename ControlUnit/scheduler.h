@@ -1,7 +1,7 @@
 #ifndef _SCHEDULER_H_
 #define _SCHEDULER_H_
 
-#include <avr/io.h>
+#include <stdint.h>
 
 // Scheduler data structure for storing task data
 typedef struct
@@ -19,7 +19,7 @@ typedef struct
 void timer_init(void);
 void timer_start(void);
 void timer_dispatch_tasks(void);
-unsigned char timer_add_task(void (*)(void), const uint16_t, const uint16_t);
+uint8_t timer_add_task(void (*)(void), const uint16_t, const uint16_t);
 void timer_delete_task(const uint8_t);
 
 #define timer_max_tasks (5)
