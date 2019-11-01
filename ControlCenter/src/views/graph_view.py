@@ -94,9 +94,11 @@ class GraphView(mvc.View):
 
 class Graph(wxmplot.PlotPanel):
     def __init__(self, parent):
-        super().__init__(parent, pos=(150, 150))
+        super().__init__(parent, pos=(150, 150),  messenger=output, show_config_popup=False )
         self.Show()
 
+def output(text, panel):
+    return
 
 # For testing purposes, please ignore
 def update():
