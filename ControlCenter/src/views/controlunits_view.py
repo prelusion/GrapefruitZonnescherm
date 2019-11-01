@@ -11,25 +11,19 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         self.units = {}
         self.unit_count = 1  # begins at 1 because the spacer is at the first index
 
-        # self.SetBackgroundColour((255, 255, 255))
         self.SetBackgroundColour((173, 166, 166))
 
-        self.main_sizer = wx.BoxSizer(wx.HORIZONTAL)
-
-        # self.panel = wx.Panel(self)
-        # self.panel.SetBackgroundColour((173, 166, 166))
-        # self.panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        # self.main_sizer.Add(self.panel, wx.ID_ANY, wx.EXPAND | wx.ALL, 10)
+        self.main_sizer = wx.BoxSizer(wx.VERTICAL)
 
         self.unit_sizer = wx.BoxSizer(wx.VERTICAL)
         self.unit_sizer.AddSpacer(20)
 
-        self.main_sizer.Add(self.unit_sizer, 0, wx.EXPAND | wx.ALL, 20)
+        self.main_sizer.Add(self.unit_sizer, 0, wx.CENTER, border=50)
         self.SetSizer(self.main_sizer)
 
-        debug = False
+        debug = True
         if debug:
-            for i in range(3):
+            for i in range(4):
                 view = ControlUnitView(self)
                 self.render_unit(1, view)
 

@@ -31,3 +31,5 @@ class TopView(wx.Panel):
 
         main_sizer.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         main_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+
+        self.Layout()

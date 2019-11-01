@@ -50,8 +50,9 @@ class App(wx.App):
 
 class MainView(wx.Frame):
     def __init__(self, app, title):
-        super().__init__(None, title=title, size=(1600, 900))
+        super().__init__(None, title=title, size=(1500, 800))
 
+        self.SetMinSize((1450, 750))
         self.app = app
         self.SetIcon(wx.Icon(os.path.join(const.ROOT_DIR, "Assets", "Icons", "logo.ico")))
         self.Center()
