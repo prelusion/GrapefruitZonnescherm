@@ -4,27 +4,35 @@ from src.mvc import View
 from src.views import graph_view
 import random
 import wx
+import os
 
 class graph_tab_view(View):
     def __init__(self, parent):
         super().__init__(parent)
-        #self.SetBackgroundColour(colour=(255,0,0))
         self.sizer = wx.BoxSizer()
         self.SetSizer(self.sizer)
 
         self.tab_panel = wx.Notebook(self)
+        self.tab_panel.SetWindowStyle(wx.NB_TOP)
 
         self.temps_tab = graph_tab(self.tab_panel, "Temperatures", "Temperature in °C")
         self.status_tab = graph_tab(self.tab_panel, "Shutter status", "Shutter status: Up or Down")
         self.light_tab = graph_tab(self.tab_panel, "Light intensity", "Light intensity in //TODO")
 
-        self.tab_panel.AddPage(self.temps_tab, "Temps")
-        self.tab_panel.AddPage(self.status_tab, "Status")
-        self.tab_panel.AddPage(self.light_tab, "Light")
+        self.tab_panel.AddPage(self.temps_tab, "Temperatures")
+        self.tab_panel.AddPage(self.status_tab, "Shutter status")
+        self.tab_panel.AddPage(self.light_tab, "Light intensity")
 
-        #self.tab_panel.AddPage(self.status_tab, "Status")
-        #self.tab_panel.AddPage(self.light_tab, "Light")
+        IconsFolder = os.path.dirname(str.replace(os.getcwd(),"\\src", "") + "\\Assets\\Icons\\")
 
+        icons = wx.ImageList(16,16)
+        self.tab_panel.AssignImageList(icons)
+        icon0 = icons.Add(wx.Bitmap((IconsFolder + "\\small_temp.ico"), wx.BITMAP_TYPE_ICO))
+        icon1 = icons.Add(wx.Bitmap((IconsFolder + "\\small_status.ico"), wx.BITMAP_TYPE_ICO))
+        icon2 = icons.Add(wx.Bitmap((IconsFolder + "\\small_light.ico"), wx.BITMAP_TYPE_ICO))
+        self.tab_panel.SetPageImage(0,icon0)
+        self.tab_panel.SetPageImage(1,icon1)
+        self.tab_panel.SetPageImage(2,icon2)
 
         self.sizer.Add(self.tab_panel, 1, wx.EXPAND)
 
