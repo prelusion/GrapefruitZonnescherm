@@ -13,7 +13,7 @@ class TopView(wx.Panel):
         self.SetSizer(main_sizer)
 
         # Left panel
-        left_panel = wx.Panel(self, style=wx.BORDER_SUNKEN)
+        left_panel = wx.Panel(self)
         left_panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
         left_panel.SetSizer(left_panel_sizer)
 
@@ -22,7 +22,7 @@ class TopView(wx.Panel):
         left_panel_sizer.Add(label, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         # Right panel
-        right_panel = wx.Panel(self, style=wx.BORDER_SUNKEN)
+        right_panel = wx.Panel(self)
         right_panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
         right_panel.SetSizer(right_panel_sizer)
 
