@@ -1,17 +1,13 @@
 import wx
 
 from src import mvc
-
-
-# label = wx.StaticText(left_panel, wx.ID_ANY, label="test", style=wx.ALIGN_CENTER)
-# left_panel_sizer.Add(label, wx.ID_ANY, wx.EXPAND | wx.ALL)
+from src import widgets
 
 
 class TopView(wx.Panel):
 
     def __init__(self, parent):
         super().__init__(parent)
-        # self.SetBackgroundColour((255, 0, 0))
 
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.SetSizer(main_sizer)
@@ -20,13 +16,14 @@ class TopView(wx.Panel):
         left_panel = wx.Panel(self, style=wx.BORDER_SUNKEN)
         left_panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
         left_panel.SetSizer(left_panel_sizer)
-        # left_panel.SetBackgroundColour((0, 255, 0))
+
+        label = widgets.CenteredLabel(left_panel, "RICK ZIJN MOEDER")
+        left_panel_sizer.Add(label, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         # Right panel
         right_panel = wx.Panel(self, style=wx.BORDER_SUNKEN)
         right_panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
         right_panel.SetSizer(right_panel_sizer)
-        # right_panel.SetBackgroundColour((0, 0, 255))
 
         main_sizer.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         main_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
