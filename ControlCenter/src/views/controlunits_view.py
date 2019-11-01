@@ -11,7 +11,7 @@ class ControlUnitsView(mvc.View):
         super().__init__(parent)
         self.parent = parent
         self.units = {}
-        self.unit_count = 0
+        self.unit_count = 1  # begins at 1 because the spacer is at the first index
 
         self.SetBackgroundColour((173, 166, 166))
 
@@ -30,6 +30,7 @@ class ControlUnitsView(mvc.View):
                 self.render_unit(1, view)
 
     def render_unit(self, id_, view):
+        print("render unit:", id_)
         self.unit_sizer.Add(view, 0, wx.EXPAND | wx.ALL, 10)
         self.units[id_] = self.unit_count
         self.unit_sizer.Layout()
@@ -37,6 +38,7 @@ class ControlUnitsView(mvc.View):
         self.main_sizer.Layout()
 
     def remove_unit(self, id_):
+        print("remove unit:", id_)
         idx = self.units[id_]
         self.unit_sizer.Hide(self.units[id_])
         self.unit_sizer.Remove(self.units[id_])
