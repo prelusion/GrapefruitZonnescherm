@@ -1,27 +1,40 @@
 import datetime
 import random
-
+import enum
 import wx
 import wxmplot
 
 from src import mvc
 from src.controlunit import Measurement
 
+class GraphMode(enum.Enum):
+   Temp = 1
+   Status = 2
+   Light = 3
 
 class GraphView(mvc.View):
-    def __init__(self, parent, title, unit):
+    def __init__(self, parent, graphmode:GraphMode):
         super().__init__(parent)
-        self.measure_unit = unit
         self.graph = Graph(self)
         self.graph_sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(self.graph_sizer)
         self.graph_sizer.Add(self.graph, 0, wx.EXPAND, 0)
-
         self.framecolor = "LightGrey"
         self.units = []
-        self.x_max = 0
-        self.y_min = -20
-        self.y_max = 40
+
+        if graphmode == GraphMode.Temp:
+            self.y_min = -30
+            self.y_max = 40
+            self.measure_unit = "Temperature in °C"
+
+        if graphmode == GraphMode.Status:
+            self.y_min = 0
+            self.y_max = 1
+            self.measure_unit = "Shutter status: Up or Down"
+
+        if graphmode == GraphMode.Light:
+            self.measure_unit = "Light intensity in #TODO"
+            # TODO Set light settings
 
     def update_graph(self):
         dates = []

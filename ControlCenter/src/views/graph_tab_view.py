@@ -7,10 +7,6 @@ import wx
 import os
 import enum
 
-class GraphMode(enum.Enum):
-   Temp = 1
-   Status = 2
-   Light = 3
 
 class graph_tab_view(View):
     def __init__(self, parent):
@@ -21,9 +17,9 @@ class graph_tab_view(View):
         self.tab_panel = wx.Notebook(self)
         self.tab_panel.SetWindowStyle(wx.NB_TOP)
 
-        self.temps_tab = graph_tab(self.tab_panel, "Temperatures", "Temperature in °C")
-        self.status_tab = graph_tab(self.tab_panel, "Shutter status", "Shutter status: Up or Down")
-        self.light_tab = graph_tab(self.tab_panel, "Light intensity", "Light intensity in //TODO")
+        self.temps_tab = graph_tab(self.tab_panel, graph_view.GraphMode.Temp)
+        self.status_tab = graph_tab(self.tab_panel, graph_view.GraphMode.Status)
+        self.light_tab = graph_tab(self.tab_panel, graph_view.GraphMode.Light)
 
         self.tab_panel.AddPage(self.temps_tab, "Temperatures")
         self.tab_panel.AddPage(self.status_tab, "Shutter status")
@@ -44,9 +40,9 @@ class graph_tab_view(View):
 
 
 class graph_tab(View):
-    def __init__(self, parent, title, unit):
+    def __init__(self, parent, graphmode:graph_view.GraphMode):
         super().__init__(parent)
-        graph = graph_view.GraphView(self, title, unit)
+        graph = graph_view.GraphView(self, graphmode)
         sizer = wx.GridSizer(1,1,1,1)
         self.SetSizer(sizer)
         sizer.Add(graph, 0, wx.EXPAND, 0)
