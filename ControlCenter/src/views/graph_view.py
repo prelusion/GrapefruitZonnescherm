@@ -23,18 +23,24 @@ class GraphView(mvc.View):
         self.units = []
 
         if graphmode == GraphMode.Temp:
-            self.y_min = -30
+            self.graph.set_xlabel("test")
+            self.y_min = -40
             self.y_max = 40
             self.measure_unit = "Temperature in °C"
+            self.autoscale = True
 
         if graphmode == GraphMode.Status:
             self.y_min = 0
             self.y_max = 1
             self.measure_unit = "Shutter status: Up or Down"
+            self.autoscale = False
 
         if graphmode == GraphMode.Light:
+            self.y_min = 0
+            self.y_max = 5000
             self.measure_unit = "Light intensity in #TODO"
             # TODO Set light settings
+            self.autoscale = True
 
     def update_graph(self):
         dates = []
@@ -53,8 +59,8 @@ class GraphView(mvc.View):
                     status.append(measurement.shutter_status)
                     xdata.append(x)
                 if first_drawn:
-                    self.graph.plot(dates, temps, ylabel=self.measure_unit , side='left', linewidth=1, labelfontsize=5,
-                                    legendfontsize=6, autoscale=True, framecolor=self.framecolor, use_dates=True,
+                    self.graph.plot(dates, temps, ymin= self.y_min, ymax= self.y_max,ylabel=self.measure_unit , side='left', linewidth=1, labelfontsize=6,
+                                    legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor, use_dates=True,
                                     color=unit["color"])
                 else:
                     self.graph.oplot(dates, temps, side='left', linewidth=1, color=unit["color"])
