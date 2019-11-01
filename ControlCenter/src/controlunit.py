@@ -18,7 +18,7 @@ BAUDRATE = 19200
 Measurement = namedtuple("Measurement", ["timestamp",
                                         "temperature",
                                         "shutter_status",
-                                        "light_sensitivity"])
+                                        "light_intensity"])
 
 
 def get_online_control_units(connected_ports=set(), unused_ports=set()):
