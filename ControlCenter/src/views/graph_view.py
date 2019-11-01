@@ -1,26 +1,46 @@
 import datetime
 import random
-
+import enum
 import wx
 import wxmplot
 
 from src import mvc
 from src.controlunit import Measurement
 
+class GraphMode(enum.Enum):
+   Temp = 1
+   Status = 2
+   Light = 3
 
 class GraphView(mvc.View):
-    def __init__(self, parent):
+    def __init__(self, parent, graphmode:GraphMode):
         super().__init__(parent)
         self.graph = Graph(self)
         self.graph_sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(self.graph_sizer)
         self.graph_sizer.Add(self.graph, 0, wx.EXPAND, 0)
-
         self.framecolor = "LightGrey"
         self.units = []
-        self.x_max = 0
-        self.y_min = -20
-        self.y_max = 40
+
+        if graphmode == GraphMode.Temp:
+            self.graph.set_xlabel("test")
+            self.y_min = -40
+            self.y_max = 40
+            self.measure_unit = "Temperature in °C"
+            self.autoscale = True
+
+        if graphmode == GraphMode.Status:
+            self.y_min = 0
+            self.y_max = 1
+            self.measure_unit = "Shutter status: Up or Down"
+            self.autoscale = False
+
+        if graphmode == GraphMode.Light:
+            self.y_min = 0
+            self.y_max = 5000
+            self.measure_unit = "Light intensity in #TODO"
+            # TODO Set light settings
+            self.autoscale = True
 
     def update_graph(self):
         dates = []
@@ -39,8 +59,8 @@ class GraphView(mvc.View):
                     status.append(measurement.shutter_status)
                     xdata.append(x)
                 if first_drawn:
-                    self.graph.plot(dates, temps, ylabel="Temperature in °C", side='left', linewidth=1, labelfontsize=5,
-                                    legendfontsize=6, autoscale=True, framecolor=self.framecolor, use_dates=True,
+                    self.graph.plot(dates, temps, ymin= self.y_min, ymax= self.y_max,ylabel=self.measure_unit , side='left', linewidth=1, labelfontsize=6,
+                                    legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor, use_dates=True,
                                     color=unit["color"])
                 else:
                     self.graph.oplot(dates, temps, side='left', linewidth=1, color=unit["color"])
@@ -90,7 +110,7 @@ def SetTestData(graph_view: GraphView):
         temp += random.uniform(-3, 3)
         measurements.append(
             Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)),
-                        temperature=temp, shutter_status=random.randint(0, 1), light_sensitivity=0))
+                        temperature=temp, shutter_status=random.randint(0, 1), light_intensity=0))
     graph_view.set_unit(1, measurements)
 
 

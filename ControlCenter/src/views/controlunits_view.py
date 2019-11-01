@@ -4,9 +4,10 @@ import wx
 from src.views.controlunit_view import ControlUnitView
 
 from src import mvc
+import wx.lib.scrolledpanel as scrolled
 
 
-class ControlUnitsView(mvc.View):
+class ControlUnitsView(scrolled.ScrolledPanel):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
@@ -25,9 +26,10 @@ class ControlUnitsView(mvc.View):
 
         debug = False
         if debug:
-            for i in range(2):
+            for i in range(3):
                 view = ControlUnitView(self)
                 self.render_unit(1, view)
+
 
     def render_unit(self, id_, view):
         self.unit_sizer.Add(view, 0, wx.EXPAND | wx.ALL, 10)
@@ -35,6 +37,7 @@ class ControlUnitsView(mvc.View):
         self.unit_sizer.Layout()
         self.unit_count += 1
         self.main_sizer.Layout()
+        self.SetupScrolling()
 
     def remove_unit(self, id_):
         idx = self.units[id_]
@@ -43,6 +46,7 @@ class ControlUnitsView(mvc.View):
         self.unit_count -= 1
         self._update_indexes(idx)
         self.unit_sizer.Layout()
+        self.SetupScrolling()
 
     def _update_indexes(self, removed_index):
         for i, id_ in enumerate(self.units):
