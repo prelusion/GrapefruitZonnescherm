@@ -64,8 +64,6 @@ class MainView(wx.Frame):
 
         # Top bar
         top_panel = TopView(main_panel)
-        top_panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        top_panel.SetSizer(top_panel_sizer)
         main_sizer.Add(top_panel, 1, wx.EXPAND | wx.ALL)
 
         # Center panel
