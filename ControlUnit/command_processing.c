@@ -82,7 +82,9 @@ void process_input(char* input)
 	{
 		// When there is no = character there are no parameters, so we can use the entire input as command name.
 		execute_command(input, "");
-	} else {
+	}
+	else
+	{
 		// Replace the = character with a null character so the input will be the command name.
 		*startOfParameters = '\0';
 		
@@ -155,6 +157,7 @@ char* cmd_initialize(char* parameters)
 	// If the last parameter contains a value the init was successful.
 	if (parameter)
 	{
+		set_current_unit_status(OPERATING);
 		strcpy(result, "OK");
 	}
 	else
@@ -308,7 +311,8 @@ char* cmd_get_sensor_data(char* parameters)
 	char* result = malloc(16);
 	
 	// When the unit is initializing sensor data cannot be read.
-	if (get_current_unit_status() == INITIALIZING) {
+	if (get_current_unit_status() == INITIALIZING)
+	{
 		strcpy(result, "ERROR");
 		
 		return result;
@@ -335,7 +339,8 @@ char* cmd_get_sensor_history(char* parameters)
 	uint8_t last_chunk_size = chunk_size;
 	
 	// Round up.
-	if (history.size % chunk_count) {
+	if (history.size % chunk_count)
+	{
 		last_chunk_size = history.size % chunk_count;
 		chunk_count++;
 	}
@@ -355,9 +360,12 @@ char* cmd_get_sensor_history(char* parameters)
 			uint8_t light_intensity = (uint8_t)(((measurement & 0b0000000111111100) >> 2) * 2); // Light intensity is saved as divided by 2, so we have to multiply it again.
 			uint8_t shutter_status = (uint8_t)(measurement & 0b0000000000000011);
 			
-			if (i == 0) {
+			if (i == 0)
+			{
 				sprintf(argument, "%d,%u,%u", temperature, light_intensity, shutter_status);
-			} else {
+			}
+			else
+			{
 				sprintf(argument, "%s;%d,%u,%u", argument, temperature, light_intensity, shutter_status);
 			}
 		}
