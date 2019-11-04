@@ -12,7 +12,7 @@ uint8_t get_light_intensity(void)
 	//Converts the light intensity to a %amount
 	uint32_t light_intensity = (((light_level - MINIMUM_LIGHT_INTENSITY) * 100) / (MAXIMUM_LIGHT_INTENSITY - MINIMUM_LIGHT_INTENSITY));
 	//If the light_level is above the max amount it can handle set the %amount to 100%
-	if(light_level > MAXIMUM_LIGHT_INTENSITY)
+	if (light_level > MAXIMUM_LIGHT_INTENSITY)
 	{
 		light_intensity = 100;
 	}
