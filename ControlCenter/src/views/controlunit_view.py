@@ -37,17 +37,23 @@ class ControlUnitView(wx.Panel):
         for name in self.box.keys():
             panel = wx.Panel(self.main_panel, style=wx.SUNKEN_BORDER)
             panel.SetBackgroundColour((255, 255, 255))
+            datalabel = "color"
 
-            infolabel = wx.StaticText(panel, wx.ID_ANY, label="Info label", style=wx.ALIGN_CENTER)
-            infolabel.SetLabelText(name)
-            datalabel = wx.StaticText(panel, wx.ID_ANY, label="Data label", style=wx.ALIGN_CENTER)
+            if name is not "color":
+                infolabel = wx.StaticText(panel, wx.ID_ANY, label="Info label", style=wx.ALIGN_CENTER)
+                infolabel.SetLabelText(name)
+                font = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+                infolabel.SetFont(font)
+                datalabel = wx.StaticText(panel, wx.ID_ANY, label="Data label", style=wx.ALIGN_CENTER)
+                font = wx.Font(10, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
+                datalabel.SetFont(font)
 
-            vertical_sizer = wx.BoxSizer(wx.VERTICAL)
+                vertical_sizer = wx.BoxSizer(wx.VERTICAL)
 
-            vertical_sizer.Add(infolabel, 0, wx.CENTER)
-            vertical_sizer.Add(datalabel,  0, wx.CENTER)
+                vertical_sizer.Add(infolabel, 0, wx.CENTER)
+                vertical_sizer.Add(datalabel,  0, wx.CENTER)
 
-            panel.SetSizer(vertical_sizer)
+                panel.SetSizer(vertical_sizer)
 
             self.grid.Add(panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
             self.box[name] = UnitValueBox(panel, datalabel)
