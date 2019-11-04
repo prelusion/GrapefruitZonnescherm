@@ -17,15 +17,14 @@ def translate_shutter_status(value):
 
 
 class ControlUnitView(wx.Panel):
+    COLOR_ACTIVE = (0, 0, 0)
+    COLOR_INACTIVE = (200, 200, 200)
 
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__(parent, size=(500, 120))
         self.parent = parent
-        self.main_panel = wx.Panel(self, style=wx.BORDER_RAISED, size=(500, 120))
-        self.grid = wx.GridSizer(2, 3, 0, 0)  # Add gridsizer to main panel, 2 rows, 3 columns, 0 borders
-        self.main_panel.SetSizer(self.grid)
 
-        self.box = {
+        self.boxes = {
             "name": None,
             "temperature": None,
             "status": None,
@@ -34,8 +33,20 @@ class ControlUnitView(wx.Panel):
             "mode": None,
         }
 
-        for name in self.box.keys():
-            panel = wx.Panel(self.main_panel, style=wx.SUNKEN_BORDER)
+        self._selected = False
+
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(self.sizer)
+        self.SetBackgroundColour(self.COLOR_INACTIVE)
+
+        self.box_panel = wx.Panel(self, style=wx.SUNKEN_BORDER)
+        self.grid = wx.GridSizer(2, 3, 0, 0)  # Add gridsizer to main panel, 2 rows, 3 columns, 0 borders
+        self.box_panel.SetSizer(self.grid)
+
+        self.sizer.Add(self.box_panel, wx.ID_ANY, wx.EXPAND | wx.ALL, 2)
+
+        for name in self.boxes.keys():
+            panel = wx.Panel(self.box_panel, style=wx.SUNKEN_BORDER)
             panel.SetBackgroundColour((255, 255, 255))
 
             label = wx.StaticText(panel, wx.ID_ANY, label="", style=wx.ALIGN_CENTER)
@@ -50,42 +61,52 @@ class ControlUnitView(wx.Panel):
 
             panel.SetSizer(v_sizer)
 
-            self.grid.Add(panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-            self.box[name] = UnitValueBox(panel, label)
+            panel.Bind(wx.EVT_LEFT_DOWN, self.on_click)
+            label.Bind(wx.EVT_LEFT_DOWN, self.on_click)
 
-        self.grid.Layout()
-        self.main_panel.Layout()
+            self.grid.Add(panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+            self.boxes[name] = UnitValueBox(panel, label)
+
+        self.Bind(wx.EVT_LEFT_DOWN, self.on_click)
 
     def set_temperature(self, value):
-        box = self.box["temperature"]
+        box = self.boxes["temperature"]
         box.label.SetLabelText(str(value) + " °C")
         self._refresh(box.panel)
 
     def set_name(self, value):
-        box = self.box["name"]
+        box = self.boxes["name"]
         box.label.SetLabelText(str(value))
         box.label.GetFont().SetWeight(wx.BOLD)
         self._refresh(box.panel)
 
     def set_shutter_status(self, value):
-        box = self.box["status"]
+        box = self.boxes["status"]
         box.label.SetLabelText(translate_shutter_status(value))
         self._refresh(box.panel)
 
     def set_device_color(self, value):
-        panel = self.box["color"].panel
+        panel = self.boxes["color"].panel
         panel.SetBackgroundColour(value)
         self._refresh(panel)
 
     def set_connection(self, value):
-        box = self.box["connection"]
+        box = self.boxes["connection"]
         box.label.SetLabelText(str(value))
         self._refresh(box.panel)
 
     def set_mode(self, value):
-        box = self.box["mode"]
+        box = self.boxes["mode"]
         box.label.SetLabelText(str(value))
         self._refresh(box.panel)
 
     def _refresh(self, panel):
         panel.Layout()
+
+    def set_selected(self, boolean):
+        self.SetBackgroundColour(self.COLOR_ACTIVE) if boolean \
+            else self.SetBackgroundColour(self.COLOR_INACTIVE)
+
+    def on_click(self, e):
+        self.set_selected(True) if not self._selected else self.set_selected(False)
+        self._selected = not self._selected
