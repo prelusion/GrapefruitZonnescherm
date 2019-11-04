@@ -45,6 +45,12 @@ class ControlUnitsController(mvc.Controller):
 
         self.controlunits_manager.units.add_callback(self.on_units_changed)
 
+        debug = True
+        if debug:
+            for i in range(3):
+                view = ControlUnitView(view_parent)
+                self.view.render_unit(1, view)
+
     def on_units_changed(self, model, data):
         down_units = {k: self.prevstate[k] for k in set(self.prevstate) - set(data)}
         new_units = {k: data[k] for k in set(data) - set(self.prevstate)}
@@ -75,4 +81,9 @@ class ControlUnitsController(mvc.Controller):
         model.color.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_device_color(value)))
         model.mode.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_mode(value)))
 
+        view.set_on_click_callback(lambda e: self.on_unit_click(model, view))
         self.view.render_unit(model.get_id(), view)
+
+    def on_unit_click(self, model, view):
+        view.set_selected(True) if not model.get_selected() else view.set_selected(False)
+        model.set_selected(not model.get_selected())

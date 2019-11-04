@@ -14,6 +14,7 @@ class ControlUnitModel(mvc.Model):
         self.shutter_status = mvc.Observable(self, None)
         self.temperature = mvc.Observable(self, 0)
         self.light_intensity = mvc.Observable(self, 0)
+        self.selected = mvc.Observable(self, False)
 
     def set_id(self, id):
         self.id.set(id)
@@ -72,3 +73,9 @@ class ControlUnitModel(mvc.Model):
 
     def get_measurements(self):
         return self.measurements
+
+    def set_selected(self, value):
+        self.selected.set(value)
+
+    def get_selected(self):
+        return self.selected.get()

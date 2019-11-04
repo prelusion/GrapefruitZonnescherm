@@ -22,12 +22,6 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         self.main_sizer.Add(self.unit_sizer, 0, wx.CENTER, border=50)
         self.SetSizer(self.main_sizer)
 
-        debug = True
-        if debug:
-            for i in range(3):
-                view = ControlUnitView(self)
-                self.render_unit(1, view)
-
     def render_unit(self, id_, view):
         # view.SetBackgroundColour((255, 0, 255))
         self.unit_views[id_] = view

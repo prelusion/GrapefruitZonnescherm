@@ -33,6 +33,7 @@ class ControlUnitView(wx.Panel):
             "mode": None,
         }
 
+        self._select_callback = None
         self._selected = False
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -108,5 +109,12 @@ class ControlUnitView(wx.Panel):
             else self.SetBackgroundColour(self.COLOR_INACTIVE)
 
     def on_click(self, e):
-        self.set_selected(True) if not self._selected else self.set_selected(False)
-        self._selected = not self._selected
+        if self._select_callback:
+            self._select_callback(e)
+        else:
+            self.set_selected(True) if not self._selected else self.set_selected(False)
+            self._selected = not self._selected
+
+    def set_on_click_callback(self, callback):
+        self._select_callback = callback
+        print("select allback set")
