@@ -17,13 +17,15 @@ uint8_t serial_buffer_index = 0;
 ISR(USART_RX_vect)
 {
 	char character = UDR0;
-		
+	
 	if (character == '\r' || serial_buffer_index > sizeof(serial_buffer) - 2)
 	{
 		serial_buffer[serial_buffer_index] = '\0';
 		process_input(serial_buffer);
 		serial_buffer_index = 0;
-	} else {
+	}
+	else
+	{
 		serial_buffer[serial_buffer_index++] = character;
 	}
 }
