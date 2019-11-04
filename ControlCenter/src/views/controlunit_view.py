@@ -107,6 +107,7 @@ class ControlUnitView(wx.Panel):
     def set_selected(self, boolean):
         self.SetBackgroundColour(self.COLOR_ACTIVE) if boolean \
             else self.SetBackgroundColour(self.COLOR_INACTIVE)
+        self.Refresh()
 
     def on_click(self, e):
         if self._select_callback:
