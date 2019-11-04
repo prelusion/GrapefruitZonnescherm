@@ -1,10 +1,7 @@
-import random
-
 import wx
-from src.views.controlunit_view import ControlUnitView
-
-from src import mvc
 import wx.lib.scrolledpanel as scrolled
+
+from src.views.controlunit_view import ControlUnitView
 
 
 class ControlUnitsView(scrolled.ScrolledPanel):
@@ -24,12 +21,11 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         self.main_sizer.Add(self.unit_sizer, 0, wx.CENTER, border=50)
         self.SetSizer(self.main_sizer)
 
-        debug = False
+        debug = True
         if debug:
-            for i in range(3):
+            for i in range(4):
                 view = ControlUnitView(self)
                 self.render_unit(1, view)
-
 
     def render_unit(self, id_, view):
         self.unit_sizer.Add(view, 0, wx.EXPAND | wx.ALL, 10)

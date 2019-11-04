@@ -1,6 +1,6 @@
-import wx
 from collections import namedtuple
 
+import wx
 
 UnitValueBox = namedtuple("UnitValueBox", ["panel", "label"])
 

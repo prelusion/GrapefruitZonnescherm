@@ -1,19 +1,22 @@
 import datetime
-import random
 import enum
+import random
+
 import wx
 import wxmplot
 
 from src import mvc
 from src.controlunit import Measurement
 
+
 class GraphMode(enum.Enum):
-   Temp = 1
-   Status = 2
-   Light = 3
+    Temp = 1
+    Status = 2
+    Light = 3
+
 
 class GraphView(mvc.View):
-    def __init__(self, parent, graphmode:GraphMode):
+    def __init__(self, parent, graphmode: GraphMode):
         super().__init__(parent)
         self.graph = Graph(self)
         self.graph_sizer = wx.GridSizer(1, 1, 1, 1)
@@ -59,8 +62,10 @@ class GraphView(mvc.View):
                     status.append(measurement.shutter_status)
                     xdata.append(x)
                 if first_drawn:
-                    self.graph.plot(dates, temps, ymin= self.y_min, ymax= self.y_max,ylabel=self.measure_unit , side='left', linewidth=1, labelfontsize=6,
-                                    legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor, use_dates=True,
+                    self.graph.plot(dates, temps, ymin=self.y_min, ymax=self.y_max, ylabel=self.measure_unit,
+                                    side='left', linewidth=1, labelfontsize=6,
+                                    legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor,
+                                    use_dates=True,
                                     color=unit["color"])
                 else:
                     self.graph.oplot(dates, temps, side='left', linewidth=1, color=unit["color"])
