@@ -21,7 +21,7 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         self.main_sizer.Add(self.unit_sizer, 0, wx.CENTER, border=50)
         self.SetSizer(self.main_sizer)
 
-        debug = True
+        debug = False
         if debug:
             for i in range(4):
                 view = ControlUnitView(self)

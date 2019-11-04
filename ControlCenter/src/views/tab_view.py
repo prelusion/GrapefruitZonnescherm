@@ -8,7 +8,7 @@ from src import mvc
 class TabView(mvc.View):
 
     COLOR_INACTIVE = (255, 255, 255)
-    COLOR_ACTIVE = (255, 20, 255)
+    COLOR_ACTIVE = (200, 200, 200)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -38,9 +38,9 @@ class TabView(mvc.View):
         icon1 = wx.Bitmap(os.path.join(const.ICONS_DIR, "graphs.ico"), wx.BITMAP_TYPE_ICO)
         icon2 = wx.Bitmap(os.path.join(const.ICONS_DIR, "settings.ico"), wx.BITMAP_TYPE_ICO)
 
-        manual_tab.SetBitmap(icon0)
-        graph_tab.SetBitmap(icon1)
-        settings_tab.SetBitmap(icon2)
+        # manual_tab.SetBitmap(icon0)
+        # graph_tab.SetBitmap(icon1)
+        # settings_tab.SetBitmap(icon2)
 
     def set_manual_active(self):
         self.manual_tab.SetBackgroundColour(self.COLOR_ACTIVE)
