@@ -17,7 +17,7 @@ class GraphViewController(mvc.Controller):
         self.filter_model.filter_shutter_up.add_callback(self.on_filter_connected_change)
         self.filter_model.filter_shutter_down.add_callback(self.on_filter_connected_change)
 
-        # self.controlunit_manager.units.add_callback(self.on_controlunits_change)
+        self.controlunit_manager.units.add_callback(self.on_controlunits_change)
 
     def on_filter_connected_change(self, model, data):
         pass
@@ -32,10 +32,11 @@ class GraphViewController(mvc.Controller):
         pass
 
     def on_controlunits_change(self, model, data):
-        for port, unit in data:
+        for port, unit in data.items():
             comm, model = unit
-            unit.measurements.add_callback(self.on_controlunit_measurement_change)
-            unit.color.add_callback(self.on_controlunit_color_change)
+            model.measurements.add_callback(self.on_controlunit_measurement_change)
+            model.color.add_callback(self.on_controlunit_color_change)
+            model.selected.add_callback(self.on_controlunit_selected_change)
 
     def on_controlunit_measurement_change(self, model, data):
         dates = []
@@ -49,9 +50,12 @@ class GraphViewController(mvc.Controller):
             status.append(measurement.shutter_status)
             light.append(measurement.light_intensity)
 
-        self.temp_view.set_unit(model.get_id(), [dates, temps])
-        self.status_view.set_unit(model.get_id, [dates, status])
-        self.light_view.set_unit(model.get_id, [dates, light])
+        # self.temp_view.set_unit(model.get_id(), [dates, temps])
+        # self.status_view.set_unit(model.get_id, [dates, status])
+        # self.light_view.set_unit(model.get_id, [dates, light])
 
     def on_controlunit_color_change(self, model, data):
-        self.view.set_measurements(model.get_id(), data)
+        pass
+
+    def on_controlunit_selected_change(self, model, data):
+        print("Model with id:", model.get_id(), "selected:", data)
