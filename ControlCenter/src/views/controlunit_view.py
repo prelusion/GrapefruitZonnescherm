@@ -48,12 +48,11 @@ class ControlUnitView(wx.Panel):
                 font = wx.Font(10, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
                 datalabel.SetFont(font)
 
-                vertical_sizer = wx.BoxSizer(wx.VERTICAL)
+                main_sizer = wx.GridSizer(2, 1, 0, 0)
+                main_sizer.Add(infolabel, 1, wx.EXPAND | wx.ALL)
+                main_sizer.Add(datalabel, 1, wx.EXPAND | wx.ALL)
 
-                vertical_sizer.Add(infolabel, 0, wx.CENTER)
-                vertical_sizer.Add(datalabel,  0, wx.CENTER)
-
-                panel.SetSizer(vertical_sizer)
+                panel.SetSizer(main_sizer)
 
             self.grid.Add(panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
             self.box[name] = UnitValueBox(panel, datalabel)
