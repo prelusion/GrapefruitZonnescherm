@@ -5,6 +5,17 @@ import wx
 UnitValueBox = namedtuple("UnitValueBox", ["panel", "label"])
 
 
+def translate_shutter_status(value):
+    distributor = {
+        None: "unknown",
+        0: "up",
+        1: "down",
+        2: "going up",
+        4: "going down"
+    }
+    return distributor[value]
+
+
 class ControlUnitView(wx.Panel):
 
     def __init__(self, parent):
@@ -47,17 +58,18 @@ class ControlUnitView(wx.Panel):
 
     def set_temperature(self, value):
         box = self.box["temperature"]
-        box.label.SetLabelText(str(value))
+        box.label.SetLabelText(str(value) + " °C")
         self._refresh(box.panel)
 
     def set_name(self, value):
         box = self.box["name"]
         box.label.SetLabelText(str(value))
+        box.label.GetFont().SetWeight(wx.BOLD)
         self._refresh(box.panel)
 
     def set_shutter_status(self, value):
         box = self.box["status"]
-        box.label.SetLabelText(str(value))
+        box.label.SetLabelText(translate_shutter_status(value))
         self._refresh(box.panel)
 
     def set_device_color(self, value):

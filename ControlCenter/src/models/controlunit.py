@@ -11,7 +11,7 @@ class ControlUnitModel(mvc.Model):
         self.mode = mvc.Observable(self, "auto")
         self.color = mvc.Observable(self, None)
         self.measurements = mvc.Observable(self, [])
-        self.shutter_status = mvc.Observable(self, "up")
+        self.shutter_status = mvc.Observable(self, None)
         self.temperature = mvc.Observable(self, 0)
         self.light_intensity = mvc.Observable(self, 0)
 
