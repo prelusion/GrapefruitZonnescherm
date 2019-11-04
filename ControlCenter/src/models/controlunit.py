@@ -2,7 +2,7 @@ from src import mvc
 
 
 class ControlUnitModel(mvc.Model):
-    MEMORY_COUNT_THRESHOLD = 1000
+    MEMORY_COUNT_THRESHOLD = 200
 
     def __init__(self, id):
         self.id = mvc.Observable(self, id)
@@ -12,6 +12,8 @@ class ControlUnitModel(mvc.Model):
         self.color = mvc.Observable(self, None)
         self.measurements = mvc.Observable(self, [])
         self.shutter_status = mvc.Observable(self, "up")
+        self.temperature = mvc.Observable(self, 0)
+        self.light_intensity = mvc.Observable(self, 0)
 
     def set_id(self, id):
         self.id.set(id)
@@ -49,14 +51,24 @@ class ControlUnitModel(mvc.Model):
     def get_shutter_status(self):
         return self.shutter_status.get()
 
+    def set_temperature(self, value):
+        self.temperature.set(value)
+
+    def get_temperature(self):
+        return self.temperature.get()
+
+    def set_light_intensity(self, value):
+        return self.light_intensity.set(value)
+
+    def get_light_intensity(self):
+        return self.light_intensity.get()
+
     def add_measurement(self, measurement):
         measurements = self.measurements.get()
         if len(measurements) > self.MEMORY_COUNT_THRESHOLD:
             measurements.pop(0)
-        self.measurements.set(measurements.append(measurement))
+        measurements.append(measurement)
+        self.measurements.set(measurements)
 
     def get_measurements(self):
         return self.measurements
-
-    def get_current_temperature(self):
-        return "23.5"

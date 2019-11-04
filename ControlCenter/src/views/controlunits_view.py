@@ -1,17 +1,15 @@
-import random
-
 import wx
+import wx.lib.scrolledpanel as scrolled
+
 from src.views.controlunit_view import ControlUnitView
 
-from src import mvc
 
-
-class ControlUnitsView(mvc.View):
+class ControlUnitsView(scrolled.ScrolledPanel):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
         self.units = {}
-        self.unit_count = 0
+        self.unit_count = 1  # begins at 1 because the spacer is at the first index
 
         self.SetBackgroundColour((173, 166, 166))
 
@@ -23,9 +21,9 @@ class ControlUnitsView(mvc.View):
         self.main_sizer.Add(self.unit_sizer, 0, wx.CENTER, border=50)
         self.SetSizer(self.main_sizer)
 
-        debug = False
+        debug = True
         if debug:
-            for i in range(2):
+            for i in range(4):
                 view = ControlUnitView(self)
                 self.render_unit(1, view)
 
@@ -35,6 +33,7 @@ class ControlUnitsView(mvc.View):
         self.unit_sizer.Layout()
         self.unit_count += 1
         self.main_sizer.Layout()
+        self.SetupScrolling()
 
     def remove_unit(self, id_):
         idx = self.units[id_]
@@ -43,6 +42,7 @@ class ControlUnitsView(mvc.View):
         self.unit_count -= 1
         self._update_indexes(idx)
         self.unit_sizer.Layout()
+        self.SetupScrolling()
 
     def _update_indexes(self, removed_index):
         for i, id_ in enumerate(self.units):

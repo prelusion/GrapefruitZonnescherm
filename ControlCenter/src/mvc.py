@@ -32,6 +32,7 @@ class Observable:
         [func(self.model, data) for func in self.callbacks]
 
     def set(self, data):
+        self.data = data
         self._docallbacks(self.data)
 
     def get(self):
