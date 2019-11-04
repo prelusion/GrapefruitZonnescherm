@@ -10,6 +10,7 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         self.parent = parent
         self.units = {}
         self.unit_count = 1  # begins at 1 because the spacer is at the first index
+        self.SetWindowStyle(wx.BORDER_SIMPLE)
 
         self.SetBackgroundColour((173, 166, 166))
 

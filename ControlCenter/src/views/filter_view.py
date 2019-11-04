@@ -15,6 +15,7 @@ class FilterView(mvc.View):
         self.SetBackgroundColour((255, 255, 255))
 
         self.gridsizer = wx.GridSizer(2, 2, 5, 5)
+        self.SetWindowStyle(wx.BORDER_SIMPLE)
 
         self.checkboxes = {}
 
