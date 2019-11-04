@@ -117,4 +117,3 @@ class ControlUnitView(wx.Panel):
 
     def set_on_click_callback(self, callback):
         self._select_callback = callback
-        print("select allback set")
