@@ -17,12 +17,16 @@ class TabviewController(mvc.Controller):
 
     def set_tabstate_model(self, tabstate_model):
         self.tabstate_model = tabstate_model
+        self.on_show_graph_btn(None)
 
     def on_show_graph_btn(self, e):
         self.tabstate_model.set_graph_view()
+        self.view.set_graph_active()
 
     def on_show_manual_control_btn(self, e):
         self.tabstate_model.set_manualcontrol_view()
+        self.view.set_manual_active()
 
     def on_show_settings_btn(self, e):
         self.tabstate_model.set_settings_view()
+        self.view.set_settings_active()
