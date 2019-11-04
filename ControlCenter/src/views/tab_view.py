@@ -1,7 +1,7 @@
 import os
 
 import wx
-import const
+from src import const
 from src import mvc
 
 
