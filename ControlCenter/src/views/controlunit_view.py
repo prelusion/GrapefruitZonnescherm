@@ -49,24 +49,33 @@ class ControlUnitView(wx.Panel):
         for name in self.boxes.keys():
             panel = wx.Panel(self.box_panel, style=wx.SUNKEN_BORDER)
             panel.SetBackgroundColour((255, 255, 255))
+            datalabel = None
 
-            label = wx.StaticText(panel, wx.ID_ANY, label="", style=wx.ALIGN_CENTER)
+            # color panel doesnt require a label so is excluded for label creation
+            if name is not "color":
+                infolabel = wx.StaticText(panel, wx.ID_ANY, label="Info label", style=wx.ALIGN_CENTER)
+                infolabel.SetLabelText(name)
+                font = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+                infolabel.SetFont(font)
+                datalabel = wx.StaticText(panel, wx.ID_ANY, label="Data label", style=wx.ALIGN_CENTER)
+                font = wx.Font(10, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
+                datalabel.SetFont(font)
 
-            h_sizer = wx.BoxSizer(wx.HORIZONTAL)
-            v_sizer = wx.BoxSizer(wx.VERTICAL)
+                # Create sizer for labels
+                main_sizer = wx.GridSizer(2, 1, 0, 0)
+                main_sizer.Add(infolabel, 1, wx.EXPAND | wx.ALL)
+                main_sizer.Add(datalabel, 1, wx.EXPAND | wx.ALL)
 
-            h_sizer.Add(label, 0, wx.CENTER)
-            v_sizer.Add((0, 0), 1, wx.EXPAND)
-            v_sizer.Add(h_sizer, 0, wx.CENTER)
-            v_sizer.Add((0, 0), 1, wx.EXPAND)
+                # set sizer for the main panel
+                panel.SetSizer(main_sizer)
 
-            panel.SetSizer(v_sizer)
+                panel.Bind(wx.EVT_LEFT_DOWN, self.on_click)
+                infolabel.Bind(wx.EVT_LEFT_DOWN, self.on_click)
+                datalabel.Bind(wx.EVT_LEFT_DOWN, self.on_click)
 
-            panel.Bind(wx.EVT_LEFT_DOWN, self.on_click)
-            label.Bind(wx.EVT_LEFT_DOWN, self.on_click)
-
+            # build unit view
             self.grid.Add(panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-            self.boxes[name] = UnitValueBox(panel, label)
+            self.boxes[name] = UnitValueBox(panel, datalabel)
 
         self.Bind(wx.EVT_LEFT_DOWN, self.on_click)
 
@@ -107,6 +116,7 @@ class ControlUnitView(wx.Panel):
     def set_selected(self, boolean):
         self.SetBackgroundColour(self.COLOR_ACTIVE) if boolean \
             else self.SetBackgroundColour(self.COLOR_INACTIVE)
+        self.Refresh()
 
     def on_click(self, e):
         if self._select_callback:
@@ -117,3 +127,4 @@ class ControlUnitView(wx.Panel):
 
     def set_on_click_callback(self, callback):
         self._select_callback = callback
+

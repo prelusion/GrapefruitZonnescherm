@@ -12,6 +12,7 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         self.unit_indexes = {}
         self.unit_count = 1  # begins at 1 because the spacer is at the first index
 
+        self.SetWindowStyle(wx.BORDER_SIMPLE)
         self.SetBackgroundColour((173, 166, 166))
 
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -46,3 +47,4 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         for i, id_ in enumerate(self.unit_indexes):
             if self.unit_indexes[id_] > removed_index:
                 self.unit_indexes[id_] -= 1
+

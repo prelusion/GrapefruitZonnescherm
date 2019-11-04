@@ -45,7 +45,7 @@ class ControlUnitsController(mvc.Controller):
 
         self.controlunits_manager.units.add_callback(self.on_units_changed)
 
-        debug = True
+        debug = False
         if debug:
             for i in range(3):
                 view = ControlUnitView(view_parent)
