@@ -8,9 +8,10 @@ from src import controlunit
 from src import util
 from src.controllers.controlunits_controller import ControlUnitsController
 from src.controllers.filterview_controller import FilterViewController
-from src.controllers.graphview_controller import GraphViewController
+from src.controllers.rightpaneldata_controller import RightpanelDataController
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.filter import FilterModel
+from src.models.tabstate import TabstateModel
 from src.views.top_view import TopView
 
 
@@ -22,6 +23,7 @@ class App(wx.App):
 
         self.controlunit_manager = ControlUnitManager()
         self.filter_model = FilterModel()
+        self.tabstate_model = TabstateModel()
 
         self.init()
         self.start_background_services()
@@ -63,7 +65,7 @@ class MainView(wx.Frame):
         main_panel.SetSizer(main_sizer)
 
         # Top bar
-        top_panel = TopView(main_panel)
+        top_panel = TopView(main_panel, self.app.tabstate_model)
         main_sizer.Add(top_panel, 1, wx.EXPAND | wx.ALL)
 
         # Center panel
@@ -90,8 +92,9 @@ class MainView(wx.Frame):
         center_panel_sizer.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL, 20)
 
         # Right panel components
-        graphview_controller = GraphViewController(right_panel, self.app.filter_model, self.app.controlunit_manager)
-        right_panel_sizer_vbox.Add(graphview_controller.view, 10, wx.EXPAND | wx.ALL)
+        rightpanel_controller = RightpanelDataController(right_panel, self.app.filter_model,
+                                                         self.app.controlunit_manager, self.app.tabstate_model)
+        right_panel_sizer_vbox.Add(rightpanel_controller.view, 10, wx.EXPAND | wx.ALL)
         center_panel_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
 
