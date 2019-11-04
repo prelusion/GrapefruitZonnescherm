@@ -2,6 +2,7 @@ import wx
 
 from src import widgets
 from src.views.tab_view import TabView
+from src.controllers.tabview_controller import TabviewController
 
 
 class TopView(wx.Panel):
@@ -26,8 +27,8 @@ class TopView(wx.Panel):
         right_panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
         right_panel.SetSizer(right_panel_sizer)
 
-        tab_view = TabView(right_panel)
-        right_panel_sizer.Add(tab_view, 1, wx.EXPAND | wx.ALL)
+        self.tab_view_controller = TabviewController(right_panel)
+        right_panel_sizer.Add(self.tab_view_controller.view, 1, wx.EXPAND | wx.ALL)
 
         main_sizer.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         main_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
