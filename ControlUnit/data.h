@@ -18,6 +18,9 @@ typedef enum {
 	SENSOR_ERROR = 3 // Not all sensors are connected.
 } UnitStatus;
 
+uint8_t get_current_serial_connection(void);
+void set_current_serial_connection(uint8_t serial_connected);
+
 int8_t get_current_temperature(void);
 void set_current_temperature(int8_t temperature);
 

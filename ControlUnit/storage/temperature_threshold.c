@@ -1,7 +1,7 @@
 #include "temperature_threshold.h"
 #include <avr/eeprom.h>
 
-// The temperature threshold will be stored in EEPROM at address 0x0004.
+// The temperature threshold will be stored in EEPROM at address 0x0006.
 #define TEMPERATURE_THRESHOLD_ADDRESS 0x0006
 
 int8_t get_temperature_threshold(void)
