@@ -38,20 +38,19 @@ class ControlUnitView(wx.Panel):
             panel = wx.Panel(self.main_panel, style=wx.SUNKEN_BORDER)
             panel.SetBackgroundColour((255, 255, 255))
 
-            label = wx.StaticText(panel, wx.ID_ANY, label="", style=wx.ALIGN_CENTER)
+            infolabel = wx.StaticText(panel, wx.ID_ANY, label="Info label", style=wx.ALIGN_CENTER)
+            infolabel.SetLabelText(name)
+            datalabel = wx.StaticText(panel, wx.ID_ANY, label="Data label", style=wx.ALIGN_CENTER)
 
-            h_sizer = wx.BoxSizer(wx.HORIZONTAL)
-            v_sizer = wx.BoxSizer(wx.VERTICAL)
+            vertical_sizer = wx.BoxSizer(wx.VERTICAL)
 
-            h_sizer.Add(label, 0, wx.CENTER)
-            v_sizer.Add((0, 0), 1, wx.EXPAND)
-            v_sizer.Add(h_sizer, 0, wx.CENTER)
-            v_sizer.Add((0, 0), 1, wx.EXPAND)
+            vertical_sizer.Add(infolabel, 0, wx.CENTER)
+            vertical_sizer.Add(datalabel,  0, wx.CENTER)
 
-            panel.SetSizer(v_sizer)
+            panel.SetSizer(vertical_sizer)
 
             self.grid.Add(panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-            self.box[name] = UnitValueBox(panel, label)
+            self.box[name] = UnitValueBox(panel, datalabel)
 
         self.grid.Layout()
         self.main_panel.Layout()
