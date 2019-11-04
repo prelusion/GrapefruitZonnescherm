@@ -1,9 +1,5 @@
-import wx
-
 from src import mvc
-from src.controlunit import Measurement
-from src.views.graph_view import GraphView
-from src.views.graphtabview import GraphTabView
+from src.views.graphtab_view import GraphTabView
 
 
 class GraphViewController(mvc.Controller):
@@ -53,9 +49,9 @@ class GraphViewController(mvc.Controller):
             status.append(measurement.shutter_status)
             light.append(measurement.light_intensity)
 
-        self.temp_view.set_unit(model.get_id(),[dates,temps])
-        self.status_view.set_unit(model.get_id,[dates,status])
-        self.light_view.set_unit(model.get_id,[dates,light])
+        self.temp_view.set_unit(model.get_id(), [dates, temps])
+        self.status_view.set_unit(model.get_id, [dates, status])
+        self.light_view.set_unit(model.get_id, [dates, light])
 
     def on_controlunit_color_change(self, model, data):
         self.view.set_measurements(model.get_id(), data)
