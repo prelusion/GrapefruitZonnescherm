@@ -9,10 +9,10 @@ from src import util
 from src.controllers.controlunits_controller import ControlUnitsController
 from src.controllers.filterview_controller import FilterViewController
 from src.controllers.rightpaneldata_controller import RightpanelDataController
+from src.controllers.topview_controller import TopViewController
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.filter import FilterModel
 from src.models.tabstate import TabstateModel
-from src.views.top_view import TopView
 
 
 class App(wx.App):
@@ -65,8 +65,8 @@ class MainView(wx.Frame):
         main_panel.SetSizer(main_sizer)
 
         # Top bar
-        top_panel = TopView(main_panel, self.app.tabstate_model)
-        main_sizer.Add(top_panel, 1, wx.EXPAND | wx.ALL)
+        toppanel_controller = TopViewController(main_panel, self.app.tabstate_model)
+        main_sizer.Add(toppanel_controller.view, 1, wx.EXPAND | wx.ALL)
 
         # Center panel
         center_panel = wx.Panel(main_panel)

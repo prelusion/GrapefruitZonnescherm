@@ -7,7 +7,7 @@ from src.controllers.tabview_controller import TabviewController
 
 class TopView(wx.Panel):
 
-    def __init__(self, parent, tabstate_model):
+    def __init__(self, parent):
         super().__init__(parent)
 
         main_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -27,8 +27,8 @@ class TopView(wx.Panel):
         right_panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
         right_panel.SetSizer(right_panel_sizer)
 
-        tab_view_controller = TabviewController(right_panel, tabstate_model)
-        right_panel_sizer.Add(tab_view_controller.view, 1, wx.EXPAND | wx.ALL)
+        self.tab_view_controller = TabviewController(right_panel)
+        right_panel_sizer.Add(self.tab_view_controller.view, 1, wx.EXPAND | wx.ALL)
 
         main_sizer.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         main_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
