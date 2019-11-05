@@ -26,7 +26,7 @@ class ControlUnitManager:
         self.units.set(units)
 
     def get_units(self):
-        return self.units.get()
+        return [unit for port, unit in self.units.get().items()]
 
     def is_port_connected(self, port):
         return port in self.units.get()

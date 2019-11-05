@@ -7,11 +7,10 @@ from src.views.settings_view import SettingsView
 
 
 class RightpanelDataController(mvc.Controller):
-    def __init__(self, view_parent, filter_model, controlunit_manager, tabstate_model):
+    def __init__(self, view_parent, controlunit_manager, tabstate_model):
         super().__init__()
 
         self.view_parent = view_parent
-        self.filter_model = filter_model
         self.controlunit_manager = controlunit_manager
         self.tabstate_model = tabstate_model
         self.current_view = None
@@ -22,7 +21,7 @@ class RightpanelDataController(mvc.Controller):
 
         self.tabstate_model.state.add_callback(self.on_tab_change)
 
-        self.graphview_controller = GraphViewController(self.view_parent, self.filter_model, self.controlunit_manager)
+        self.graphview_controller = GraphViewController(self.view_parent, self.controlunit_manager)
         self.manualcontrol_view = ManualControlView(self.view_parent)
         self.settings_view = SettingsView(self.view_parent)
 
