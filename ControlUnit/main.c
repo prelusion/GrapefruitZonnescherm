@@ -3,13 +3,10 @@
 
 #include "scheduler.h"
 #include "data.h"
-
-//serial includes
 #include "serial.h"
 
 //ports includes
 #include "ports/adc.h"
-#include "ports/ports.h"
 
 // Sensor includes
 #include "sensors/distance.h"
@@ -61,10 +58,10 @@ void update_light_intensity(void)
 
 int main(void)
 {
-	init_ports();
 	adc_init();
 	init_history();
 	serial_init();
+	init_distance_sensor();
 	
 	if (!has_unit_id())
 	{
@@ -83,8 +80,6 @@ int main(void)
 		
 	// Initialize the timer.
 	timer_init();
-	
-	init_distance_sensor();
 
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
 	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
