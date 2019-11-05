@@ -7,7 +7,7 @@ void init_ports()
 	PORTB = 0b00000111;
 	
 	//Set all pins except pin 7 to output
-	DDRD = 0b01000000;
+	DDRD = 0b01010000;
 	//Disables all pins
 	PORTD = 0x00;
 }
