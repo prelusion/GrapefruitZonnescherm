@@ -95,8 +95,7 @@ class MainView(wx.Frame):
         center_panel_sizer.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL, 20)
 
         # Right panel components
-        rightpanel_controller = RightpanelDataController(right_panel, 
-                                                         self.app.controlunit_manager, self.app.tabstate_model)
+        rightpanel_controller = RightpanelDataController(right_panel, self.app.controlunit_manager, self.app.tabstate_model)
         right_panel_sizer_vbox.Add(rightpanel_controller.view, 10, wx.EXPAND | wx.ALL)
         center_panel_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
