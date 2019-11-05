@@ -10,6 +10,9 @@ from src.controllers.controlunits_controller import ControlUnitsController
 from src.controllers.filterview_controller import FilterViewController
 from src.controllers.rightpaneldata_controller import RightpanelDataController
 from src.controllers.topview_controller import TopViewController
+from src.controllers.graphview_controller import GraphViewController
+from src.controllers.manualcontrol_controller import ManualControlController
+from src.controllers.settingsview_controller import SettingsViewController
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.filter import FilterModel
 from src.models.tabstate import TabstateModel
