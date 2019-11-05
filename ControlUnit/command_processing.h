@@ -6,6 +6,7 @@
 typedef struct {
 	char name[20];				// The command name. Max 20 characters.
 	void(*function)(char[20], char[50]);	// Pointer to function that is associated with the command name.
+	uint8_t parameters_required;
 } Command;
 
 /**

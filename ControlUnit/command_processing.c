@@ -21,54 +21,71 @@ Command* get_available_commands()
 	
 	strcpy(available_commands[0].name, "PING");
 	available_commands[0].function = &cmd_ping;
+	available_commands[0].parameters_required = 0;
 	
 	strcpy(available_commands[1].name, "INITIALIZE");
 	available_commands[1].function = &cmd_initialize;
+	available_commands[1].parameters_required = 1;
 	
 	strcpy(available_commands[2].name, "RESET");
 	available_commands[2].function = &cmd_reset;
+	available_commands[2].parameters_required = 0;
 	
 	strcpy(available_commands[3].name, "GET_ID");
 	available_commands[3].function = &cmd_get_id;
+	available_commands[3].parameters_required = 0;
 	
 	strcpy(available_commands[4].name, "SET_ID");
 	available_commands[4].function = &cmd_set_id;
+	available_commands[4].parameters_required = 1;
 	
 	strcpy(available_commands[6].name, "GET_WINDOW_HEIGHT");
 	available_commands[6].function = &cmd_get_window_height;
+	available_commands[6].parameters_required = 0;
 	
 	strcpy(available_commands[7].name, "SET_WINDOW_HEIGHT");
 	available_commands[7].function = &cmd_set_window_height;
+	available_commands[7].parameters_required = 1;
 	
 	strcpy(available_commands[8].name, "GET_TEMP_THRESHOLD");
 	available_commands[8].function = &cmd_get_temperature_threshold;
+	available_commands[8].parameters_required = 0;
 	
 	strcpy(available_commands[9].name, "SET_TEMP_THRESHOLD");
 	available_commands[9].function = &cmd_set_temperature_threshold;
+	available_commands[9].parameters_required = 1;
 	
 	strcpy(available_commands[10].name, "GET_LI_THRESHOLD");
 	available_commands[10].function = &cmd_get_light_intensity_threshold;
+	available_commands[10].parameters_required = 0;
 	
 	strcpy(available_commands[11].name, "SET_LI_THRESHOLD");
 	available_commands[11].function = &cmd_set_light_intensity_threshold;
+	available_commands[11].parameters_required = 1;
 	
 	strcpy(available_commands[12].name, "GET_MANUAL");
 	available_commands[12].function = &cmd_get_manual;
+	available_commands[12].parameters_required = 0;
 	
 	strcpy(available_commands[13].name, "SET_MANUAL");
 	available_commands[13].function = &cmd_set_manual;
+	available_commands[13].parameters_required = 1;
 	
 	strcpy(available_commands[14].name, "GET_SENSOR_DATA");
 	available_commands[14].function = &cmd_get_sensor_data;
+	available_commands[14].parameters_required = 0;
 	
 	strcpy(available_commands[15].name, "GET_SENSOR_HISTORY");
 	available_commands[15].function = &cmd_get_sensor_history;
+	available_commands[15].parameters_required = 0;
 	
 	strcpy(available_commands[16].name, "ROLL_UP");
 	available_commands[16].function = &cmd_roll_up;
+	available_commands[16].parameters_required = 0;
 	
 	strcpy(available_commands[17].name, "ROLL_DOWN");
 	available_commands[17].function = &cmd_roll_down;
+	available_commands[17].parameters_required = 0;
 	
 	return available_commands;
 }
@@ -110,7 +127,12 @@ void execute_command(char name[20], char parameters[20])
 		if (strcmp(command.name, name) == 0)
 		{
 			char result[50]; // Result buffer.
-			command.function(parameters, (char*)&result);
+			if (command.parameters_required && !strlen(parameters))
+			{
+				strcpy(result, "ERROR");
+			} else {
+				command.function(parameters, (char*)&result);
+			}
 			printf("%s=%s\n", name, result);
 			free(commands);
 			return;
@@ -338,10 +360,22 @@ void cmd_get_sensor_history(char parameters[20], char result[50])
 
 void cmd_roll_up(char parameters[20], char result[50])
 {
+	if (!get_manual())
+	{
+		strcpy(result, "ERROR");
+		return;
+	}
+	
 	strcpy(result, "NOT_IMPLEMENTED");
 }
 
 void cmd_roll_down(char parameters[20], char result[50])
 {
+	if (!get_manual())
+	{
+		strcpy(result, "ERROR");
+		return;
+	}
+	
 	strcpy(result, "NOT_IMPLEMENTED");
 }
