@@ -26,9 +26,7 @@ class GraphViewController(mvc.Controller):
         status = []
         light = []
 
-        print("on_controlunit_measurement_change data:", data)
         for measurement in data:
-            print("measurement", measurement)
             dates.append(measurement.timestamp)
             temps.append(measurement.temperature)
             status.append(measurement.shutter_status)
