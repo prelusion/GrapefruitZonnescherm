@@ -10,6 +10,9 @@ from src.controllers.controlunits_controller import ControlUnitsController
 from src.controllers.filterview_controller import FilterViewController
 from src.controllers.rightpaneldata_controller import RightpanelDataController
 from src.controllers.topview_controller import TopViewController
+from src.controllers.graphview_controller import GraphViewController
+from src.controllers.manualcontrol_controller import ManualControlController
+from src.controllers.settingsview_controller import SettingsViewController
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.tabstate import TabstateModel
 
@@ -91,7 +94,8 @@ class MainView(wx.Frame):
 
         # Right panel components
         rightpanel_controller = RightpanelDataController(right_panel,
-                                                         self.app.controlunit_manager, self.app.tabstate_model)
+                                                         self.app.controlunit_manager,
+                                                         self.app.tabstate_model)
         right_panel_sizer_vbox.Add(rightpanel_controller.view, 10, wx.EXPAND | wx.ALL)
         center_panel_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 

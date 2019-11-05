@@ -42,15 +42,18 @@ class GraphTabView(View):
 class graph_tab(View):
     def __init__(self, parent, graphmode: graph_view.GraphMode):
         super().__init__(parent)
-        graph = graph_view.GraphView(self, graphmode)
+        self.graph = graph_view.GraphView(self, graphmode)
         sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(sizer)
-        sizer.Add(graph, 0, wx.EXPAND | wx.ALL, 0)
+        sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
         self.SetBackgroundColour(colour=(0, 255, 0))
-        graph.SetSize(200, 200)
-        SetTestData(graph)
-        graph.update_graph()
+        self.graph.SetSize(200, 200)
+        #TODO Remove test data
+        self.create_test_Data()
 
+    def create_test_Data(self):
+        SetTestData(self.graph)
+        self.graph.update_graph()
 
 def SetTestData(graph_view: graph_view.GraphView):
     measurements = []

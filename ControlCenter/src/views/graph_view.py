@@ -83,7 +83,7 @@ class GraphView(mvc.View):
             "visible": True,
         }
         for unit in self.units:
-            if unit[id] == id:
+            if unit["id"] == id:
                 unit = new_unit
                 return
         self.units.append(new_unit)
