@@ -66,11 +66,11 @@ void timer_init(void)
       timer_delete_task(i);
    }
 
-   // Set up Timer 1
+   // Set up Timer 2
    // Values for 1ms and 10ms ticks are provided for various crystals
-   OCR1A = (uint16_t)625;   		     // 10ms = (256/16.000.000) * 625
-   TCCR1B = (1 << CS12) | (1 << WGM12);  // prescale op 64, top counter = value OCR1A (CTC mode)
-   TIMSK1 = 1 << OCIE1A;   		     // Timer 1 Output Compare A Match Interrupt Enable
+   OCR2A = (uint16_t)156;   		     // ~10ms = (1024/16.000.000) * 156
+   TCCR2B = (1 << CS20) | (1 << CS21) | (1 << CS22) | (1 << WGM22);  // prescale op 1024, top counter = value OCR2A (CTC mode)
+   TIMSK2 = 1 << OCIE2A;   		     // Timer 2 Output Compare A Match Interrupt Enable
 }
 
 void timer_start(void)
@@ -78,7 +78,7 @@ void timer_start(void)
       sei();
 }
 
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER2_COMPA_vect)
 {
    for (uint8_t index = 0; index < timer_max_tasks; index++)
    {

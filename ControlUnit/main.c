@@ -59,15 +59,6 @@ void update_light_intensity(void)
 	set_current_light_intensity(get_light_intensity());
 }
 
-/**
- * \brief 
- * Update the distance in the current_unit_statistics struct.
- */	
-void update_distance(void)
-{
-	set_current_distance(get_distance());
-}
-
 int main(void)
 {
 	init_ports();
@@ -92,9 +83,9 @@ int main(void)
 		
 	// Initialize the timer.
 	timer_init();
+	
+	init_distance_sensor();
 
-	//TODO task update_distance wordt nog niet uigevoerd.
-	timer_add_task(&update_distance, (uint16_t)0, (uint16_t)2000); // 2000 * 10ms = 20sec
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
 	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
 	timer_add_task(&update_history, (uint16_t)200, (uint16_t)6000); // 6000 * 10ms = 60sec
