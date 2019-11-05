@@ -84,6 +84,7 @@ class ManualControlView(mvc.View):
                 self.disable_manual_control_buttons()
                 cb = self.callbacks["disable-manual-control"]
                 if cb: cb()
+                self.toggle_off.SetValue(1)
             else:
                 self.toggle_off.SetValue(1)
 

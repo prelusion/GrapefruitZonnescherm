@@ -1,5 +1,14 @@
+import threading
+
+import wx
+
 from src import mvc
 from src.views.manualcontrol_view import ManualControlView
+
+
+def execute_threaded(fn, callback):
+    if fn():
+        wx.CallAfter(callback)
 
 
 class ManualControlController(mvc.Controller):
@@ -37,21 +46,36 @@ class ManualControlController(mvc.Controller):
             self.view.disable_manual_control()
 
     def on_manual_control_enable(self):
-        for comm, model in self.controlunit_manager.get_selected_units():
-            if comm.set_manual(True):
-                model.set_manual(True)
+        def execute():
+            for comm, model in self.controlunit_manager.get_selected_units():
+                if comm.set_manual(True):
+                    wx.CallAfter(lambda: model.set_manual(True))
+
+        threading.Thread(target=execute).start()
 
     def on_manual_control_disable(self):
-        for comm, model in self.controlunit_manager.get_selected_units():
-            if comm.set_manual(False):
-                model.set_manual(False)
+
+        def execute():
+            for comm, model in self.controlunit_manager.get_selected_units():
+                if comm.set_manual(False):
+                    wx.CallAfter(lambda: model.set_manual(False))
+
+        threading.Thread(target=execute).start()
 
     def on_toggle_up(self):
-        for comm, model in self.controlunit_manager.get_selected_units():
-            if comm.roll_up():
-                model.set_shutter_status(model.SHUTTER_GOING_UP)
+
+        def execute():
+            for comm, model in self.controlunit_manager.get_selected_units():
+                if comm.roll_up():
+                    wx.CallAfter(lambda: model.set_shutter_status(model.SHUTTER_GOING_UP))
+
+        threading.Thread(target=execute).start()
 
     def on_toggle_down(self):
-        for comm, model in self.controlunit_manager.get_selected_units():
-            if comm.roll_down():
-                model.set_shutter_status(model.SHUTTER_GOING_DOWN)
+
+        def execute():
+            for comm, model in self.controlunit_manager.get_selected_units():
+                if comm.roll_down():
+                    wx.CallAfter(lambda: model.set_shutter_status(model.SHUTTER_GOING_DOWN))
+
+        threading.Thread(target=execute).start()
