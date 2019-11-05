@@ -110,7 +110,7 @@ void check_thresholds(void)
 	//if the shutter status is opening or closing add a task;
 	if (current_shutter_status == OPENING || current_shutter_status == CLOSING)
 	{
-		shutter_task_index = timer_add_task(&update_shutter_status, (uint16_t)0, (uint16_t)50); // 40 * 10ms = .5sec
+		shutter_task_index = timer_add_task(&update_shutter_status, (uint16_t)0, (uint16_t)20); // 40 * 10ms = .5sec
 	}
 }
 
