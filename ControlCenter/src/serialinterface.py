@@ -54,10 +54,16 @@ class Connection:
         if not self._interface:
             raise IOError("Connection must be opened before reading")
 
-        return self._interface.read(self._interface.inWaiting()).decode()
+        try:
+            return self._interface.read(self._interface.inWaiting()).decode()
+        except UnicodeDecodeError:
+            pass
 
     def readline(self):
         if not self._interface:
             raise IOError("Connection must be opened before reading")
 
-        return self._interface.readline().decode()
+        try:
+            return self._interface.readline().decode()
+        except UnicodeDecodeError:
+            pass
