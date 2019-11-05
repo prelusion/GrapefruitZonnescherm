@@ -29,7 +29,7 @@ class SettingsViewController(mvc.Controller):
     def on_apply(self):
 
         settings= {
-        "name":self.view.get_name(),
+        "name":(self.view.get_name(), lambda x, value: comm.set_name(value)),
         "height":self.view.get_height(),
         "color": self.view.get_color(),
         "max_temp": self.view.get_max_temp(),
@@ -37,18 +37,18 @@ class SettingsViewController(mvc.Controller):
         }
 
         all_errors = []
-        for port, unit in self.controlunit_manager.get_selected_units():
-            comm, model = unit
-
+        for comm, model in self.controlunit_manager.get_selected_units():
             errors = []
 
-            for name, value in settings.items()
 
-            if comm.set_name(name):
-                model.set_name(name)
-            else:
-                errors.append("NAME_ERROR")
-
-            comm.height(height)
+            for name, setter in settings.items():
+                value, function = setter
+                if function(comm, value):
+                    function(model, value)
+                else:
+                    errors.append("Error setting " + name)
 
             all_errors.append((model.get_id(), errors))
+
+
+
