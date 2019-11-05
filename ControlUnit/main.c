@@ -5,7 +5,7 @@
 #include "data.h"
 
 //serial includes
-#include "serial/serial.h"
+#include "serial.h"
 
 //ports includes
 #include "ports/adc.h"
@@ -20,7 +20,26 @@
 #include "storage/unit_id.h"
 #include "storage/history.h"
 
-#include "command_processing.h"
+void update_history(void)
+{
+	// Check if the unit is connected to the control center.
+	if (!get_current_serial_connection())
+	{
+		// When connected there is no need to keep the history.
+		return;
+	}
+	
+	int8_t current_temperature = get_current_temperature();
+	uint8_t current_light_intensity = get_current_light_intensity();
+	ShutterStatus current_shutter_status = get_current_shutter_status();
+	
+	// 16 bit per measurement:
+	//   0  0  0  0  0  0  0     0  0  0  0  0  0  0     0  0
+	// |      Temperature     |    Light intensity    | Shutter status
+	uint16_t measurement = (current_temperature << 9) | ((current_light_intensity / 2) << 2) | current_shutter_status;
+	
+	write_measurement(measurement);
+}
 
 /**
  * \brief 
@@ -49,22 +68,12 @@ void update_distance(void)
 	set_current_distance(get_distance());
 }
 
-void process_serial(void)
-{
-	char buffer[255];
-	serial_readln(buffer, sizeof(buffer));
-	
-	process_input(buffer);
-}
-
 int main(void)
 {
 	init_ports();
 	adc_init();
+	init_history();
 	serial_init();
-	
-	// Set unit status to starting.
-	set_current_unit_status(STARTING);
 	
 	if (!has_unit_id())
 	{
@@ -83,17 +92,19 @@ int main(void)
 		
 	// Initialize the timer.
 	timer_init();
-	timer_add_task(&process_serial, (uint16_t)0, (uint16_t)2); // 2 * 10ms = 20ms
+
 	//TODO task update_distance wordt nog niet uigevoerd.
 	timer_add_task(&update_distance, (uint16_t)0, (uint16_t)2000); // 2000 * 10ms = 20sec
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
 	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
+	timer_add_task(&update_history, (uint16_t)200, (uint16_t)6000); // 6000 * 10ms = 60sec
 	timer_start();
 	
-	// TODO handle serial communication, maybe do this in the infinite loop.
-	
-	// Initializating and sensor check passed, serial communication is ready and scheduler is ready.
-	set_current_unit_status(OPERATING);
+	if (get_current_unit_status() == STARTING)
+	{
+		// Initializating and sensor check passed, serial communication is ready and scheduler is ready.
+		set_current_unit_status(OPERATING);
+	}
 	
     while (1) 
     {

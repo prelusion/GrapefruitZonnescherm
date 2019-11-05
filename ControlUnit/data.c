@@ -1,10 +1,21 @@
 #include "data.h"
 
-int8_t current_temperature;
-uint8_t current_light_intensity;
-uint16_t current_distance;
-ShutterStatus current_shutter_status;
-UnitStatus current_unit_status;
+uint8_t current_serial_connection = 0;
+int8_t current_temperature = 0;
+uint8_t current_light_intensity = 0;
+uint16_t current_distance = 0;
+ShutterStatus current_shutter_status = 0;
+UnitStatus current_unit_status = STARTING;
+
+uint8_t get_current_serial_connection(void)
+{
+	return current_serial_connection;
+}
+
+void set_current_serial_connection(uint8_t serial_connected)
+{
+	current_serial_connection = serial_connected;
+}
 
 int8_t get_current_temperature(void)
 {

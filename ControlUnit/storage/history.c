@@ -1,17 +1,18 @@
 #include "history.h"
 #include <avr/eeprom.h>
+#include <stdlib.h>
 
-// The history start index will be stored in EEPROM at address 0x0006 and 0x0007.
-#define HISTORY_START_INDEX_ADDRESS 0x0009
+// The history start index will be stored in EEPROM at address 0x001C and 0x001D.
+#define HISTORY_START_INDEX_ADDRESS 0x001C
 
-// The history start index will be stored in EEPROM at address 0x0008 and 0x0009.
-#define HISTORY_SIZE_ADDRESS 0x000B
+// The history start index will be stored in EEPROM at address 0x001E and 0x001F.
+#define HISTORY_SIZE_ADDRESS 0x001E
 
 // The history will be stored in EEPROM at address 0x0020 until end of memory.
 #define HISTORY_ADDRESS 0x0020
 
-// TODO maybe there already is a definition of EEPROM size :)
-#define EEPROM_END_ADDRESS 0x0400
+// The maximum amount of saved history.
+#define MAX_HISTORY_SIZE 300
 
 void init_history(void)
 {
@@ -19,7 +20,7 @@ void init_history(void)
 	
 	// If the size is zero clear the history just to be sure.
 	// When the size is larger then possible it must be invalid, so clear it.
-	if (size == 0 || (size * 2) > EEPROM_END_ADDRESS - HISTORY_ADDRESS)
+	if ((size == 0) || (size * 2) > MAX_HISTORY_SIZE)
 	{
 		clear_history();
 	}
@@ -37,10 +38,10 @@ History load_history(void)
 	history.data = (uint16_t*)malloc(history.size * 2);
 	
 	// Check if there is a "History overflow".
-	if ((((uint16_t) HISTORY_ADDRESS) + (start_index * 2) + (history.size * 2)) > (uint16_t) EEPROM_END_ADDRESS)
+	if ((start_index + history.size) > MAX_HISTORY_SIZE)
 	{
-		// Check how much to read until the end of EEPROM.
-		uint16_t read_to_end_size = ((uint16_t) EEPROM_END_ADDRESS) - ((uint16_t) HISTORY_ADDRESS) - (start_index * 2);
+		// Check how much to read until the maximum history size address is reached.
+		uint16_t read_to_end_size = (MAX_HISTORY_SIZE - start_index) * 2;
 		
 		// Read until end of EEPROM.
 		eeprom_read_block(history.data, (const void*)(((uint16_t) HISTORY_ADDRESS) + (start_index * 2)), read_to_end_size);
@@ -73,14 +74,14 @@ void write_measurement(uint16_t value)
 	uint16_t size = eeprom_read_word((uint16_t*) HISTORY_SIZE_ADDRESS);
 	
 	// Check if there is a "History overflow".
-	if (HISTORY_ADDRESS + (start_index * 2) + (size * 2) < EEPROM_END_ADDRESS)
+	if ((start_index + size) >= MAX_HISTORY_SIZE)
 	{
-		eeprom_write_word((uint16_t*) (HISTORY_ADDRESS + (start_index * 2) + (size * 2)), value);
-		eeprom_write_word((uint16_t*) HISTORY_SIZE_ADDRESS, size + 1);
+		eeprom_write_word((uint16_t*) (HISTORY_ADDRESS + (start_index * 2)), value);
+		eeprom_write_word((uint16_t*) HISTORY_START_INDEX_ADDRESS, (start_index == (size - 1)) ? 0 : (start_index + 1));
 	}
 	else
 	{
-		eeprom_write_word((uint16_t*) (HISTORY_ADDRESS + (start_index * 2)), value);
-		eeprom_write_word((uint16_t*) HISTORY_START_INDEX_ADDRESS, start_index == (size - 1) ? 0 : (start_index + 1));
+		eeprom_write_word((uint16_t*) (HISTORY_ADDRESS + (size * 2)), value);
+		eeprom_write_word((uint16_t*) HISTORY_SIZE_ADDRESS, size + 1);
 	}
 }

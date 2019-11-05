@@ -21,7 +21,7 @@ class GraphView(mvc.View):
         self.graph = Graph(self)
         self.graph_sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(self.graph_sizer)
-        self.graph_sizer.Add(self.graph, 0, wx.EXPAND, 0)
+        self.graph_sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
         self.framecolor = "LightGrey"
         self.units = []
 
@@ -99,11 +99,13 @@ class GraphView(mvc.View):
 
 class Graph(wxmplot.PlotPanel):
     def __init__(self, parent):
-        super().__init__(parent, pos=(150, 150),  messenger=output, show_config_popup=False )
+        super().__init__(parent, pos=(150, 150), messenger=output, show_config_popup=False)
         self.Show()
+
 
 def output(text, panel):
     return
+
 
 # For testing purposes, please ignore
 def update():

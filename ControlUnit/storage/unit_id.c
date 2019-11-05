@@ -16,5 +16,5 @@ void set_unit_id(uint32_t unit_id)
 
 uint8_t has_unit_id(void)
 {
-	return !get_unit_id();
+	return get_unit_id();
 }

@@ -82,16 +82,25 @@ void process_input(char* input)
 	{
 		// When there is no = character there are no parameters, so we can use the entire input as command name.
 		execute_command(input, "");
-	} else {
+	}
+	else
+	{
 		// Replace the = character with a null character so the input will be the command name.
 		*startOfParameters = '\0';
 		
 		execute_command(input, startOfParameters + 1);
 	}
+	
+	if (!get_current_serial_connection())
+	{
+		// When input is received the unit is connected with a serial connection.
+		set_current_serial_connection(1);
+	}
 }
 
 void execute_command(char name[20], char* parameters)
 {
+	// TODO load available commands only once
 	Command* commands = get_available_commands();
 	
 	for (uint8_t i = 0; i < COMMAND_AMOUNT; i++)
@@ -103,12 +112,13 @@ void execute_command(char name[20], char* parameters)
 			char* result = command.function(parameters);
 			printf("%s=%s\n", name, result);
 			
-			// Result has been returned so we can free it :D
 			free(result);
+			free(commands);
+			return;
 		}
 	}
 	
-	// TODO load available commands only once
+	printf("%s=NOT_FOUND\n", name);
 	free(commands);
 }
 
@@ -147,6 +157,7 @@ char* cmd_initialize(char* parameters)
 	// If the last parameter contains a value the init was successful.
 	if (parameter)
 	{
+		set_current_unit_status(OPERATING);
 		strcpy(result, "OK");
 	}
 	else
@@ -300,7 +311,8 @@ char* cmd_get_sensor_data(char* parameters)
 	char* result = malloc(16);
 	
 	// When the unit is initializing sensor data cannot be read.
-	if (get_current_unit_status() == INITIALIZING) {
+	if (get_current_unit_status() == INITIALIZING)
+	{
 		strcpy(result, "ERROR");
 		
 		return result;
@@ -317,8 +329,60 @@ char* cmd_get_sensor_data(char* parameters)
 
 char* cmd_get_sensor_history(char* parameters)
 {
-	char* result = malloc(16);
-	strcpy(result, "NOT_IMPLEMENTED");
+	History history = load_history();
+	
+	// Start with sending the history size.
+	printf("GET_SENSOR_HISTORY=L%u\n", history.size);
+	
+	const uint8_t chunk_size = 5;
+	uint8_t chunk_count = (history.size / chunk_size);
+	uint8_t last_chunk_size = chunk_size;
+	
+	// Round up.
+	if (history.size % chunk_count)
+	{
+		last_chunk_size = history.size % chunk_count;
+		chunk_count++;
+	}
+	
+	// Split the history in chunks.
+	for (uint8_t chunk_index = 0; chunk_index < chunk_count; chunk_index++)
+	{
+		uint8_t current_chunk_size = (chunk_index == (chunk_count - 1)) ? last_chunk_size : chunk_size;
+		
+		// Each measurement can take up to 10 bytes as string.
+		char* argument = malloc((current_chunk_size * 10) - 1);
+			
+		for (uint8_t i = 0; i < current_chunk_size; i++)
+		{
+			uint16_t measurement = *(history.data + (chunk_index * chunk_size) + i);
+			int8_t temperature = (int8_t)(((measurement & 0b1111111000000000) >> 9) | (measurement & 0b1000000000000000) >> 8);
+			uint8_t light_intensity = (uint8_t)(((measurement & 0b0000000111111100) >> 2) * 2); // Light intensity is saved as divided by 2, so we have to multiply it again.
+			uint8_t shutter_status = (uint8_t)(measurement & 0b0000000000000011);
+			
+			if (i == 0)
+			{
+				sprintf(argument, "%d,%u,%u", temperature, light_intensity, shutter_status);
+			}
+			else
+			{
+				sprintf(argument, "%s;%d,%u,%u", argument, temperature, light_intensity, shutter_status);
+			}
+		}
+		
+		printf("GET_SENSOR_HISTORY=%s\n", argument);
+		
+		free(argument);
+	}
+	
+	// Free the history data.
+	free(history.data);
+	
+	// History has been sent so can be cleared.
+	clear_history();
+	
+	char* result = malloc(3);
+	strcpy(result, "OK");
 	
 	return result;
 }
