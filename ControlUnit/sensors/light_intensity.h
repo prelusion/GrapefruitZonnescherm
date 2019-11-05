@@ -7,7 +7,7 @@
  * \brief 
  * Get the current light intensity.
  * 
- * \return uint8_t Unsigned number between 0 and 255
+ * \return uint8_t Light intensity as a percentage.
  */
 uint8_t get_light_intensity(void);
 

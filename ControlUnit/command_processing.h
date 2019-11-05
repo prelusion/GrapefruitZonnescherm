@@ -14,7 +14,7 @@ typedef struct {
  * 
  * \return Command* Collection of available commands
  */
-Command* get_available_commands();
+Command* get_available_commands(void);
 
 
 /**
