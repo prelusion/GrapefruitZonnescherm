@@ -19,25 +19,54 @@ class SettingsView(mvc.View):
 
         self.SetSizer(sizer)
 
-        self.deviceName = Setting(self,"Set device name:")
-        sizer.Add(self.deviceName, flag=wx.ALIGN_CENTER | wx.ALL)
+        self.device_name = Setting(self,"Set device name:")
+        sizer.Add(self.device_name, flag=wx.ALIGN_CENTER | wx.ALL)
 
-        self.windowHeight = Setting(self,"Set window height:")
-        sizer.Add(self.windowHeight, flag=wx.ALIGN_CENTER | wx.ALL)
+        self.window_height = Setting(self,"Set window height:")
+        sizer.Add(self.window_height, flag=wx.ALIGN_CENTER | wx.ALL)
 
-        self.deviceColor = Setting(self,"Set device color:")
-        sizer.Add(self.deviceColor, flag=wx.ALIGN_CENTER | wx.ALL)
+        self.device_color = Setting(self,"Set device color:")
+        sizer.Add(self.device_color, flag=wx.ALIGN_CENTER | wx.ALL)
 
-    def SetName(self, name):
-        self.deviceName.SetValue(name)
+        self.max_temp = Setting(self,"Set temperature threshold:")
+        sizer.Add(self.max_temp, flag=wx.ALIGN_CENTER | wx.ALL)
 
-    def SetHeight(self, height):
-        self.windowHeight.SetValue(height)
+        self.max_light = Setting(self,"Set light sensitivity threshold:")
+        sizer.Add(self.max_light, flag=wx.ALIGN_CENTER | wx.ALL)
 
-    def SetColor(self, color):
-        self.deviceColor.SetValue(color)
+        self.apply_button = wx.Button(self, label="apply")
+        sizer.Add(self.apply_button)
+
+    def set_name(self, name):
+        self.device_name.set_value(name)
+
+    def set_height(self, height):
+        self.window_height.set_value(height)
+
+    def set_color(self, color):
+        self.device_name.set_value(color)
+
+    def set_max_temp(self, color):
+        self.max_temp.set_value(color)
+
+    def set_max_light(self, color):
+        self.max_light.SetValue(color)
 
 
+    def get_name(self):
+        return self.device_name.get_value()
+
+    def get_height(self):
+        return self.window_height.get_value()
+
+    def get_color(self):
+        return self.device_name.get_value()
+
+    def get_max_temp(self):
+        return self.max_temp.get_value()
+
+    def get_max_light(self):
+        return self.max_light.get_value()
 
 class Setting(mvc.View):
     def __init__(self, parent, text):
@@ -53,7 +82,10 @@ class Setting(mvc.View):
         sizer.Add(wx.StaticText(self), flag=wx.ALIGN_LEFT)
 
         self.input = wx.TextCtrl(self, size=(80,20),value="test")
-        sizer.Add(input, flag=wx.ALIGN_LEFT)
+        sizer.Add(self.input, flag=wx.ALIGN_LEFT)
 
-    def SetValue(self, value):
+    def set_value(self, value):
         self.input.SetValue(value)
+
+    def get_value(self):
+        return self.input.GetValue()

@@ -2,16 +2,16 @@ import wx
 
 from src import mvc
 from src.controllers.graphview_controller import GraphViewController
+from src.controllers.settingsview_controller import SettingsViewController
 from src.views.manualcontrol_view import ManualControlView
 from src.views.settings_view import SettingsView
 
 
 class RightpanelDataController(mvc.Controller):
-    def __init__(self, view_parent, filter_model, controlunit_manager, tabstate_model):
+    def __init__(self, view_parent, controlunit_manager, tabstate_model):
         super().__init__()
 
         self.view_parent = view_parent
-        self.filter_model = filter_model
         self.controlunit_manager = controlunit_manager
         self.tabstate_model = tabstate_model
         self.current_view = None
@@ -22,17 +22,17 @@ class RightpanelDataController(mvc.Controller):
 
         self.tabstate_model.state.add_callback(self.on_tab_change)
 
-        self.graphview_controller = GraphViewController(self.view_parent, self.filter_model, self.controlunit_manager)
+        self.graphview_controller = GraphViewController(self.view_parent, self.controlunit_manager)
         self.manualcontrol_view = ManualControlView(self.view_parent)
-        self.settings_view = SettingsView(self.view_parent)
+        self.settingsview_controller = SettingsViewController(self.view_parent, controlunit_manager)
 
         self.graphview_controller.view.Hide()
         self.manualcontrol_view.Hide()
-        self.settings_view.Hide()
+        self.settingsview_controller.view.Hide()
 
         self.main_sizer.Add(self.graphview_controller.view, wx.ID_ANY, wx.EXPAND | wx.ALL)
         self.main_sizer.Add(self.manualcontrol_view, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        self.main_sizer.Add(self.settings_view, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        self.main_sizer.Add(self.settingsview_controller.view, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         self.show_graph()
 
@@ -52,7 +52,7 @@ class RightpanelDataController(mvc.Controller):
         self.main_sizer.Layout()
 
     def show_settings(self):
-        self._show_view(self.settings_view)
+        self._show_view(self.settingsview_controller.view)
 
     def show_graph(self):
         self._show_view(self.graphview_controller.view)
