@@ -16,7 +16,7 @@ class ManualControlController(mvc.Controller):
         self.view.set_toggle_down_callback(self.on_toggle_down)
 
         if not self.controlunit_manager.get_selected_units():
-            self.view.set_selected_devices_none()
+            self.view.disable_manual_control()
 
         self.controlunit_manager.units.add_callback(self.on_units_change)
 
@@ -25,10 +25,16 @@ class ManualControlController(mvc.Controller):
             model.selected.add_callback(self.on_unit_selected_change)
 
     def on_unit_selected_change(self, model, data):
-        if self.controlunit_manager.get_selected_units():
-            self.view.set_selected_devices_not_none()
+        units = self.controlunit_manager.get_selected_units()
+        if len(units) == 1:
+            comm, model = units[0]
+            self.view.enable_manual_control()
+            self.view.set_manual_enabled(model.get_manual())
+        elif units:
+            self.view.enable_manual_control()
+            self.view.set_manual_enabled(True)
         else:
-            self.view.set_selected_devices_none()
+            self.view.disable_manual_control()
 
     def on_manual_control_enable(self):
         for comm, model in self.controlunit_manager.get_selected_units():
@@ -41,7 +47,11 @@ class ManualControlController(mvc.Controller):
                 model.set_manual(False)
 
     def on_toggle_up(self):
-        print("toggle up")
+        for comm, model in self.controlunit_manager.get_selected_units():
+            if comm.roll_up():
+                model.set_shutter_status(model.SHUTTER_GOING_UP)
 
     def on_toggle_down(self):
-        print("toggle down")
+        for comm, model in self.controlunit_manager.get_selected_units():
+            if comm.roll_down():
+                model.set_shutter_status(model.SHUTTER_GOING_DOWN)

@@ -4,7 +4,7 @@ from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from logging import getLogger
-
+import threading
 from serial.serialutil import SerialException
 
 from src import serialinterface as ser
@@ -184,30 +184,31 @@ class ControlUnitCommunication:
         if arg:
             cmd_with_arg += "=" + str(arg)
 
-        for i in range(self.COMMAND_RETRY):
-            conn.write(cmd_with_arg)
-            data = conn.readbuffer()
+        with threading.Lock():
+            for i in range(self.COMMAND_RETRY):
+                conn.write(cmd_with_arg)
+                data = conn.readbuffer()
 
-            if f"{command}=" in data:
-                break
+                if f"{command}=" in data:
+                    break
 
-            time.sleep(self.RETRY_SLEEP)
+                time.sleep(self.RETRY_SLEEP)
 
-        return True if f"{command}=OK" in data else False
+            return True if f"{command}=OK" in data else False
 
     @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _get_command(self, command):
         conn = self._get_connection()
+        with threading.Lock():
+            for i in range(self.COMMAND_RETRY):
+                conn.write(command)
+                data = conn.readbuffer()
 
-        for i in range(self.COMMAND_RETRY):
-            conn.write(command)
-            data = conn.readbuffer()
+                if f"{command}=" not in data:
+                    time.sleep(self.RETRY_SLEEP)
+                    continue
 
-            if f"{command}=" not in data:
-                time.sleep(self.RETRY_SLEEP)
-                continue
-
-            return data.split(f"{command}=")[1].strip()
+                return data.split(f"{command}=")[1].strip()
 
     def _get_connection(self):
         if not self._conn:

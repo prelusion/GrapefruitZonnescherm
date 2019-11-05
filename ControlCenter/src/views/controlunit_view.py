@@ -91,6 +91,7 @@ class ControlUnitView(wx.Panel):
         self._refresh(box.panel)
 
     def set_shutter_status(self, value):
+        print("shutter status change:", value)
         box = self.boxes["status"]
         box.label.SetLabelText(translate_shutter_status(value))
         self._refresh(box.panel)
