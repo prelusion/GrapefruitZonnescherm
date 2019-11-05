@@ -1,9 +1,9 @@
+#include "adc.h"
 #include <avr/io.h>
 
 //Initialize ADC
 void adc_init()
 {
-	
 	//The REFS0, REFS1 bit of ADMUX is the voltage amount and how
 	//ADLAR shows the result of the ADC
 	//MUX Chooses the Analog pin on the arduino
@@ -27,10 +27,10 @@ void waitout_conversion()
 }
 
 //Reads the value of the open ADC
-uint16_t adc_read(uint8_t ADCchannel)
+uint16_t adc_read(uint8_t adc_channel)
 {
 	//Check if the right channels are selected
-	ADMUX = (ADMUX & 0b11000000) | (ADCchannel & 0x0F);
+	ADMUX = (ADMUX & 0b11000000) | (adc_channel & 0x0F);
 	//Starts the ADC conversion
 	start_conversion();
 	// Loops as long as the conversion is running 

@@ -13,7 +13,6 @@
 
 //ports includes
 #include "ports/adc.h"
-#include "ports/ports.h"
 
 // Sensor includes
 #include "sensors/distance.h"
@@ -121,6 +120,7 @@ int main(void)
 	init_history();
 	output_ports();
 	serial_init();
+	init_distance_sensor();
 	init_shutter_status();
 	
 	if (!has_unit_id())

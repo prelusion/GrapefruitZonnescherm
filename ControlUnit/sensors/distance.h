@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+/**
+ * \brief 
+ * Initialize the distance sensor.
+ */
 void init_distance_sensor(void);
 
 /**

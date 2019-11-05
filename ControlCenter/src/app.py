@@ -10,8 +10,10 @@ from src.controllers.controlunits_controller import ControlUnitsController
 from src.controllers.filterview_controller import FilterViewController
 from src.controllers.rightpaneldata_controller import RightpanelDataController
 from src.controllers.topview_controller import TopViewController
+from src.controllers.graphview_controller import GraphViewController
+from src.controllers.manualcontrol_controller import ManualControlController
+from src.controllers.settingsview_controller import SettingsViewController
 from src.models.controlunit_manager import ControlUnitManager
-from src.models.filter import FilterModel
 from src.models.tabstate import TabstateModel
 
 
@@ -22,7 +24,6 @@ class App(wx.App):
         self.app_id = None
 
         self.controlunit_manager = ControlUnitManager()
-        self.filter_model = FilterModel()
         self.tabstate_model = TabstateModel()
 
         self.init()
@@ -86,21 +87,22 @@ class MainView(wx.Frame):
 
         # Left panel components
         controlunits_controller = ControlUnitsController(left_panel, self.app.controlunit_manager)
-        filterview_controller = FilterViewController(left_panel, self.app.filter_model)
+        filterview_controller = FilterViewController(left_panel, self.app.controlunit_manager)
         left_panel_sizer_vbox.Add(controlunits_controller.view, 8, wx.EXPAND | wx.ALL)
         left_panel_sizer_vbox.Add(filterview_controller.view, 1, wx.EXPAND | wx.ALL)
         center_panel_sizer.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL, 20)
 
         # Right panel components
-        rightpanel_controller = RightpanelDataController(right_panel, self.app.filter_model,
-                                                         self.app.controlunit_manager, self.app.tabstate_model)
+        rightpanel_controller = RightpanelDataController(right_panel,
+                                                         self.app.controlunit_manager,
+                                                         self.app.tabstate_model)
         right_panel_sizer_vbox.Add(rightpanel_controller.view, 10, wx.EXPAND | wx.ALL)
         center_panel_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
 
 def mainloop():
     app = App(False)
-    mainview = MainView(app, "Grapefruit controlpanel")
+    mainview = MainView(app, "Grapefruit Control Centre")
     mainview.Show()
     app.MainLoop()
 

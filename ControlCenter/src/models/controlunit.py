@@ -3,11 +3,15 @@ from src import mvc
 
 class ControlUnitModel(mvc.Model):
     MEMORY_COUNT_THRESHOLD = 200
+    SHUTTER_UP = 0
+    SHUTTER_DOWN = 1
+    SHUTTER_GOING_UP = 2
+    SHUTTER_GOING_DOWN = 3
 
     def __init__(self, id):
         self.id = mvc.Observable(self, id)
         self.name = mvc.Observable(self, "unnamed")
-        self.online = mvc.Observable(self, False)
+        self.online = mvc.Observable(self, True)
         self.mode = mvc.Observable(self, "auto")
         self.color = mvc.Observable(self, None)
         self.measurements = mvc.Observable(self, [])
