@@ -8,6 +8,8 @@ class ManualControlView(mvc.View):
     def __init__(self, parent):
         super().__init__(parent)
 
+        self.callbacks = {}
+
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.main_sizer)
         self.main_sizer.AddSpacer(50)
@@ -53,11 +55,15 @@ class ManualControlView(mvc.View):
         if e.GetName() == "down":
             if e.GetValue():
                 self.toggle_up.SetValue(0)
+                cb = self.callbacks["toggle-down"]
+                if cb: cb()
             else:
                 self.toggle_down.SetValue(1)
         if e.GetName() == "up":
             if e.GetValue():
                 self.toggle_down.SetValue(0)
+                cb = self.callbacks["toggle-up"]
+                if cb: cb()
             else:
                 self.toggle_up.SetValue(1)
 
@@ -68,12 +74,16 @@ class ManualControlView(mvc.View):
             if e.GetValue():
                 self.toggle_off.SetValue(0)
                 self.enable_manual_control_buttons()
+                cb = self.callbacks["enable-manual-control"]
+                if cb: cb()
             else:
                 self.toggle_on.SetValue(1)
         if e.GetName() == "off":
             if e.GetValue():
                 self.toggle_on.SetValue(0)
                 self.disable_manual_control_buttons()
+                cb = self.callbacks["disable-manual-control"]
+                if cb: cb()
             else:
                 self.toggle_off.SetValue(1)
 
@@ -86,3 +96,15 @@ class ManualControlView(mvc.View):
         self.toggle_up.Disable()
         self.toggle_down.SetValue(0)
         self.toggle_up.SetValue(0)
+
+    def set_enable_manual_control_callback(self, callback):
+        self.callbacks["enable-manual-control"] = callback
+
+    def set_disable_manual_control_callback(self, callback):
+        self.callbacks["disable-manual-control"] = callback
+
+    def set_toggle_up_callback(self, callback):
+        self.callbacks["toggle-up"] = callback
+
+    def set_toggle_down_callback(self, callback):
+        self.callbacks["toggle-down"] = callback
