@@ -171,7 +171,7 @@ class ControlUnitCommunication:
         return self._get_command("GET_MANUAL")
 
     def set_manual(self, boolean):
-        return self._set_command("SET_MANUAL", boolean)
+        return self._set_command("SET_MANUAL", int(boolean))
 
     @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _set_command(self, command, arg=None):
@@ -180,7 +180,7 @@ class ControlUnitCommunication:
 
         cmd_with_arg = command
         if arg:
-            cmd_with_arg += "=" + arg
+            cmd_with_arg += "=" + str(arg)
 
         for i in range(self.COMMAND_RETRY):
             conn.write(cmd_with_arg)

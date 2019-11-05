@@ -17,6 +17,11 @@ class ManualControlController(mvc.Controller):
 
     def on_manual_control_enable(self):
         print("manual enable")
+        for comm, model in self.controlunit_manager.get_selected_units():
+            print("enabling for unit..")
+            if comm.set_manual(True):
+                print("unit is now in manual mode")
+                print("reading manual mode:", comm.get_manual())
 
     def on_manual_control_disable(self):
         print("manual disable")
