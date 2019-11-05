@@ -52,6 +52,8 @@ class FilterViewController(mvc.Controller):
             if self.filters[self.view.CHECKBOX_SELECT_ALL]:
                 model.set_selected(True)
 
+        print(self.controlunit_manager.get_selected_units())
+
     def on_checkbox_connected(self, boolean):
         self.filters[self.view.CHECKBOX_CONNECTED] = boolean
         self._select()
