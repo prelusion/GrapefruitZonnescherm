@@ -26,7 +26,18 @@ class ControlUnitManager:
         self.units.set(units)
 
     def get_units(self):
-        return self.units.get()
+        """
+        :return: [(comm, model), (comm, model)]
+        """
+        return [unit for port, unit in self.units.get().items()]
+
+    def get_selected_units(self):
+        """
+        Returns a list of selected control units
+
+        :return: [(comm, model), (comm, model)]
+        """
+        return [unit for port, unit in self.units.get().items() if unit[1].get_selected()]
 
     def is_port_connected(self, port):
         return port in self.units.get()

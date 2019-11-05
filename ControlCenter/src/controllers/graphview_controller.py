@@ -41,4 +41,5 @@ class GraphViewController(mvc.Controller):
         pass
 
     def on_controlunit_selected_change(self, model, data):
-        print("Model with id:", model.get_id(), "selected:", data)
+        pass
+        # print("Model with id:", model.get_id(), "selected:", data)
