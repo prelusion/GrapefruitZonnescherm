@@ -108,3 +108,13 @@ class ManualControlView(mvc.View):
 
     def set_toggle_down_callback(self, callback):
         self.callbacks["toggle-down"] = callback
+
+    def set_selected_devices_none(self):
+        self.toggle_down.Disable()
+        self.toggle_up.Disable()
+        self.toggle_on.Disable()
+        self.toggle_off.Disable()
+
+    def set_selected_devices_not_none(self):
+        self.toggle_on.Enable()
+        self.toggle_off.Enable()

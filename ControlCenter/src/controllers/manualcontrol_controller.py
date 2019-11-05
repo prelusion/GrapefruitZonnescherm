@@ -15,16 +15,30 @@ class ManualControlController(mvc.Controller):
         self.view.set_toggle_up_callback(self.on_toggle_up)
         self.view.set_toggle_down_callback(self.on_toggle_down)
 
+        if not self.controlunit_manager.get_selected_units():
+            self.view.set_selected_devices_none()
+
+        self.controlunit_manager.units.add_callback(self.on_units_change)
+
+    def on_units_change(self, model, data):
+        for comm, model in self.controlunit_manager.get_units():
+            model.selected.add_callback(self.on_unit_selected_change)
+
+    def on_unit_selected_change(self, model, data):
+        if self.controlunit_manager.get_selected_units():
+            self.view.set_selected_devices_not_none()
+        else:
+            self.view.set_selected_devices_none()
+
     def on_manual_control_enable(self):
-        print("manual enable")
         for comm, model in self.controlunit_manager.get_selected_units():
-            print("enabling for unit..")
             if comm.set_manual(True):
-                print("unit is now in manual mode")
-                print("reading manual mode:", comm.get_manual())
+                model.set_manual(True)
 
     def on_manual_control_disable(self):
-        print("manual disable")
+        for comm, model in self.controlunit_manager.get_selected_units():
+            if comm.set_manual(False):
+                model.set_manual(False)
 
     def on_toggle_up(self):
         print("toggle up")

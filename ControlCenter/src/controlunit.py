@@ -90,7 +90,9 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
                 comm.set_id(current_id)
 
             logger.info(f"control unit with port '{port}' has id: {current_id}")
+
             model = ControlUnitModel(current_id)
+            model.set_manual(comm.get_manual())
 
             controlunit_manager.add_unit(port, comm, model)
 

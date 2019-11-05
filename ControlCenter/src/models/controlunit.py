@@ -12,7 +12,7 @@ class ControlUnitModel(mvc.Model):
         self.id = mvc.Observable(self, id)
         self.name = mvc.Observable(self, "unnamed")
         self.online = mvc.Observable(self, True)
-        self.mode = mvc.Observable(self, "auto")
+        self.manual = mvc.Observable(self, False)
         self.color = mvc.Observable(self, None)
         self.measurements = mvc.Observable(self, [])
         self.shutter_status = mvc.Observable(self, None)
@@ -44,11 +44,11 @@ class ControlUnitModel(mvc.Model):
     def get_online(self):
         return self.online.get()
 
-    def set_mode(self, boolean):
-        self.mode.set(boolean)
+    def set_manual(self, boolean):
+        self.manual.set(boolean)
 
-    def get_mode(self):
-        return self.mode.get()
+    def get_manual(self):
+        return self.manual.get()
 
     def set_shutter_status(self, value):
         self.shutter_status.set(value)
