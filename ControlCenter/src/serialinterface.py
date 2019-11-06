@@ -1,8 +1,11 @@
 from contextlib import contextmanager
+from logging import getLogger
 
 import serial as pyserial
 from serial.serialutil import SerialException
 from serial.tools import list_ports
+
+logger = getLogger(__name__)
 
 
 def get_com_ports():
@@ -45,6 +48,8 @@ class Connection:
         if not self._interface:
             raise IOError("Connection must be opened before writing")
 
+        logger.info(f"write serial data: {data}")
+
         if '\r' not in data:
             data += '\r'
 
@@ -55,7 +60,10 @@ class Connection:
             raise IOError("Connection must be opened before reading")
 
         try:
-            return self._interface.read(self._interface.inWaiting()).decode()
+            data = self._interface.read(self._interface.inWaiting()).decode()
+            if data:
+                logger.info(f"read serial data: {data}")
+            return data
         except UnicodeDecodeError:
             pass
 

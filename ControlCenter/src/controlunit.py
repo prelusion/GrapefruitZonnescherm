@@ -12,7 +12,7 @@ from src import serialinterface as ser
 from src import util
 from src.decorators import retry_on_any_exception, retry_on_given_exception
 from src.models.controlunit import ControlUnitModel
-
+import threading
 logger = getLogger(__name__)
 BAUDRATE = 19200
 
@@ -114,8 +114,10 @@ EXCEPT_RETRIES = 5
 
 
 class ControlUnitCommunication:
-    COMMAND_RETRY = 10
-    RETRY_SLEEP = 0.2
+    COMMAND_RETRY = 2
+    BUFFER_READS = 20
+    BUFFER_SLEEP = 0.05
+    RETRY_SLEEP = 0.1
 
     def __init__(self, port):
         self.id = None
@@ -183,41 +185,67 @@ class ControlUnitCommunication:
     @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _set_command(self, command, arg=None):
         conn = self._get_connection()
-        data = None
 
         cmd_with_arg = command
-        if arg:
+        if arg is not None:
             cmd_with_arg += "=" + str(arg)
 
-        with threading.Lock():
-            for i in range(self.COMMAND_RETRY):
-                conn.write(cmd_with_arg)
-                time.sleep(0.1)
+        logger.info(f"executing command to control unit: {cmd_with_arg}")
+
+        def execute_command():
+            conn.write(cmd_with_arg)
+            time.sleep(0.1)
+            buffer = ""
+            for i in range(self.BUFFER_READS):
                 data = conn.readbuffer()
 
-                if f"{command}=" in data:
-                    if "NOT_IMPLEMENTED" in data:
+                buffer += data
+
+                if f"{command}=" in buffer:
+                    if "NOT_IMPLEMENTED" in buffer:
                         raise CommandNotImplemented
 
-                    break
+                    return True, buffer
 
+                time.sleep(self.BUFFER_SLEEP)
+
+            return False, buffer
+
+        with threading.Lock():
+            buffer = None
+
+            for i in range(self.COMMAND_RETRY):
+                success, buffer = execute_command()
+                if success:
+                    break
                 time.sleep(self.RETRY_SLEEP)
 
-            return True if f"{command}=OK" in data else False
+            return True if f"{command}=OK" in buffer else False
 
     @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _get_command(self, command):
         conn = self._get_connection()
-        with threading.Lock():
-            for i in range(self.COMMAND_RETRY):
-                conn.write(command)
+
+        logger.info(f"executing command to control unit: {command}")
+
+        def execute_command():
+            conn.write(command)
+            time.sleep(0.1)
+            buffer = ""
+
+            for i in range(self.BUFFER_READS):
                 data = conn.readbuffer()
 
-                if f"{command}=" not in data:
-                    time.sleep(self.RETRY_SLEEP)
+                buffer += data
+
+                if f"{command}=" not in buffer:
+                    time.sleep(self.BUFFER_SLEEP)
                     continue
 
-                return data.split(f"{command}=")[1].strip()
+                return buffer.split(f"{command}=")[1].strip()
+
+        with threading.Lock():
+            return execute_command()
 
     def _get_connection(self):
         if not self._conn:

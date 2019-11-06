@@ -47,7 +47,7 @@ class App(wx.App):
         t.start()
 
         t = threading.Thread(target=controlunit.sensor_data_service,
-                             args=(self.controlunit_manager, 5), daemon=True)
+                             args=(self.controlunit_manager, 30), daemon=True)
         t.start()
 
 

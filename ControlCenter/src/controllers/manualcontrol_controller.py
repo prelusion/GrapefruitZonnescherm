@@ -34,19 +34,24 @@ class ManualControlController(mvc.Controller):
         if len(units) == 1:
             comm, model = units[0]
             self.view.enable_manual_control()
-            self.view.set_manual_enabled(model.get_manual())
+            self.view.toggle_manual_control(model.get_manual())
+            if model.get_manual():
+                self.view.enable_shutter_control_buttons()
+                self.view.toggle_shutter_control(model.get_shutter_status())
         elif units:
-            self.view.enable_manual_control()
-            self.view.set_manual_enabled(True)
+            self.view.disable_manual_control()
         else:
             self.view.disable_manual_control()
 
     def on_manual_control_enable(self):
+
         def execute():
             for comm, model in self.controlunit_manager.get_selected_units():
                 try:
                     if comm.set_manual(True):
                         wx.CallAfter(lambda: model.set_manual(True))
+                        wx.CallAfter(lambda: self.view.enable_shutter_control_buttons())
+                        wx.CallAfter(lambda: self.view.manual_toggle.on_toggle_2_success())
                     else:
                         wx.CallAfter(lambda: self.view.show_error("Enable manual control failure"))
                 except controlunit.CommandNotImplemented:
@@ -56,12 +61,14 @@ class ManualControlController(mvc.Controller):
         threading.Thread(target=execute, daemon=True).start()
 
     def on_manual_control_disable(self):
+        self.view.disable_shutter_control_buttons()
 
         def execute():
             for comm, model in self.controlunit_manager.get_selected_units():
                 try:
                     if comm.set_manual(False):
                         wx.CallAfter(lambda: model.set_manual(False))
+                        wx.CallAfter(lambda: self.view.manual_toggle.on_toggle_1_success())
                     else:
                         wx.CallAfter(lambda: self.view.show_error("Disable manual control failure"))
                 except controlunit.CommandNotImplemented:
@@ -77,6 +84,7 @@ class ManualControlController(mvc.Controller):
                 try:
                     if comm.roll_up():
                         wx.CallAfter(lambda: model.set_shutter_status(model.SHUTTER_GOING_UP))
+                        wx.CallAfter(lambda: self.view.shutter_control.on_toggle_1_success())
                     else:
                         wx.CallAfter(lambda: self.view.show_error("Toggle up failure"))
                 except controlunit.CommandNotImplemented:
@@ -92,6 +100,7 @@ class ManualControlController(mvc.Controller):
                 try:
                     if comm.roll_down():
                         wx.CallAfter(lambda: model.set_shutter_status(model.SHUTTER_GOING_DOWN))
+                        wx.CallAfter(lambda: self.view.shutter_control.on_toggle_2_success())
                     else:
                         wx.CallAfter(lambda: self.view.show_error("Toggle down failure"))
                 except controlunit.CommandNotImplemented:

@@ -4,14 +4,52 @@ from src import mvc
 from src import widgets
 
 
+class LabeledDoubleToggleButton(wx.Panel):
+    STATE_TOGGLED = 1
+    STATE_DEFAULT = 0
+
+    def __init__(self, parent, label, button1_label, button2_label, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+
+        self._button1_callback = None
+        self._button2_callback = None
+
+        self.label = widgets.CenteredLabel(parent, label=label, horizontal=False)
+        self.button1 = wx.ToggleButton(parent, id=wx.ID_ANY, label=button1_label, name="1")
+        self.button2 = wx.ToggleButton(parent, id=wx.ID_ANY, label=button2_label, name="2")
+
+        self.button1.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_1)
+        self.button2.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_2)
+
+    def set_button1_callback(self, callback):
+        self._button1_callback = callback
+
+    def set_button2_callback(self, callback):
+        self._button2_callback = callback
+
+    def on_toggle_1(self, e):
+        self.button1.SetValue(self.STATE_DEFAULT)
+        if self._button1_callback: self._button1_callback()
+
+    def on_toggle_2(self, e):
+        self.button2.SetValue(self.STATE_DEFAULT)
+        if self._button2_callback: self._button2_callback()
+
+    def on_toggle_1_success(self):
+        self.button1.SetValue(self.STATE_DEFAULT)
+        self.button2.SetValue(self.STATE_TOGGLED)
+
+    def on_toggle_2_success(self):
+        self.button1.SetValue(self.STATE_TOGGLED)
+        self.button2.SetValue(self.STATE_DEFAULT)
+
+
 class ManualControlView(mvc.View):
     COLOR_ERROR = wx.RED
     COLOR_INFO = wx.BLACK
 
     def __init__(self, parent):
         super().__init__(parent)
-
-        self.callbacks = {}
 
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.main_sizer)
@@ -24,116 +62,77 @@ class ManualControlView(mvc.View):
         self.inner_panel.SetSizer(grid_sizer)
 
         # Manual toggle
-        self.device_name = widgets.CenteredLabel(self.inner_panel, label="Manual Control", horizontal=False)
-        grid_sizer.Add(self.device_name, flag=wx.EXPAND | wx.ALL)
-
-        self.toggle_on = wx.ToggleButton(self.inner_panel, id=wx.ID_ANY, label="ON", name="on")
-        grid_sizer.Add(self.toggle_on, flag=wx.EXPAND | wx.ALL)
-
-        self.toggle_off = wx.ToggleButton(self.inner_panel, id=wx.ID_ANY, label="OFF", name="off")
-        grid_sizer.Add(self.toggle_off, flag=wx.EXPAND | wx.ALL)
-
-        self.toggle_on.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_manual_control)
-        self.toggle_off.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_manual_control)
+        self.manual_toggle = LabeledDoubleToggleButton(self.inner_panel, "Manual Control", "ON", "OFF")
+        grid_sizer.Add(self.manual_toggle.label, flag=wx.EXPAND | wx.ALL)
+        grid_sizer.Add(self.manual_toggle.button1, flag=wx.EXPAND | wx.ALL)
+        grid_sizer.Add(self.manual_toggle.button2, flag=wx.EXPAND | wx.ALL)
 
         # Shutter control
-        self.device_name = widgets.CenteredLabel(self.inner_panel, label="Shutter Control", horizontal=False)
-        grid_sizer.Add(self.device_name, flag=wx.EXPAND | wx.ALL)
+        self.shutter_control = LabeledDoubleToggleButton(self.inner_panel, "Shutter Control", "DOWN", "UP")
+        grid_sizer.Add(self.shutter_control.label, flag=wx.EXPAND | wx.ALL)
+        grid_sizer.Add(self.shutter_control.button1, flag=wx.EXPAND | wx.ALL)
+        grid_sizer.Add(self.shutter_control.button2, flag=wx.EXPAND | wx.ALL)
 
-        self.toggle_down = wx.ToggleButton(self.inner_panel, id=wx.ID_ANY, label="DOWN", name="down")
-        grid_sizer.Add(self.toggle_down, flag=wx.EXPAND | wx.ALL)
-
-        self.toggle_up = wx.ToggleButton(self.inner_panel, id=wx.ID_ANY, label="UP", name="up")
-        grid_sizer.Add(self.toggle_up, flag=wx.EXPAND | wx.ALL)
-
-        self.toggle_down.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_shutter)
-        self.toggle_up.Bind(wx.EVT_TOGGLEBUTTON, self.on_toggle_shutter)
-
-        self.toggle_off.SetValue(1)
         self.disable_manual_control_buttons()
-
-    def on_toggle_shutter(self, event):
-        e = event.GetEventObject()
-
-        if e.GetName() == "down":
-            if e.GetValue():
-                self.toggle_up.SetValue(0)
-                cb = self.callbacks["toggle-down"]
-                if cb: cb()
-            else:
-                self.toggle_down.SetValue(1)
-        if e.GetName() == "up":
-            if e.GetValue():
-                self.toggle_down.SetValue(0)
-                cb = self.callbacks["toggle-up"]
-                if cb: cb()
-            else:
-                self.toggle_up.SetValue(1)
-
-    def on_toggle_manual_control(self, event):
-        e = event.GetEventObject()
-
-        if e.GetName() == "on":
-            if e.GetValue():
-                self.toggle_off.SetValue(0)
-                self.enable_manual_control_buttons()
-                cb = self.callbacks["enable-manual-control"]
-                if cb: cb()
-            else:
-                self.toggle_on.SetValue(1)
-        if e.GetName() == "off":
-            if e.GetValue():
-                self.toggle_on.SetValue(0)
-                self.disable_manual_control_buttons()
-                cb = self.callbacks["disable-manual-control"]
-                if cb: cb()
-                self.toggle_off.SetValue(1)
-            else:
-                self.toggle_off.SetValue(1)
-
-    def enable_manual_control_buttons(self):
-        self.toggle_down.Enable()
-        self.toggle_up.Enable()
-
-    def disable_manual_control_buttons(self):
-        self.toggle_down.Disable()
-        self.toggle_up.Disable()
-        self.toggle_down.SetValue(0)
-        self.toggle_up.SetValue(0)
+        self.disable_shutter_control_buttons()
 
     def set_enable_manual_control_callback(self, callback):
-        self.callbacks["enable-manual-control"] = callback
+        self.manual_toggle.set_button1_callback(callback)
 
     def set_disable_manual_control_callback(self, callback):
-        self.callbacks["disable-manual-control"] = callback
+        self.manual_toggle.set_button2_callback(callback)
 
     def set_toggle_up_callback(self, callback):
-        self.callbacks["toggle-up"] = callback
+        self.shutter_control.set_button2_callback(callback)
 
     def set_toggle_down_callback(self, callback):
-        self.callbacks["toggle-down"] = callback
+        self.shutter_control.set_button1_callback(callback)
 
-    def disable_manual_control(self):
-        self.toggle_down.Disable()
-        self.toggle_up.Disable()
-        self.toggle_on.Disable()
-        self.toggle_off.Disable()
+    def enable_manual_control_buttons(self):
+        self.manual_toggle.button1.Enable()
+        self.manual_toggle.button2.Enable()
+
+    def disable_manual_control_buttons(self):
+        self.manual_toggle.button1.Disable()
+        self.manual_toggle.button2.Disable()
+
+    def enable_shutter_control_buttons(self):
+        self.shutter_control.button1.Enable()
+        self.shutter_control.button2.Enable()
+
+    def disable_shutter_control_buttons(self):
+        self.shutter_control.button1.Disable()
+        self.shutter_control.button2.Disable()
 
     def enable_manual_control(self):
-        self.toggle_on.Enable()
-        self.toggle_off.Enable()
+        self.enable_manual_control_buttons()
 
-    def set_manual_enabled(self, boolean):
+    def disable_manual_control(self):
+        self.disable_manual_control_buttons()
+        self.disable_shutter_control_buttons()
+
+    def toggle_manual_control(self, boolean):
+        """
+        :param boolean: True (on toggled) False (off toggled)
+        """
         if boolean:
-            self.toggle_on.SetValue(1)
-            self.toggle_off.SetValue(0)
-            self.enable_manual_control_buttons()
+            self.manual_toggle.button1.SetValue(LabeledDoubleToggleButton.STATE_TOGGLED)
+            self.manual_toggle.button2.SetValue(LabeledDoubleToggleButton.STATE_DEFAULT)
         else:
-            self.toggle_on.SetValue(0)
-            self.toggle_off.SetValue(1)
-            self.disable_manual_control_buttons()
+            self.manual_toggle.button1.SetValue(LabeledDoubleToggleButton.STATE_DEFAULT)
+            self.manual_toggle.button2.SetValue(LabeledDoubleToggleButton.STATE_TOGGLED)
 
-    def show_error(self, message):
-        print("show dialog")
-        wx.MessageBox(message, 'Error',
-                      wx.OK | wx.ICON_ERROR)
+    def toggle_shutter_control(self, boolean):
+        """
+        :param boolean: True (on toggled) False (off toggled)
+        """
+        if boolean:
+            self.shutter_control.button1.SetValue(LabeledDoubleToggleButton.STATE_TOGGLED)
+            self.shutter_control.button2.SetValue(LabeledDoubleToggleButton.STATE_DEFAULT)
+        else:
+            self.shutter_control.button1.SetValue(LabeledDoubleToggleButton.STATE_DEFAULT)
+            self.shutter_control.button2.SetValue(LabeledDoubleToggleButton.STATE_TOGGLED)
+
+    @staticmethod
+    def show_error(message):
+        wx.MessageBox(message, 'Error', wx.OK | wx.ICON_ERROR)

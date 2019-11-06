@@ -11,7 +11,7 @@ def translate_shutter_status(value):
         0: "up",
         1: "down",
         2: "going up",
-        4: "going down"
+        3: "going down"
     }
     return distributor[value]
 
