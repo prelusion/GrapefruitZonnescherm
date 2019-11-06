@@ -24,11 +24,18 @@ class FilterView(mvc.View):
         h_sizer = wx.BoxSizer(wx.HORIZONTAL)
         title_panel.SetSizer(h_sizer)
         label = widgets.CenteredLabel(title_panel, "Filters")
-        label.SetFont(wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.BOLD))
+        font = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+        label.SetFont(font)
         h_sizer.Add(label, wx.ID_ANY, wx.EXPAND | wx.ALL )
 
+        # Create lower panel and its sizers
+        lower_panel = wx.Panel(self)
+        checkbox_sizer = wx.BoxSizer()
+        checkbox_sizer.AddStretchSpacer(1)
+
+
         # create checkbox panel
-        checkbox_panel = wx.Panel(self)
+        checkbox_panel = wx.Panel(lower_panel)
         checkbox_panel.SetBackgroundColour((255, 255, 255))
         gridsizer = wx.GridSizer(2, 2, 5, 5)
         checkboxes = {}
@@ -38,9 +45,16 @@ class FilterView(mvc.View):
             gridsizer.Add(checkboxes[checkbox], 0, wx.EXPAND)
         checkbox_panel.SetSizer(gridsizer)
 
+        checkbox_sizer.Add(checkbox_panel, 0, wx.ALIGN_CENTER)
+        checkbox_sizer.AddStretchSpacer(1)
+
+        lower_panel.SetSizer(checkbox_sizer)
+
+
+
         # add all elements to main sizer
         main_sizer.Add(title_panel,  wx.ID_ANY, wx.EXPAND | wx.ALL)
-        main_sizer.Add(checkbox_panel,  wx.ID_ANY, wx.EXPAND | wx.ALL)
+        main_sizer.Add(lower_panel,  wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         # set window border
         self.SetWindowStyle(wx.BORDER_SIMPLE)
