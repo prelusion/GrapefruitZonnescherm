@@ -79,8 +79,6 @@ int main(void)
 	init_distance_sensor();
 	init_leds();
 	init_shutter_status();
-
-
 	
 	if (!has_unit_id())
 	{

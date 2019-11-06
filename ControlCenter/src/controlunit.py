@@ -1,4 +1,5 @@
 import concurrent
+import threading
 import time
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
@@ -11,7 +12,7 @@ from src import serialinterface as ser
 from src import util
 from src.decorators import retry_on_any_exception, retry_on_given_exception
 from src.models.controlunit import ControlUnitModel
-
+import threading
 logger = getLogger(__name__)
 BAUDRATE = 19200
 
@@ -19,6 +20,10 @@ Measurement = namedtuple("Measurement", ["timestamp",
                                          "temperature",
                                          "shutter_status",
                                          "light_intensity"])
+
+
+class CommandNotImplemented(Exception):
+    pass
 
 
 def get_online_control_units(connected_ports=set(), unused_ports=set()):
@@ -31,7 +36,7 @@ def get_online_control_units(connected_ports=set(), unused_ports=set()):
                 conn.write("PING")
                 data = conn.readbuffer()
 
-                if "PONG" in data:
+                if data and "PONG" in data:
                     return port
                 time.sleep(0.1)
 
@@ -90,7 +95,11 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
                 comm.set_id(current_id)
 
             logger.info(f"control unit with port '{port}' has id: {current_id}")
+
             model = ControlUnitModel(current_id)
+
+            model.set_manual(comm.get_manual())
+            model.set_online(True)
 
             controlunit_manager.add_unit(port, comm, model)
 
@@ -107,8 +116,10 @@ EXCEPT_RETRIES = 5
 
 
 class ControlUnitCommunication:
-    COMMAND_RETRY = 10
-    RETRY_SLEEP = 0.2
+    COMMAND_RETRY = 2
+    BUFFER_READS = 20
+    BUFFER_SLEEP = 0.05
+    RETRY_SLEEP = 0.1
 
     def __init__(self, port):
         self.id = None
@@ -168,44 +179,75 @@ class ControlUnitCommunication:
         return self._set_command("ROLL_DOWN")
 
     def get_manual(self):
-        return self._get_command("GET_MANUAL")
+        return bool(int(self._get_command("GET_MANUAL")))
 
     def set_manual(self, boolean):
-        return self._set_command("SET_MANUAL", boolean)
+        return self._set_command("SET_MANUAL", int(boolean))
 
     @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _set_command(self, command, arg=None):
         conn = self._get_connection()
-        data = None
 
         cmd_with_arg = command
-        if arg:
-            cmd_with_arg += "=" + arg
+        if arg is not None:
+            cmd_with_arg += "=" + str(arg)
 
-        for i in range(self.COMMAND_RETRY):
+        logger.info(f"executing command to control unit: {cmd_with_arg}")
+
+        def execute_command():
             conn.write(cmd_with_arg)
-            data = conn.readbuffer()
+            time.sleep(0.1)
+            buffer = ""
+            for i in range(self.BUFFER_READS):
+                data = conn.readbuffer()
 
-            if f"{command}=" in data:
-                break
+                buffer += data
 
-            time.sleep(self.RETRY_SLEEP)
+                if f"{command}=" in buffer:
+                    if "NOT_IMPLEMENTED" in buffer:
+                        raise CommandNotImplemented
 
-        return True if f"{command}=OK" in data else False
+                    return True, buffer
+
+                time.sleep(self.BUFFER_SLEEP)
+
+            return False, buffer
+
+        with threading.Lock():
+            buffer = None
+
+            for i in range(self.COMMAND_RETRY):
+                success, buffer = execute_command()
+                if success:
+                    break
+                time.sleep(self.RETRY_SLEEP)
+
+            return True if f"{command}=OK" in buffer else False
 
     @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _get_command(self, command):
         conn = self._get_connection()
 
-        for i in range(self.COMMAND_RETRY):
+        logger.info(f"executing command to control unit: {command}")
+
+        def execute_command():
             conn.write(command)
-            data = conn.readbuffer()
+            time.sleep(0.1)
+            buffer = ""
 
-            if f"{command}=" not in data:
-                time.sleep(self.RETRY_SLEEP)
-                continue
+            for i in range(self.BUFFER_READS):
+                data = conn.readbuffer()
 
-            return data.split(f"{command}=")[1].strip()
+                buffer += data
+
+                if f"{command}=" not in buffer:
+                    time.sleep(self.BUFFER_SLEEP)
+                    continue
+
+                return buffer.split(f"{command}=")[1].strip()
+
+        with threading.Lock():
+            return execute_command()
 
     def _get_connection(self):
         if not self._conn:

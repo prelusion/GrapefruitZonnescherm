@@ -68,7 +68,7 @@ class ControlUnitsController(mvc.Controller):
         view = ControlUnitView(self.view)
         view.set_connection(model.get_online())
         view.set_name(model.get_id())
-        view.set_mode(model.get_mode())
+        view.set_manual(model.get_manual())
         view.set_shutter_status(model.get_shutter_status())
         view.set_device_color(randcolor())
         view.set_temperature(model.get_temperature())
@@ -79,7 +79,7 @@ class ControlUnitsController(mvc.Controller):
         model.shutter_status.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_shutter_status(value)))
         model.online.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_connection(value)))
         model.color.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_device_color(value)))
-        model.mode.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_mode(value)))
+        model.manual.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_manual(value)))
         model.selected.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_selected(value)))
 
         view.set_on_click_callback(lambda e: self.on_unit_click(model, view))

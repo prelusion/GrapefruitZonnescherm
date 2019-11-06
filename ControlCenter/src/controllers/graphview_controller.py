@@ -13,7 +13,6 @@ class GraphViewController(mvc.Controller):
 
         self.controlunit_manager.units.add_callback(self.on_controlunits_change)
 
-
     def on_controlunits_change(self, model, data):
         for port, unit in data.items():
             comm, model = unit

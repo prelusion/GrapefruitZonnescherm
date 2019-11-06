@@ -11,7 +11,7 @@ def translate_shutter_status(value):
         0: "up",
         1: "down",
         2: "going up",
-        4: "going down"
+        3: "going down"
     }
     return distributor[value]
 
@@ -91,6 +91,7 @@ class ControlUnitView(wx.Panel):
         self._refresh(box.panel)
 
     def set_shutter_status(self, value):
+
         box = self.boxes["status"]
         box.label.SetLabelText(translate_shutter_status(value))
         self._refresh(box.panel)
@@ -105,9 +106,9 @@ class ControlUnitView(wx.Panel):
         box.label.SetLabelText(str(value))
         self._refresh(box.panel)
 
-    def set_mode(self, value):
+    def set_manual(self, boolean):
         box = self.boxes["mode"]
-        box.label.SetLabelText(str(value))
+        box.label.SetLabelText("manual" if boolean else "auto")
         self._refresh(box.panel)
 
     def _refresh(self, panel):
