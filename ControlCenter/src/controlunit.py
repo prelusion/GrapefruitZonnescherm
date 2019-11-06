@@ -1,6 +1,7 @@
 import concurrent
 import threading
 import time
+import wx
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
@@ -12,9 +13,12 @@ from src import serialinterface as ser
 from src import util
 from src.decorators import retry_on_any_exception, retry_on_given_exception
 from src.models.controlunit import ControlUnitModel
+from src import db
+
 
 logger = getLogger(__name__)
 BAUDRATE = 19200
+
 
 Measurement = namedtuple("Measurement", ["timestamp",
                                          "temperature",
@@ -88,11 +92,12 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
             comm = ControlUnitCommunication(port)
 
             current_id = comm.get_id()
+            initialized = True
 
             if not current_id:
+                initialized = False
                 unit_id = util.generate_16bit_int()
                 current_id = util.encode_controlunit_id(app_id, unit_id)
-                comm.set_id(current_id)
 
             logger.info(f"control unit with port '{port}' has id: {current_id}")
 
@@ -100,6 +105,8 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
 
             model.set_manual(comm.get_manual())
             model.set_online(True)
+            model.set_initialized(initialized)
+
 
             history = comm.get_sensor_history()
             # TODO do something with sensor history
@@ -129,6 +136,9 @@ class ControlUnitCommunication:
         self.com_port = port
         self._conn = None
 
+    def initialize(self, id):
+        pass
+
     def get_up_time(self):
         return self._get_command("GET_UP_TIME")
 
@@ -151,7 +161,10 @@ class ControlUnitCommunication:
         if not data:
             return
 
-        temp, light, shutter = data.split(",")
+        try:
+            temp, light, shutter = data.split(",")
+        except ValueError:
+            return None
 
         return Measurement(
             time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
@@ -190,7 +203,7 @@ class ControlUnitCommunication:
             temp, light, shutter = value.split(",")
 
             measurement = Measurement(
-                time.time() - ((i+1) * 60), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                time.time() - ((i + 1) * 60), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
                 int(shutter), int(light))
 
             measurements.append(measurement)
@@ -224,7 +237,9 @@ class ControlUnitCommunication:
         return self._set_command("ROLL_DOWN")
 
     def get_manual(self):
-        return bool(int(self._get_command("GET_MANUAL")))
+        value = self._get_command("GET_MANUAL")
+        if value: value = bool(int(value))
+        return value
 
     def set_manual(self, boolean):
         return self._set_command("SET_MANUAL", int(boolean))

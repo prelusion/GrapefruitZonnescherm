@@ -1,4 +1,5 @@
 from src import mvc
+import wx
 
 
 class ControlUnitModel(mvc.Model):
@@ -9,16 +10,23 @@ class ControlUnitModel(mvc.Model):
     SHUTTER_GOING_DOWN = 3
 
     def __init__(self, id):
+        self.initialized = mvc.Observable(self, False)
         self.id = mvc.Observable(self, id)
-        self.name = mvc.Observable(self, "unnamed")
+        self.name = mvc.Observable(self, "uninitialized")
         self.online = mvc.Observable(self, True)
         self.manual = mvc.Observable(self, False)
-        self.color = mvc.Observable(self, None)
+        self.color = mvc.Observable(self, wx.RED)
         self.measurements = mvc.Observable(self, [])
         self.shutter_status = mvc.Observable(self, None)
         self.temperature = mvc.Observable(self, 0)
         self.light_intensity = mvc.Observable(self, 0)
         self.selected = mvc.Observable(self, False)
+
+    def set_initialized(self, boolean):
+        self.initialized = boolean
+
+    def get_initialized(self):
+        return self.initialized
 
     def set_id(self, id):
         self.id.set(id)
