@@ -3,8 +3,7 @@ import wx
 from src import mvc
 from src.controllers.graphview_controller import GraphViewController
 from src.controllers.settingsview_controller import SettingsViewController
-from src.views.manualcontrol_view import ManualControlView
-from src.views.settings_view import SettingsView
+from src.controllers.manualcontrol_controller import ManualControlController
 
 
 class RightpanelDataController(mvc.Controller):
@@ -23,18 +22,19 @@ class RightpanelDataController(mvc.Controller):
         self.tabstate_model.state.add_callback(self.on_tab_change)
 
         self.graphview_controller = GraphViewController(self.view, self.controlunit_manager)
-        self.manualcontrol_view = ManualControlView(self.view)
+        self.manualcontrolview_controller = ManualControlController(self.view, self.controlunit_manager)
         self.settingsview_controller = SettingsViewController(self.view, controlunit_manager)
 
         self.graphview_controller.view.Hide()
-        self.manualcontrol_view.Hide()
+        self.manualcontrolview_controller.view.Hide()
         self.settingsview_controller.view.Hide()
 
         self.main_sizer.Add(self.graphview_controller.view, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        self.main_sizer.Add(self.manualcontrol_view, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        self.main_sizer.Add(self.manualcontrolview_controller.view, wx.ID_ANY, wx.EXPAND | wx.ALL, 10)
         self.main_sizer.Add(self.settingsview_controller.view, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         self.show_graph()
+        self.show_manual_control()
 
     def on_tab_change(self, model, data):
         distributor = {
@@ -58,4 +58,4 @@ class RightpanelDataController(mvc.Controller):
         self._show_view(self.graphview_controller.view)
 
     def show_manual_control(self):
-        self._show_view(self.manualcontrol_view)
+        self._show_view(self.manualcontrolview_controller.view)

@@ -67,10 +67,10 @@ void timer_init(void)
    }
 
    // Set up Timer 2
-   // Values for 1ms and 10ms ticks are provided for various crystals
-   OCR2A = (uint16_t)156;   		     // ~10ms = (1024/16.000.000) * 156
-   TCCR2B = (1 << CS20) | (1 << CS21) | (1 << CS22) | (1 << WGM22);  // prescale op 1024, top counter = value OCR2A (CTC mode)
-   TIMSK2 = 1 << OCIE2A;   		     // Timer 2 Output Compare A Match Interrupt Enable
+   OCR2A = (uint8_t)156; // ~10ms = (1024/16.000.000) * 156
+   TCCR2A = (1 << WGM21) | (1 << COM2A1); // Enable CTC mode and set clear compare match.
+   TCCR2B = (1 << CS20) | (1 << CS21) | (1 << CS22); // prescale op 1024
+   TIMSK2 = (1 << OCIE2A); // Timer 2 Output Compare A Match Interrupt Enable
 }
 
 void timer_start(void)

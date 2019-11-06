@@ -154,6 +154,9 @@
     <Compile Include="ports\adc.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="sensors\temperature.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="serial.c">
       <SubType>compile</SubType>
     </Compile>
@@ -164,6 +167,18 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="scheduler.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="status\output.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="status\output.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="status\shutter.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="status\shutter.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="storage\history.c">
@@ -220,11 +235,9 @@
     <Compile Include="sensors\temperature.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="sensors\temperature.h">
-      <SubType>compile</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="status" />
     <Folder Include="ports" />
     <Folder Include="storage" />
     <Folder Include="sensors" />

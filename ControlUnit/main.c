@@ -3,7 +3,13 @@
 
 #include "scheduler.h"
 #include "data.h"
+
+//serial includes
 #include "serial.h"
+
+//status includes
+#include "status/shutter.h"
+#include "status/output.h"
 
 //ports includes
 #include "ports/adc.h"
@@ -16,6 +22,10 @@
 // Storage includes
 #include "storage/unit_id.h"
 #include "storage/history.h"
+#include "storage/temperature_threshold.h"
+#include "storage/light_intensity_threshold.h"
+#include "storage/window_height.h"
+
 
 void update_history(void)
 {
@@ -56,12 +66,19 @@ void update_light_intensity(void)
 	set_current_light_intensity(get_light_intensity());
 }
 
+void check_thresholds(void)
+{
+	check_shutter_status();
+}
+
 int main(void)
 {
 	adc_init();
 	init_history();
 	serial_init();
 	init_distance_sensor();
+	init_leds();
+	init_shutter_status();
 	
 	if (!has_unit_id())
 	{
@@ -80,10 +97,13 @@ int main(void)
 		
 	// Initialize the timer.
 	timer_init();
+	
+	init_distance_sensor();
 
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
 	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
 	timer_add_task(&update_history, (uint16_t)200, (uint16_t)6000); // 6000 * 10ms = 60sec
+	timer_add_task(&check_thresholds, (uint16_t)10, (uint16_t)6000); // 6000 * 10ms = 60sec
 	timer_start();
 	
 	if (get_current_unit_status() == STARTING)
