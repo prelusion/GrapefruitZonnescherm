@@ -21,54 +21,71 @@ Command* get_available_commands()
 	
 	strcpy(available_commands[0].name, "PING");
 	available_commands[0].function = &cmd_ping;
+	available_commands[0].parameters_required = 0;
 	
 	strcpy(available_commands[1].name, "INITIALIZE");
 	available_commands[1].function = &cmd_initialize;
+	available_commands[1].parameters_required = 1;
 	
 	strcpy(available_commands[2].name, "RESET");
 	available_commands[2].function = &cmd_reset;
+	available_commands[2].parameters_required = 0;
 	
 	strcpy(available_commands[3].name, "GET_ID");
 	available_commands[3].function = &cmd_get_id;
+	available_commands[3].parameters_required = 0;
 	
 	strcpy(available_commands[4].name, "SET_ID");
 	available_commands[4].function = &cmd_set_id;
+	available_commands[4].parameters_required = 1;
 	
 	strcpy(available_commands[6].name, "GET_WINDOW_HEIGHT");
 	available_commands[6].function = &cmd_get_window_height;
+	available_commands[6].parameters_required = 0;
 	
 	strcpy(available_commands[7].name, "SET_WINDOW_HEIGHT");
 	available_commands[7].function = &cmd_set_window_height;
+	available_commands[7].parameters_required = 1;
 	
 	strcpy(available_commands[8].name, "GET_TEMP_THRESHOLD");
 	available_commands[8].function = &cmd_get_temperature_threshold;
+	available_commands[8].parameters_required = 0;
 	
 	strcpy(available_commands[9].name, "SET_TEMP_THRESHOLD");
 	available_commands[9].function = &cmd_set_temperature_threshold;
+	available_commands[9].parameters_required = 1;
 	
 	strcpy(available_commands[10].name, "GET_LI_THRESHOLD");
 	available_commands[10].function = &cmd_get_light_intensity_threshold;
+	available_commands[10].parameters_required = 0;
 	
 	strcpy(available_commands[11].name, "SET_LI_THRESHOLD");
 	available_commands[11].function = &cmd_set_light_intensity_threshold;
+	available_commands[11].parameters_required = 1;
 	
 	strcpy(available_commands[12].name, "GET_MANUAL");
 	available_commands[12].function = &cmd_get_manual;
+	available_commands[12].parameters_required = 0;
 	
 	strcpy(available_commands[13].name, "SET_MANUAL");
 	available_commands[13].function = &cmd_set_manual;
+	available_commands[13].parameters_required = 1;
 	
 	strcpy(available_commands[14].name, "GET_SENSOR_DATA");
 	available_commands[14].function = &cmd_get_sensor_data;
+	available_commands[14].parameters_required = 0;
 	
 	strcpy(available_commands[15].name, "GET_SENSOR_HISTORY");
 	available_commands[15].function = &cmd_get_sensor_history;
+	available_commands[15].parameters_required = 0;
 	
 	strcpy(available_commands[16].name, "ROLL_UP");
 	available_commands[16].function = &cmd_roll_up;
+	available_commands[16].parameters_required = 0;
 	
 	strcpy(available_commands[17].name, "ROLL_DOWN");
 	available_commands[17].function = &cmd_roll_down;
+	available_commands[17].parameters_required = 0;
 	
 	return available_commands;
 }
@@ -98,7 +115,7 @@ void process_input(char* input)
 	}
 }
 
-void execute_command(char name[20], char* parameters)
+void execute_command(char name[20], char parameters[20])
 {
 	// TODO load available commands only once
 	Command* commands = get_available_commands();
@@ -109,10 +126,14 @@ void execute_command(char name[20], char* parameters)
 		
 		if (strcmp(command.name, name) == 0)
 		{
-			char* result = command.function(parameters);
+			char result[50]; // Result buffer.
+			if (command.parameters_required && !strlen(parameters))
+			{
+				strcpy(result, "ERROR");
+			} else {
+				command.function(parameters, (char*)&result);
+			}
 			printf("%s=%s\n", name, result);
-			
-			free(result);
 			free(commands);
 			return;
 		}
@@ -122,37 +143,32 @@ void execute_command(char name[20], char* parameters)
 	free(commands);
 }
 
-char* cmd_ping(char* parameters)
+void cmd_ping(char parameters[20], char result[50])
 {
-	char* result = malloc(5);
 	strcpy(result, "PONG");
-	
-	return result;
 }
 
-char* cmd_initialize(char* parameters)
+void cmd_initialize(char parameters[20], char result[50])
 {
-	char* result = malloc(6);
-	
 	if (get_current_unit_status() != INITIALIZING) {
 		// Don't initialize the unit when it already is.
 		strcpy(result, "ERROR");
-		return result;
+		return;
 	}
 	
 	char* parameter;
 	
 	parameter = strtok(parameters, ",");
-	free(cmd_set_id(parameter));
+	cmd_set_id(parameter, result);
 	
 	parameter = strtok(NULL, ",");
-	free(cmd_set_temperature_threshold(parameter));
+	cmd_set_temperature_threshold(parameter, result);
 	
 	parameter = strtok(NULL, ",");
-	free(cmd_set_light_intensity_threshold(parameter));
+	cmd_set_light_intensity_threshold(parameter, result);
 	
 	parameter = strtok(NULL, ",");
-	free(cmd_set_manual(parameter));
+	cmd_set_manual(parameter, result);
 	
 	// If the last parameter contains a value the init was successful.
 	if (parameter)
@@ -162,14 +178,12 @@ char* cmd_initialize(char* parameters)
 	}
 	else
 	{
-		free(cmd_reset(NULL));
+		cmd_reset(NULL, result);
 		strcpy(result, "ERROR");
 	}
-	
-	return result;
 }
 
-char* cmd_reset(char* parameters)
+void cmd_reset(char parameters[20], char result[50])
 {
 	set_unit_id(0);
 	set_temperature_threshold(0);
@@ -179,24 +193,17 @@ char* cmd_reset(char* parameters)
 	clear_history();
 	set_current_unit_status(INITIALIZING);
 	
-	char* result = malloc(3);
 	strcpy(result, "OK");
-	
-	return result;
 }
 
-char* cmd_get_id(char* parameters)
+void cmd_get_id(char parameters[20], char result[50])
 {
-	char* result = malloc(11);
 	sprintf(result, "%lu", get_unit_id());
-	
-	return result;
 }
 
-char* cmd_set_id(char* parameters)
+void cmd_set_id(char parameters[20], char result[50])
 {
 	uint32_t unit_id = atol(parameters);
-	char* result = malloc(6);
 	
 	if (unit_id)
 	{
@@ -207,22 +214,16 @@ char* cmd_set_id(char* parameters)
 	{
 		strcpy(result, "ERROR");
 	}
-	
-	return result;
 }
 
-char* cmd_get_window_height(char* parameters)
+void cmd_get_window_height(char parameters[20], char result[50])
 {
-	char* result = malloc(6);
 	sprintf(result, "%u", get_window_height());
-	
-	return result;
 }
 
-char* cmd_set_window_height(char* parameters)
+void cmd_set_window_height(char parameters[20], char result[50])
 {
 	uint16_t window_height = atoi(parameters);
-	char* result = malloc(6);
 	
 	if (window_height)
 	{
@@ -233,22 +234,16 @@ char* cmd_set_window_height(char* parameters)
 	{
 		strcpy(result, "ERROR");
 	}
-	
-	return result;
 }
 
-char* cmd_get_temperature_threshold(char* parameters)
+void cmd_get_temperature_threshold(char parameters[20], char result[50])
 {
-	char* result = malloc(5);
 	sprintf(result, "%d", get_temperature_threshold());
-	
-	return result;
 }
 
-char* cmd_set_temperature_threshold(char* parameters)
+void cmd_set_temperature_threshold(char parameters[20], char result[50])
 {
 	int8_t temperature_threshold = atoi(parameters);
-	char* result = malloc(6);
 	
 	if (temperature_threshold)
 	{
@@ -259,22 +254,16 @@ char* cmd_set_temperature_threshold(char* parameters)
 	{
 		strcpy(result, "ERROR");
 	}
-	
-	return result;
 }
 
-char* cmd_get_light_intensity_threshold(char* parameters)
+void cmd_get_light_intensity_threshold(char parameters[20], char result[50])
 {
-	char* result = malloc(4);
 	sprintf(result, "%u", get_light_intensity_threshold());
-	
-	return result;
 }
 
-char* cmd_set_light_intensity_threshold(char* parameters)
+void cmd_set_light_intensity_threshold(char parameters[20], char result[50])
 {
 	uint8_t light_intensity_threshold = atoi(parameters);
-	char* result = malloc(6);
 	
 	if (light_intensity_threshold)
 	{
@@ -285,37 +274,26 @@ char* cmd_set_light_intensity_threshold(char* parameters)
 	{
 		strcpy(result, "ERROR");
 	}
-	
-	return result;
 }
 
-char* cmd_get_manual(char* parameters)
+void cmd_get_manual(char parameters[20], char result[50])
 {
-	char* result = malloc(4);
 	sprintf(result, "%u", get_manual());
-	
-	return result;
 }
 
-char* cmd_set_manual(char* parameters)
+void cmd_set_manual(char parameters[20], char result[50])
 {
 	set_manual(atoi(parameters));
-	char* result = malloc(3);
 	strcpy(result, "OK");
-	
-	return result;
 }
 
-char* cmd_get_sensor_data(char* parameters)
+void cmd_get_sensor_data(char parameters[20], char result[50])
 {
-	char* result = malloc(16);
-	
 	// When the unit is initializing sensor data cannot be read.
 	if (get_current_unit_status() == INITIALIZING)
 	{
 		strcpy(result, "ERROR");
-		
-		return result;
+		return;
 	}
 	
 	int8_t current_temperature = get_current_temperature();
@@ -323,11 +301,9 @@ char* cmd_get_sensor_data(char* parameters)
 	ShutterStatus current_shutter_status = get_current_shutter_status();
 	
 	sprintf(result, "%d,%u,%u", current_temperature, current_light_intensity, current_shutter_status);
-	
-	return result;
 }
 
-char* cmd_get_sensor_history(char* parameters)
+void cmd_get_sensor_history(char parameters[20], char result[50])
 {
 	History history = load_history();
 	
@@ -350,8 +326,8 @@ char* cmd_get_sensor_history(char* parameters)
 	{
 		uint8_t current_chunk_size = (chunk_index == (chunk_count - 1)) ? last_chunk_size : chunk_size;
 		
-		// Each measurement can take up to 10 bytes as string.
-		char* argument = malloc((current_chunk_size * 10) - 1);
+		// Reserve 50 bytes for the readings.
+		char argument[50];
 			
 		for (uint8_t i = 0; i < current_chunk_size; i++)
 		{
@@ -371,8 +347,6 @@ char* cmd_get_sensor_history(char* parameters)
 		}
 		
 		printf("GET_SENSOR_HISTORY=%s\n", argument);
-		
-		free(argument);
 	}
 	
 	// Free the history data.
@@ -381,24 +355,27 @@ char* cmd_get_sensor_history(char* parameters)
 	// History has been sent so can be cleared.
 	clear_history();
 	
-	char* result = malloc(3);
 	strcpy(result, "OK");
-	
-	return result;
 }
 
-char* cmd_roll_up(char* parameters)
+void cmd_roll_up(char parameters[20], char result[50])
 {
-	char* result = malloc(16);
-	strcpy(result, "NOT_IMPLEMENTED");
+	if (!get_manual())
+	{
+		strcpy(result, "ERROR");
+		return;
+	}
 	
-	return result;
+	strcpy(result, "NOT_IMPLEMENTED");
 }
 
-char* cmd_roll_down(char* parameters)
+void cmd_roll_down(char parameters[20], char result[50])
 {
-	char* result = malloc(16);
-	strcpy(result, "NOT_IMPLEMENTED");
+	if (!get_manual())
+	{
+		strcpy(result, "ERROR");
+		return;
+	}
 	
-	return result;
+	strcpy(result, "NOT_IMPLEMENTED");
 }
