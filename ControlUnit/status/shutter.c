@@ -1,8 +1,8 @@
+#include "shutter.h"
 #include <avr/io.h>
 #include "../scheduler.h"
 
 //status includes
-#include "shutter.h"
 #include "output.h"
 
 // Sensor includes
