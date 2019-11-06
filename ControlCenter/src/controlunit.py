@@ -36,7 +36,7 @@ def get_online_control_units(connected_ports=set(), unused_ports=set()):
                 conn.write("PING")
                 data = conn.readbuffer()
 
-                if "PONG" in data:
+                if data and "PONG" in data:
                     return port
                 time.sleep(0.1)
 
