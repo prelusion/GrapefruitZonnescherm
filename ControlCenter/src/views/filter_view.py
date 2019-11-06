@@ -26,7 +26,7 @@ class FilterView(mvc.View):
         label = widgets.CenteredLabel(title_panel, "Filters")
         font = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
         label.SetFont(font)
-        h_sizer.Add(label, wx.ID_ANY, wx.EXPAND | wx.ALL )
+        h_sizer.Add(label, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         # Create lower panel and its sizers
         lower_panel = wx.Panel(self)
@@ -36,13 +36,20 @@ class FilterView(mvc.View):
         # create checkbox panel
         checkbox_panel = wx.Panel(lower_panel)
         checkbox_panel.SetBackgroundColour((255, 255, 255))
-        gridsizer = wx.GridSizer(2, 2, 5, 5)
-        checkboxes = {}
-        for checkbox in (self.CHECKBOX_CONNECTED, self.CHECKBOX_STATUS_UP,
-                         self.CHECKBOX_SELECT_ALL, self.CHECKBOX_STATUS_DOWN):
-            checkboxes[checkbox] = wx.CheckBox(checkbox_panel, label=checkbox)
-            gridsizer.Add(checkboxes[checkbox], 0, wx.EXPAND)
+        gridsizer = wx.GridSizer(2, 3, 0, 0)
+
+        checkboxes = [wx.CheckBox(checkbox_panel, label=self.CHECKBOX_CONNECTED), wx.CheckBox(checkbox_panel, label=self.CHECKBOX_STATUS_UP),
+                      wx.CheckBox(checkbox_panel, label=self.CHECKBOX_SELECT_ALL), wx.CheckBox(checkbox_panel, label=self.CHECKBOX_STATUS_DOWN)]
+        counter = 0
+        for index in range(6):
+            if index == 1 or index == 4:
+                gridsizer.AddStretchSpacer(10)
+            else:
+                gridsizer.Add(checkboxes[counter], 0)
+                counter += 1
         checkbox_panel.SetSizer(gridsizer)
+        checkbox_panel.Layout()
+
 
         # Add checkbox panel to lower panel and center it
         checkbox_sizer.Add(checkbox_panel, 0, wx.ALIGN_CENTER)
