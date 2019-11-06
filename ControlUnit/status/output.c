@@ -46,32 +46,3 @@ void control_leds(ShutterStatus status)
 	}
 }
 
-
-case OPEN:
-//Makes the green led emit light consistently
-PORTB = 0b00000010;
-break;
-//Checks if the red and yellow leds are already emitting light. If so stop. If not emit light.
-case CLOSING:
-if (PORTB & 0b00000101 == 0b00000101)
-{
-	PORTB = 0b00000000;
-}
-else
-{
-	PORTB = 0b00000101;
-}
-break;
-//Checks if the green and yellow leds are already emitting light. If so stop. If not emit light.
-case OPENING:
-if (PORTB & 0b00000011 == 0b00000011)
-{
-	PORTB = 0b00000000;
-}
-else
-{
-	PORTB = 0b00000011;
-}
-break;
-}
-}

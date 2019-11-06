@@ -120,7 +120,7 @@ int main(void)
 	serial_init();
 	init_distance_sensor();
 	output_ports();
-	init_shutter_status()
+	init_shutter_status();
 
 
 	
