@@ -4,7 +4,7 @@
 
 int8_t get_temperature(void)
 {
-	return (int8_t)((adc_read(PINC0)*(5.0/1024.0))-0.5)*100;
+	return (int8_t)(((adc_read(PINC0)*(5.0/1024.0))-0.5)*100);
 }
 
 uint8_t temperature_sensor_connected(void)
