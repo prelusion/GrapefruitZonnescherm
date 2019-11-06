@@ -1,10 +1,11 @@
 import concurrent
+import threading
 import time
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from logging import getLogger
-import threading
+
 from serial.serialutil import SerialException
 
 from src import serialinterface as ser
@@ -19,6 +20,10 @@ Measurement = namedtuple("Measurement", ["timestamp",
                                          "temperature",
                                          "shutter_status",
                                          "light_intensity"])
+
+
+class CommandNotImplemented(Exception):
+    pass
 
 
 def get_online_control_units(connected_ports=set(), unused_ports=set()):
@@ -187,9 +192,13 @@ class ControlUnitCommunication:
         with threading.Lock():
             for i in range(self.COMMAND_RETRY):
                 conn.write(cmd_with_arg)
+                time.sleep(0.1)
                 data = conn.readbuffer()
 
                 if f"{command}=" in data:
+                    if "NOT_IMPLEMENTED" in data:
+                        raise CommandNotImplemented
+
                     break
 
                 time.sleep(self.RETRY_SLEEP)

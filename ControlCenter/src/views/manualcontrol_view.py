@@ -5,6 +5,9 @@ from src import widgets
 
 
 class ManualControlView(mvc.View):
+    COLOR_ERROR = wx.RED
+    COLOR_INFO = wx.BLACK
+
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -15,7 +18,7 @@ class ManualControlView(mvc.View):
         self.main_sizer.AddSpacer(50)
 
         self.inner_panel = wx.Panel(self)
-        self.main_sizer.Add(self.inner_panel, wx.ID_ANY)
+        self.main_sizer.Add(self.inner_panel, 20, wx.CENTER)
 
         grid_sizer = wx.GridSizer(14, 3, 0, 20)
         self.inner_panel.SetSizer(grid_sizer)
@@ -129,3 +132,8 @@ class ManualControlView(mvc.View):
             self.toggle_on.SetValue(0)
             self.toggle_off.SetValue(1)
             self.disable_manual_control_buttons()
+
+    def show_error(self, message):
+        print("show dialog")
+        wx.MessageBox(message, 'Error',
+                      wx.OK | wx.ICON_ERROR)
