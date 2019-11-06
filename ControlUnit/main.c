@@ -69,7 +69,6 @@ void update_light_intensity(void)
 
 void check_thresholds(void)
 {
-	printf("%u manual ", get_manual());
 	if (!get_manual())
 	{
 		check_shutter_status();

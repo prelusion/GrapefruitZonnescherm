@@ -3,7 +3,6 @@
 uint8_t current_serial_connection = 0;
 int8_t current_temperature = 0;
 uint8_t current_light_intensity = 0;
-uint8_t shutter_task_index = 0;
 uint16_t current_distance = 0;
 ShutterStatus current_shutter_status = 0;
 UnitStatus current_unit_status = STARTING;
@@ -67,14 +66,3 @@ void set_current_unit_status(UnitStatus unit_status)
 {
 	current_unit_status = unit_status;
 }
-
-uint8_t get_shutter_task_index(void)
-{
-	return shutter_task_index;
-}
-
-void set_shutter_task_index(uint8_t task_index)
-{
-	shutter_task_index = task_index;
-}
-

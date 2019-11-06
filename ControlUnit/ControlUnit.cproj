@@ -169,16 +169,16 @@
     <Compile Include="scheduler.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="status\output.c">
+    <Compile Include="output\output.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="status\output.h">
+    <Compile Include="output\output.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="status\shutter.c">
+    <Compile Include="output\shutter.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="status\shutter.h">
+    <Compile Include="output\shutter.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="storage\history.c">
@@ -237,7 +237,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="status" />
+    <Folder Include="output" />
     <Folder Include="ports" />
     <Folder Include="storage" />
     <Folder Include="sensors" />

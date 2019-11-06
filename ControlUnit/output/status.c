@@ -1,5 +1,5 @@
 #include <avr/io.h>
-#include "output.h"
+#include "status.h"
 
 //Sets the led ports
 void init_leds(void)

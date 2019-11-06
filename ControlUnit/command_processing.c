@@ -6,7 +6,7 @@
 
 
 //status includes
-#include "status/shutter.h"
+#include "output/shutter.h"
 
 // Storage includes.
 #include "storage/unit_id.h"
