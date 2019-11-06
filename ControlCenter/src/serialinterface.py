@@ -48,7 +48,7 @@ class Connection:
         if not self._interface:
             raise IOError("Connection must be opened before writing")
 
-        logger.info(f"write serial data: {data}")
+        # logger.info(f"write serial data: {data}")
 
         if '\r' not in data:
             data += '\r'
@@ -61,8 +61,8 @@ class Connection:
 
         try:
             data = self._interface.read(self._interface.inWaiting()).decode()
-            if data:
-                logger.info(f"read serial data: {data}")
+            # if data:
+                # logger.info(f"read serial data: {data}")
             return data
         except UnicodeDecodeError:
             pass

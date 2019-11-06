@@ -47,7 +47,7 @@ class App(wx.App):
         t.start()
 
         t = threading.Thread(target=controlunit.sensor_data_service,
-                             args=(self.controlunit_manager, 30), daemon=True)
+                             args=(self.controlunit_manager, 5), daemon=True)
         t.start()
 
 
@@ -98,10 +98,6 @@ class MainView(wx.Frame):
                                                          self.app.tabstate_model)
         right_panel_sizer_vbox.Add(rightpanel_controller.view, 10, wx.EXPAND | wx.ALL)
         center_panel_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-
-
-def on_click(e):
-    print(e)
 
 
 def mainloop():

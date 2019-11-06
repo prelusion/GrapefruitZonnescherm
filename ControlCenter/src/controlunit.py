@@ -97,7 +97,9 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
             logger.info(f"control unit with port '{port}' has id: {current_id}")
 
             model = ControlUnitModel(current_id)
+
             model.set_manual(comm.get_manual())
+            model.set_online(True)
 
             controlunit_manager.add_unit(port, comm, model)
 
@@ -177,7 +179,7 @@ class ControlUnitCommunication:
         return self._set_command("ROLL_DOWN")
 
     def get_manual(self):
-        return self._get_command("GET_MANUAL")
+        return bool(int(self._get_command("GET_MANUAL")))
 
     def set_manual(self, boolean):
         return self._set_command("SET_MANUAL", int(boolean))

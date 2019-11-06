@@ -106,9 +106,9 @@ class ControlUnitView(wx.Panel):
         box.label.SetLabelText(str(value))
         self._refresh(box.panel)
 
-    def set_manual(self, value):
+    def set_manual(self, boolean):
         box = self.boxes["mode"]
-        box.label.SetLabelText("manual" if value else "auto")
+        box.label.SetLabelText("manual" if boolean else "auto")
         self._refresh(box.panel)
 
     def _refresh(self, panel):

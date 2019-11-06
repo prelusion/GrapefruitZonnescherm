@@ -45,7 +45,7 @@ class ControlUnitModel(mvc.Model):
         return self.online.get()
 
     def set_manual(self, boolean):
-        self.manual.set(boolean)
+        self.manual.set(bool(boolean))
 
     def get_manual(self):
         return self.manual.get()
