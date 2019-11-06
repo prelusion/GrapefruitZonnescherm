@@ -1,5 +1,7 @@
 #ifndef _STATUS_SHUTTER_H_
 #define _STATUS_SHUTTER_H_
+#include "../data.h"
+
 /** 
  * \brief  
  * Initializes the shutter status at startup 

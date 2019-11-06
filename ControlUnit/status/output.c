@@ -1,5 +1,4 @@
 #include <avr/io.h>
-#include "../data.h"
 #include "output.h"
 
 //Sets the led ports

@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include "../scheduler.h"
-#include "../data.h"
 
 //status includes
 #include "shutter.h"

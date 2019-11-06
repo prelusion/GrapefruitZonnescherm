@@ -1,5 +1,6 @@
 #ifndef _STATUS_OUTPUT_H_
 #define _STATUS_OUTPUT_H_
+#include "../data.h"
 
 /** 
  * \brief  
