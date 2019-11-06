@@ -101,4 +101,20 @@ UnitStatus get_current_unit_status(void);
  */
 void set_current_unit_status(UnitStatus unit_status);
 
+/**
+ * \brief 
+ * Get the current task_index.
+ *
+ * \return UnitStatus The current unit status.
+ */
+uint8_t get_shutter_task_index(void);
+
+/**
+ * \brief 
+ * Set the current task index.
+ * 
+ * \param unit_status The unit status to set.
+ */
+void set_shutter_task_index(uint8_t task_index);
+
 #endif
