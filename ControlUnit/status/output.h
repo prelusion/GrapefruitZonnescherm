@@ -1,10 +1,13 @@
+#ifndef _STATUS_OUTPUT_H_
+#define _STATUS_OUTPUT_H_
+
 /** 
  * \brief  
  * Sets specific ports to output for the leds 
  *  
  * Void no returns 
  */ 
-void output_ports(void); 
+void init_leds(void); 
  
 /** 
  * \brief  
@@ -13,4 +16,6 @@ void output_ports(void);
  * Void no returns 
  */ 
 void control_leds(ShutterStatus status); 
+
  
+ #endif

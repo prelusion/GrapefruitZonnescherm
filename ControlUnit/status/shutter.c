@@ -27,10 +27,6 @@ void init_shutter_status(void)
 //Checks if the shutter reached its status destination and returns it. Returns the same status if its not yet reached
 ShutterStatus check_shutter_reached_endpoint(ShutterStatus status, uint16_t distance, uint16_t window_height)
 {
-	if(status == OPEN || status == CLOSED)
-	{
-		return status;
-	}
 	if(status == CLOSING)
 	{
 		if(distance < 10)
@@ -38,7 +34,7 @@ ShutterStatus check_shutter_reached_endpoint(ShutterStatus status, uint16_t dist
 			return CLOSED;
 		}
 	}
-	else
+	if(status == OPENING)
 	{
 		if(distance >= window_height)
 		{
@@ -79,11 +75,13 @@ void check_shutter_status(void)
 			//Set shutter status to closing
 			set_current_shutter_status(CLOSING);
 		}
-		} else {
-		if(current_shutter_status != OPEN)
+		else 
 		{
-			//Set shutter status to opening
-			set_current_shutter_status(OPENING);
+			if(current_shutter_status != OPEN)
+			{
+				//Set shutter status to opening
+				set_current_shutter_status(OPENING);
+			}
 		}
 	}
 	control_leds(current_shutter_status);

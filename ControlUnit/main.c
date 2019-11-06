@@ -77,7 +77,7 @@ int main(void)
 	init_history();
 	serial_init();
 	init_distance_sensor();
-	output_ports();
+	init_leds();
 	init_shutter_status();
 
 

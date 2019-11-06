@@ -3,7 +3,7 @@
 #include "output.h"
 
 //Sets the led ports
-void output_ports(void)
+void init_leds(void)
 {
 	DDRB = 0b00000111;
 	PORTB = 0x00;

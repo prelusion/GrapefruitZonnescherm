@@ -1,3 +1,5 @@
+#ifndef _STATUS_SHUTTER_H_
+#define _STATUS_SHUTTER_H_
 /** 
  * \brief  
  * Initializes the shutter status at startup 
@@ -30,3 +32,5 @@ void update_shutter_status(void);
  * Void no returns 
  */
 void check_shutter_status(void);
+
+#endif

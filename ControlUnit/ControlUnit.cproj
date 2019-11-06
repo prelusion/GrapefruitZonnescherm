@@ -154,6 +154,9 @@
     <Compile Include="ports\adc.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="sensors\temperature.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="serial.c">
       <SubType>compile</SubType>
     </Compile>
@@ -230,9 +233,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="sensors\temperature.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="sensors\temperature.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
