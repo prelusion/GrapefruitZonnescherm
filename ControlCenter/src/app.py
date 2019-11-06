@@ -100,6 +100,10 @@ class MainView(wx.Frame):
         center_panel_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
 
+def on_click(e):
+    print(e)
+
+
 def mainloop():
     app = App(False)
     mainview = MainView(app, "Grapefruit Control Centre")

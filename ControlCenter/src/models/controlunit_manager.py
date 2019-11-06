@@ -53,10 +53,11 @@ class ControlUnitManager:
 
             data = comm.get_sensor_data()
 
-            model.add_measurement(data)
-            model.set_temperature(data.temperature)
-            model.set_shutter_status(data.shutter_status)
-            model.set_light_intensity(data.light_intensity)
+            if data:
+                model.add_measurement(data)
+                model.set_temperature(data.temperature)
+                model.set_shutter_status(data.shutter_status)
+                model.set_light_intensity(data.light_intensity)
 
     def close_connections(self):
         for unit in self.units.get().items():
