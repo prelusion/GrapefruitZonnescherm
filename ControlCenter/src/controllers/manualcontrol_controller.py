@@ -2,13 +2,9 @@ import threading
 
 import wx
 
+from src import controlunit
 from src import mvc
 from src.views.manualcontrol_view import ManualControlView
-
-
-def execute_threaded(fn, callback):
-    if fn():
-        wx.CallAfter(callback)
 
 
 class ManualControlController(mvc.Controller):
@@ -48,34 +44,58 @@ class ManualControlController(mvc.Controller):
     def on_manual_control_enable(self):
         def execute():
             for comm, model in self.controlunit_manager.get_selected_units():
-                if comm.set_manual(True):
-                    wx.CallAfter(lambda: model.set_manual(True))
+                try:
+                    if comm.set_manual(True):
+                        wx.CallAfter(lambda: model.set_manual(True))
+                    else:
+                        wx.CallAfter(lambda: self.view.show_error("Enable manual control failure: reason unknown"))
+                except controlunit.CommandNotImplemented:
+                    wx.CallAfter(lambda: self.view.show_error(
+                        "Enable manual control failure: functionality was not implemented on this control unit"))
 
-        threading.Thread(target=execute).start()
+        threading.Thread(target=execute, daemon=True).start()
 
     def on_manual_control_disable(self):
 
         def execute():
             for comm, model in self.controlunit_manager.get_selected_units():
-                if comm.set_manual(False):
-                    wx.CallAfter(lambda: model.set_manual(False))
+                try:
+                    if comm.set_manual(False):
+                        wx.CallAfter(lambda: model.set_manual(False))
+                    else:
+                        wx.CallAfter(lambda: self.view.show_error("Disable manual control failure: reason unknown"))
+                except controlunit.CommandNotImplemented:
+                    wx.CallAfter(lambda: self.view.show_error(
+                        "Disable manual control failure: functionality was not implemented on this control unit"))
 
-        threading.Thread(target=execute).start()
+        threading.Thread(target=execute, daemon=True).start()
 
     def on_toggle_up(self):
 
         def execute():
             for comm, model in self.controlunit_manager.get_selected_units():
-                if comm.roll_up():
-                    wx.CallAfter(lambda: model.set_shutter_status(model.SHUTTER_GOING_UP))
+                try:
+                    if comm.roll_up():
+                        wx.CallAfter(lambda: model.set_shutter_status(model.SHUTTER_GOING_UP))
+                    else:
+                        wx.CallAfter(lambda: self.view.show_error("Toggle up failure: reason unknown"))
+                except controlunit.CommandNotImplemented:
+                    wx.CallAfter(lambda: self.view.show_error(
+                        "Toggle up failure: functionality was not implemented on this control unit"))
 
-        threading.Thread(target=execute).start()
+        threading.Thread(target=execute, daemon=True).start()
 
     def on_toggle_down(self):
 
         def execute():
             for comm, model in self.controlunit_manager.get_selected_units():
-                if comm.roll_down():
-                    wx.CallAfter(lambda: model.set_shutter_status(model.SHUTTER_GOING_DOWN))
+                try:
+                    if comm.roll_down():
+                        wx.CallAfter(lambda: model.set_shutter_status(model.SHUTTER_GOING_DOWN))
+                    else:
+                        wx.CallAfter(lambda: self.view.show_error("Toggle down failure: reason unknown"))
+                except controlunit.CommandNotImplemented:
+                    wx.CallAfter(lambda: self.view.show_error(
+                        "Toggle down failure: functionality was not implemented on this control unit"))
 
-        threading.Thread(target=execute).start()
+        threading.Thread(target=execute, daemon=True).start()
