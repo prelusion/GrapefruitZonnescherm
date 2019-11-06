@@ -169,10 +169,10 @@
     <Compile Include="scheduler.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="output\output.c">
+    <Compile Include="output\status.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="output\output.h">
+    <Compile Include="output\status.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="output\shutter.c">

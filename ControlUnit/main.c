@@ -8,8 +8,8 @@
 #include "serial.h"
 
 //status includes
-#include "status/shutter.h"
-#include "status/output.h"
+#include "output/shutter.h"
+#include "output/status.h"
 
 //ports includes
 #include "ports/adc.h"
