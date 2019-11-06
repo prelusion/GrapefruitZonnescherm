@@ -33,7 +33,6 @@ class FilterView(mvc.View):
         checkbox_sizer = wx.BoxSizer()
         checkbox_sizer.AddStretchSpacer(1)
 
-
         # create checkbox panel
         checkbox_panel = wx.Panel(lower_panel)
         checkbox_panel.SetBackgroundColour((255, 255, 255))
@@ -45,12 +44,10 @@ class FilterView(mvc.View):
             gridsizer.Add(checkboxes[checkbox], 0, wx.EXPAND)
         checkbox_panel.SetSizer(gridsizer)
 
+        # Add checkbox panel to lower panel and center it
         checkbox_sizer.Add(checkbox_panel, 0, wx.ALIGN_CENTER)
         checkbox_sizer.AddStretchSpacer(1)
-
         lower_panel.SetSizer(checkbox_sizer)
-
-
 
         # add all elements to main sizer
         main_sizer.Add(title_panel,  wx.ID_ANY, wx.EXPAND | wx.ALL)
