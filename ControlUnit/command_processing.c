@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include "data.h"
 
+
+//status includes
+#include "output/shutter.h"
+
 // Storage includes.
 #include "storage/unit_id.h"
 #include "storage/window_height.h"
@@ -365,8 +369,8 @@ void cmd_roll_up(char parameters[20], char result[50])
 		strcpy(result, "ERROR");
 		return;
 	}
-	
-	strcpy(result, "NOT_IMPLEMENTED");
+	shutter_roll_up();
+	strcpy(result, "OK");
 }
 
 void cmd_roll_down(char parameters[20], char result[50])
@@ -376,6 +380,6 @@ void cmd_roll_down(char parameters[20], char result[50])
 		strcpy(result, "ERROR");
 		return;
 	}
-	
-	strcpy(result, "NOT_IMPLEMENTED");
+	shutter_roll_down();
+	strcpy(result, "OK");
 }

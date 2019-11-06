@@ -2,8 +2,8 @@
 #include <avr/io.h>
 #include "../scheduler.h"
 
-//status includes
-#include "output.h"
+//output includes
+#include "status.h"
 
 // Sensor includes
 #include "../sensors/distance.h"
@@ -37,7 +37,7 @@ ShutterStatus check_shutter_reached_endpoint(ShutterStatus status, uint16_t dist
 	return status;
 }
 
-uint8_t shutter_task_index;
+uint8_t shutter_task_index = 255;
 void update_shutter_status(void)
 {
 	uint16_t distance = get_distance();
@@ -49,6 +49,7 @@ void update_shutter_status(void)
 	if(new_shutter_status == OPEN || new_shutter_status == CLOSED)
 	{
 		timer_delete_task(shutter_task_index);
+		shutter_task_index = 255;
 		current_shutter_status = new_shutter_status;
 		set_current_shutter_status(current_shutter_status);
 	}
@@ -56,7 +57,7 @@ void update_shutter_status(void)
 }
 
 void check_shutter_status(void)
-{	
+{
 	int8_t current_temperature = get_current_temperature();
 	uint8_t current_light_intensity = get_current_light_intensity();
 	ShutterStatus current_shutter_status = get_current_shutter_status();
@@ -69,7 +70,7 @@ void check_shutter_status(void)
 			set_current_shutter_status(CLOSING);
 		}
 	}
-	else 
+	else
 	{
 		if(current_shutter_status != OPEN)
 		{
@@ -81,6 +82,34 @@ void check_shutter_status(void)
 	//if the shutter status is opening or closing add a task;
 	if (current_shutter_status == OPENING || current_shutter_status == CLOSING)
 	{
+		shutter_task_index = timer_add_task(&update_shutter_status, (uint16_t)0, (uint16_t)50); // 40 * 10ms = .5sec
+	}
+}
+
+void shutter_roll_up(void)
+{
+	if(get_current_shutter_status() != OPEN)
+	{
+		if(shutter_task_index != 255)
+		{
+			timer_delete_task(shutter_task_index);
+			shutter_task_index = 255;
+		}
+		set_current_shutter_status(OPENING);
+		shutter_task_index = timer_add_task(&update_shutter_status, (uint16_t)0, (uint16_t)50); // 40 * 10ms = .5sec
+	}
+}
+
+void shutter_roll_down(void)
+{
+	if(get_current_shutter_status() != CLOSED)
+	{
+		if(shutter_task_index != 255)
+		{
+			timer_delete_task(shutter_task_index);
+			shutter_task_index = 255;
+		}
+		set_current_shutter_status(CLOSING);
 		shutter_task_index = timer_add_task(&update_shutter_status, (uint16_t)0, (uint16_t)50); // 40 * 10ms = .5sec
 	}
 }

@@ -8,8 +8,8 @@
 #include "serial.h"
 
 //status includes
-#include "status/shutter.h"
-#include "status/output.h"
+#include "output/shutter.h"
+#include "output/status.h"
 
 //ports includes
 #include "ports/adc.h"
@@ -22,6 +22,7 @@
 // Storage includes
 #include "storage/unit_id.h"
 #include "storage/history.h"
+#include "storage/manual.h"
 #include "storage/temperature_threshold.h"
 #include "storage/light_intensity_threshold.h"
 #include "storage/window_height.h"
@@ -68,7 +69,10 @@ void update_light_intensity(void)
 
 void check_thresholds(void)
 {
-	check_shutter_status();
+	if (!get_manual())
+	{
+		check_shutter_status();
+	}
 }
 
 int main(void)

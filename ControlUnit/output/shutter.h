@@ -36,4 +36,20 @@ void update_shutter_status(void);
  */
 void check_shutter_status(void);
 
+/** 
+ * \brief  
+ * Removes last shutter task and starts a roll_up task
+ *  
+ * Void no returns 
+ */
+void shutter_roll_up(void);
+
+/** 
+ * \brief
+ * Removes last shutter task and starts a roll_down task
+ *  
+ * Void no returns 
+ */
+void shutter_roll_down(void);
+
 #endif
