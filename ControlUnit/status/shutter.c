@@ -75,13 +75,13 @@ void check_shutter_status(void)
 			//Set shutter status to closing
 			set_current_shutter_status(CLOSING);
 		}
-		else 
+	}
+	else 
+	{
+		if(current_shutter_status != OPEN)
 		{
-			if(current_shutter_status != OPEN)
-			{
-				//Set shutter status to opening
-				set_current_shutter_status(OPENING);
-			}
+			//Set shutter status to opening
+			set_current_shutter_status(OPENING);
 		}
 	}
 	control_leds(current_shutter_status);
