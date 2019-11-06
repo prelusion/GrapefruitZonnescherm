@@ -60,12 +60,10 @@ void update_light_intensity(void)
 
 int main(void)
 {
-	init_ports();
 	adc_init();
 	init_history();
 	serial_init();
 	init_distance_sensor();
-	init_shutter_status();
 	
 	if (!has_unit_id())
 	{
