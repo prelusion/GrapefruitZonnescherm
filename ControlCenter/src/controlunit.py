@@ -12,7 +12,7 @@ from src import serialinterface as ser
 from src import util
 from src.decorators import retry_on_any_exception, retry_on_given_exception
 from src.models.controlunit import ControlUnitModel
-import threading
+
 logger = getLogger(__name__)
 BAUDRATE = 19200
 
@@ -101,6 +101,9 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
             model.set_manual(comm.get_manual())
             model.set_online(True)
 
+            history = comm.get_sensor_history()
+            # TODO do something with sensor history
+
             controlunit_manager.add_unit(port, comm, model)
 
         time.sleep(interval)
@@ -126,13 +129,14 @@ class ControlUnitCommunication:
         self.com_port = port
         self._conn = None
 
-    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_up_time(self):
         return self._get_command("GET_UP_TIME")
 
-    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_id(self):
-        return int(self._get_command("GET_ID"))
+        id_ = self._get_command("GET_ID")
+        if id_:
+            id_ = int(id_)
+        return id_
 
     def set_id(self, id_):
         """ id is a 32-bit int. """
@@ -141,7 +145,6 @@ class ControlUnitCommunication:
     def is_online(self):
         pass
 
-    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_sensor_data(self):
         data = self._get_command("GET_SENSOR_DATA")
 
@@ -153,6 +156,48 @@ class ControlUnitCommunication:
         return Measurement(
             time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
             int(shutter), int(light))
+
+    def get_sensor_history(self):
+        conn = self._get_connection()
+
+        def execute_command():
+            conn.write("GET_SENSOR_HISTORY")
+            time.sleep(0.1)
+            t_start = time.time()
+            values = []
+
+            while not util.timeout_exceeded(t_start, 30):
+                data = conn.readline()
+
+                if "GET_SENSOR_HISTORY=L" in data:
+                    datalength = data.split("GET_SENSOR_HISTORY=L")[1].strip()
+                elif "GET_SENSOR_HISTORY=OK" in data:
+                    return ";".join(values)
+                elif "GET_SENSOR_HISTORY=" in data:
+                    values.append(data.split("GET_SENSOR_HISTORY=")[1].strip())
+
+        with threading.Lock():
+            history_string = execute_command()
+
+        if not history_string:
+            return
+
+        splitted = history_string.split(";")
+        splitted.reverse()
+
+        measurements = []
+        for i, value in enumerate(splitted):
+            temp, light, shutter = value.split(",")
+
+            measurement = Measurement(
+                time.time() - ((i+1) * 60), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                int(shutter), int(light))
+
+            measurements.append(measurement)
+
+        measurements.reverse()
+
+        return measurements
 
     def get_window_height(self):
         return self._get_command("GET_WINDOW_HEIGHT")
@@ -192,7 +237,7 @@ class ControlUnitCommunication:
         if arg is not None:
             cmd_with_arg += "=" + str(arg)
 
-        logger.info(f"executing command to control unit: {cmd_with_arg}")
+        logger.debug(f"executing command to control unit: {cmd_with_arg}")
 
         def execute_command():
             conn.write(cmd_with_arg)
@@ -228,7 +273,7 @@ class ControlUnitCommunication:
     def _get_command(self, command):
         conn = self._get_connection()
 
-        logger.info(f"executing command to control unit: {command}")
+        logger.debug(f"executing command to control unit: {command}")
 
         def execute_command():
             conn.write(command)
