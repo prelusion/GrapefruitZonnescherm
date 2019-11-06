@@ -7,6 +7,10 @@
 //serial includes
 #include "serial.h"
 
+//status includes
+#include "status/shutter.h"
+#include "status/output.h"
+
 //ports includes
 #include "ports/adc.h"
 
@@ -18,6 +22,10 @@
 // Storage includes
 #include "storage/unit_id.h"
 #include "storage/history.h"
+#include "storage/temperature_threshold.h"
+#include "storage/light_intensity_threshold.h"
+#include "storage/window_height.h"
+
 
 void update_history(void)
 {
@@ -58,14 +66,63 @@ void update_light_intensity(void)
 	set_current_light_intensity(get_light_intensity());
 }
 
+uint8_t shutter_task_index;
+void update_shutter_status(void)
+{
+	uint16_t distance = get_distance();
+	uint16_t window_height = get_window_height();
+	ShutterStatus current_shutter_status = get_current_shutter_status();
+	//Updates the new shutter status
+	ShutterStatus new_shutter_status = check_shutter_reached_endpoint(current_shutter_status, distance, window_height);
+	//If the shutter status is open of closed. Remove the task and change the leds
+	if(new_shutter_status == OPEN || new_shutter_status == CLOSED)
+	{
+		timer_delete_task(shutter_task_index);
+		current_shutter_status = new_shutter_status;
+		set_current_shutter_status(current_shutter_status);
+	}
+	control_leds(current_shutter_status);
+}
+
+
+void check_thresholds(void)
+{
+	int8_t current_temperature = get_current_temperature();
+	uint8_t current_light_intensity = get_current_light_intensity();
+	ShutterStatus current_shutter_status = get_current_shutter_status();
+	//Check if the shutter has to close or open
+	if (current_temperature > get_temperature_threshold() || current_light_intensity > get_light_intensity_threshold())
+	{
+		if(current_shutter_status != CLOSED)
+		{
+			//Set shutter status to closing
+			set_current_shutter_status(CLOSING);
+		}
+		} else {
+		if(current_shutter_status != OPEN)
+		{
+			//Set shutter status to opening
+			set_current_shutter_status(OPENING);
+		}
+	}
+	control_leds(current_shutter_status);
+	//if the shutter status is opening or closing add a task;
+	if (current_shutter_status == OPENING || current_shutter_status == CLOSING)
+	{
+		shutter_task_index = timer_add_task(&update_shutter_status, (uint16_t)0, (uint16_t)50); // 40 * 10ms = .5sec
+	}
+}
+
 int main(void)
 {
-	init_ports();
 	adc_init();
 	init_history();
 	serial_init();
 	init_distance_sensor();
-	init_shutter_status();
+	output_ports();
+	init_shutter_status()
+
+
 	
 	if (!has_unit_id())
 	{
@@ -90,6 +147,7 @@ int main(void)
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
 	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
 	timer_add_task(&update_history, (uint16_t)200, (uint16_t)6000); // 6000 * 10ms = 60sec
+	timer_add_task(&check_thresholds, (uint16_t)10, (uint16_t)6000); // 6000 * 10ms = 60sec
 	timer_start();
 	
 	if (get_current_unit_status() == STARTING)
