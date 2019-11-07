@@ -1,24 +1,21 @@
 import concurrent
 import threading
 import time
-import wx
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from logging import getLogger
 
-from serial.serialutil import SerialException
+import serial as pyserial
+from serial import serialutil
 
 from src import serialinterface as ser
 from src import util
 from src.decorators import retry_on_any_exception, retry_on_given_exception
 from src.models.controlunit import ControlUnitModel
-from src import db
-
 
 logger = getLogger(__name__)
 BAUDRATE = 19200
-
 
 Measurement = namedtuple("Measurement", ["timestamp",
                                          "temperature",
@@ -136,7 +133,8 @@ class ControlUnitCommunication:
         self._conn = None
 
     def initialize(self, device_id, window_height, temperature_threshold, light_intensity_threshold, manual_mode):
-        return self._set_command("INITIALIZE", f"{device_id},{window_height},{temperature_threshold},{light_intensity_threshold},{int(manual_mode)}")
+        return self._set_command("INITIALIZE",
+                                 f"{device_id},{window_height},{temperature_threshold},{light_intensity_threshold},{int(manual_mode)}")
 
     def get_up_time(self):
         return self._get_command("GET_UP_TIME")
@@ -198,7 +196,13 @@ class ControlUnitCommunication:
                     values.append(data.split("GET_SENSOR_HISTORY=")[1].strip())
 
         with threading.Lock():
-            history_string = execute_command()
+            try:
+                history_string = execute_command()
+            except (
+                    UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                    serialutil.SerialException) as e:
+                logger.exception(e)
+                raise pyserial.SerialException
 
         if not history_string:
             return
@@ -294,10 +298,16 @@ class ControlUnitCommunication:
             buffer = None
 
             for i in range(self.COMMAND_RETRY):
-                success, buffer = execute_command()
-                if success:
-                    break
-                time.sleep(self.RETRY_SLEEP)
+                try:
+                    success, buffer = execute_command()
+                    if success:
+                        break
+                    time.sleep(self.RETRY_SLEEP)
+                except (
+                        UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                        serialutil.SerialException) as e:
+                    logger.exception(e)
+                    raise pyserial.SerialException
 
             return True if f"{command}=OK" in buffer else False
 
@@ -328,9 +338,15 @@ class ControlUnitCommunication:
 
         with threading.Lock():
             for i in range(self.COMMAND_RETRY):
-                data = execute_command()
-                if data: return data
-                time.sleep(self.RETRY_SLEEP)
+                try:
+                    data = execute_command()
+                    if data: return data
+                    time.sleep(self.RETRY_SLEEP)
+                except (
+                        UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                        serialutil.SerialException) as e:
+                    logger.exception(e)
+                    raise pyserial.SerialException
 
     def _get_connection(self):
         if not self._conn:

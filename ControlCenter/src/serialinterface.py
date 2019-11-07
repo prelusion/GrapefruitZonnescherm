@@ -58,14 +58,12 @@ class Connection:
         if '\r' not in data:
             data += '\r'
 
-
         self._interface.write(data.encode())
 
     @retry_on_any_exception(RETRIES)
     def readbuffer(self):
         if not self._interface:
             raise IOError("Connection must be opened before reading")
-
 
         data = self._interface.read(self._interface.inWaiting()).decode()
         # if data:
@@ -76,7 +74,6 @@ class Connection:
     def readline(self):
         if not self._interface:
             raise IOError("Connection must be opened before reading")
-
 
         return self._interface.readline().decode()
 
