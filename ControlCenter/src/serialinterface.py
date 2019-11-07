@@ -4,6 +4,7 @@ from logging import getLogger
 import serial as pyserial
 from serial.serialutil import SerialException
 from serial.tools import list_ports
+from src.decorators import retry_on_any_exception
 
 logger = getLogger(__name__)
 
@@ -24,6 +25,9 @@ def connect(port, baudrate=115200, timeout=0.5):
     connection.close()
 
 
+RETRIES = 10
+
+
 class Connection:
     def __init__(self, port, baudrate, timeout):
         self._port = port
@@ -31,21 +35,20 @@ class Connection:
         self._timeout = timeout
         self._interface = None
 
+    @retry_on_any_exception(RETRIES)
     def open(self):
         self._interface = pyserial.Serial(
             port=self._port, baudrate=self._baudrate, bytesize=pyserial.EIGHTBITS,
             parity=pyserial.PARITY_NONE, stopbits=pyserial.STOPBITS_ONE, timeout=self._timeout)
 
+    @retry_on_any_exception(RETRIES)
     def close(self):
-        try:
-            if self._interface:
-                self._interface.close()
-            self._interface = None
-        except (OSError, SerialException):
-            pass
-        except Exception as e:
-            logger.exception(e)
 
+        if self._interface:
+            self._interface.close()
+        self._interface = None
+
+    @retry_on_any_exception(RETRIES)
     def write(self, data):
         if not self._interface:
             raise IOError("Connection must be opened before writing")
@@ -57,32 +60,29 @@ class Connection:
 
         try:
             self._interface.write(data.encode())
-        except (OSError, SerialException):
-            pass
-        except Exception as e:
-            logger.exception(e)
 
+    @retry_on_any_exception(RETRIES)
     def readbuffer(self):
         if not self._interface:
             raise IOError("Connection must be opened before reading")
 
-        try:
-            data = self._interface.read(self._interface.inWaiting()).decode()
-            # if data:
-                # logger.info(f"read serial data: {data}")
-            return data
-        except (OSError, SerialException, UnicodeDecodeError):
-            pass
-        except Exception as e:
-            logger.exception(e)
 
+        data = self._interface.read(self._interface.inWaiting()).decode()
+        # if data:
+            # logger.info(f"read serial data: {data}")
+        return data
+
+    @retry_on_any_exception(RETRIES)
     def readline(self):
         if not self._interface:
             raise IOError("Connection must be opened before reading")
 
-        try:
-            return self._interface.readline().decode()
-        except (OSError, SerialException, UnicodeDecodeError):
-            pass
-        except Exception as e:
+
+        return self._interface.readline().decode()
+
+
+"""
+except (Exception, OSError, SerialException) as e:
             logger.exception(e)
+            
+            """
