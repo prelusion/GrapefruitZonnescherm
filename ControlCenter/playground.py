@@ -78,9 +78,18 @@ class test(wx.Frame):
 
         # Create apply button and add to sizer
         self.apply_button = wx.Button(apply_panel, label="apply")
+        self.apply_button.Bind(wx.EVT_BUTTON, self.onclick)
         apply_sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
-        self.Layout()
 
+
+    def onclick(self, e):
+        result = []
+        for label in self.inputs:
+            if type(self.inputs[label]) == wx.ColourPickerCtrl:
+                result.append(self.inputs[label].GetColour())
+            else:
+                result.append(self.inputs[label].GetValue())
+        return result
 
 
 app = wx.App(False)
