@@ -35,6 +35,7 @@ class SettingsViewController(mvc.Controller):
             self.disable_settings()
         elif len(units) == 1:
             self.init_settings_panel(units[0])
+            self.enable_settings()
         else:
             self.disable_settings()
 
