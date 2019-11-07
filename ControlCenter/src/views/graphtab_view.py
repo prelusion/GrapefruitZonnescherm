@@ -46,7 +46,6 @@ class graph_tab(View):
         sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(sizer)
         sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
-        self.SetBackgroundColour(colour=(0, 255, 0))
         self.graph.SetSize(200, 200)
         #TODO Remove test data
         self.create_test_Data()

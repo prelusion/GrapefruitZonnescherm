@@ -41,6 +41,7 @@ class TabView(mvc.View):
         # manual_tab.SetBitmap(icon0)
         # graph_tab.SetBitmap(icon1)
         # settings_tab.SetBitmap(icon2)
+
         self.set_manual_active()
 
     def set_manual_active(self):
