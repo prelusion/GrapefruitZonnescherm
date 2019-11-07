@@ -2,7 +2,7 @@ import threading
 import serial as pyserial
 import logging
 import wx
-
+import sqlite3
 from src import mvc
 from src import util
 from src.views.settings_view import SettingsView
@@ -11,9 +11,10 @@ logger = logging.getLogger(__name__)
 
 
 class SettingsViewController(mvc.Controller):
-    def __init__(self, view_parent, controlunit_manager):
+    def __init__(self, app, view_parent, controlunit_manager):
         super().__init__()
 
+        self.app = app
         self.view_parent = view_parent
         self.view = SettingsView(self.view_parent)
         self.controlunit_manager = controlunit_manager
@@ -150,7 +151,16 @@ class SettingsViewController(mvc.Controller):
                                   light_intensity_threshold,
                                   manual_mode)
         if success:
-            model.set_id(model.get_id(), save_db=True)
+            try:
+                model.set_id(model.get_id(), save_db=True)
+            except sqlite3.IntegrityError as e:
+                unit_id = util.generate_16bit_int()
+                device_id = util.encode_controlunit_id(self.app.app_id, unit_id)
+                if comm.set_id(device_id):
+                    model.set_id(device_id)
+                else:
+                    wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))
+
             model.set_name(name)
             model.set_colour(color) # TODO set color
             wx.CallAfter(lambda: self.view.show_success("Successfully initialized device"))

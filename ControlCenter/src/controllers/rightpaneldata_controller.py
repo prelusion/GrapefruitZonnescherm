@@ -7,7 +7,7 @@ from src.controllers.manualcontrol_controller import ManualControlController
 
 
 class RightpanelDataController(mvc.Controller):
-    def __init__(self, view_parent, controlunit_manager, tabstate_model):
+    def __init__(self, app, view_parent, controlunit_manager, tabstate_model):
         super().__init__()
 
         self.view_parent = view_parent
@@ -23,7 +23,7 @@ class RightpanelDataController(mvc.Controller):
 
         self.graphview_controller = GraphViewController(self.view, self.controlunit_manager)
         self.manualcontrolview_controller = ManualControlController(self.view, self.controlunit_manager)
-        self.settingsview_controller = SettingsViewController(self.view, controlunit_manager)
+        self.settingsview_controller = SettingsViewController(app, self.view, controlunit_manager)
 
         self.graphview_controller.view.Hide()
         self.manualcontrolview_controller.view.Hide()

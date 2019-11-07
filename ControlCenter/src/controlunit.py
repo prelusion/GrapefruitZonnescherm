@@ -121,8 +121,6 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
             try:
                 history = comm.get_sensor_history()
                 model.add_measurements(history)
-                print("sensor history:", history)
-                # TODO do something with sensor history
             except pyserial.SerialException:
                 pass
 

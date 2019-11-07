@@ -46,7 +46,6 @@ def update(table, values, where):
     with contextlib.closing(sqlite3.connect(DB_NAME)) as conn:
         cur = conn.cursor()
         sql = f"UPDATE {table} SET {values} WHERE {where}"
-        print("sql:", sql)
         cur.execute(sql)
         conn.commit()
 
@@ -62,9 +61,10 @@ def select_columns(table, columns, where, orderby=None, size=None):
     with contextlib.closing(sqlite3.connect(DB_NAME)) as conn:
         cur = conn.cursor()
         sql = f"SELECT {columns} FROM {table} WHERE {where}"
+
         if orderby:
             sql += f" ORDER BY {orderby}"
-        print("sql:", sql)
+
         cur.execute(sql)
         if not size:
             return cur.fetchall()
@@ -77,7 +77,3 @@ def select_by_where(table, where):
         cur = conn.cursor()
         cur.execute(f"SELECT * FROM {table} WHERE {where}")
         return cur.fetchall()
-"""
-init()
-insert(TABLE_CONTROL_UNITS, "(unit_id, name, color)", "(5,'my_unit','blue')")
-"""
