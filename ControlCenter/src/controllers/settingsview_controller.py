@@ -41,9 +41,9 @@ class SettingsViewController(mvc.Controller):
     def init_settings_panel(self, unit):
         comm, model = unit
 
-        def update_view(window_height, temperature_threshold, light_threshold):
+        def update_view(window_height, temperature_threshold, light_threshold, color):
             self.view.set_name(model.get_name())
-            self.view.set_color("TEST")
+            self.view.set_color(color)
             self.view.set_window_height(window_height)
             self.view.set_temperature_threshold(temperature_threshold)
             self.view.set_light_intensity_threshold(light_threshold)
@@ -55,7 +55,8 @@ class SettingsViewController(mvc.Controller):
                 window_height = str(comm.get_window_height())
                 temperature_threshold = comm.get_temperature_threshold()
                 light_threshold = comm.get_light_intensity_threshold()
-                wx.CallAfter(lambda: update_view(window_height, temperature_threshold, light_threshold))
+                color = model.get_colour()
+                wx.CallAfter(lambda: update_view(window_height, temperature_threshold, light_threshold, color))
             except pyserial.SerialException:
                 logger.warning("Serial error")
                 # TODO: show user error
