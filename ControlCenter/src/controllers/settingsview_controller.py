@@ -1,8 +1,10 @@
-import threading
-import serial as pyserial
 import logging
-import wx
 import sqlite3
+import threading
+
+import serial as pyserial
+import wx
+
 from src import mvc
 from src import util
 from src.views.settings_view import SettingsView
@@ -162,7 +164,7 @@ class SettingsViewController(mvc.Controller):
                     wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))
 
             model.set_name(name)
-            model.set_colour(color) # TODO set color
+            model.set_colour(color)
             wx.CallAfter(lambda: self.view.show_success("Successfully initialized device"))
         else:
             wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))
@@ -184,5 +186,5 @@ class SettingsViewController(mvc.Controller):
             return
 
         model.set_name(name)
-        model.set_colour(color)  # TODO set color
+        model.set_colour(color)
         wx.CallAfter(lambda: self.view.show_success("Successfully updated device"))

@@ -1,7 +1,6 @@
 import concurrent
 import threading
 import time
-from src import db
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from logging import getLogger
@@ -9,6 +8,7 @@ from logging import getLogger
 import serial as pyserial
 from serial import serialutil
 
+from src import db
 from src import serialinterface as ser
 from src import util
 from src.decorators import retry_on_any_exception

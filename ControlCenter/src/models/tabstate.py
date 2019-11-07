@@ -1,9 +1,9 @@
-from src import mvc
 from enum import Enum, auto
+
+from src import mvc
 
 
 class TabstateModel(mvc.Model):
-
     class View(Enum):
         manualcontrol = auto()
         graph = auto()

@@ -89,7 +89,7 @@ class ControlUnitsController(mvc.Controller):
         if not model.get_initialized():
             wx.MessageBox("Please select your new device and go to the settings tab",
                           'New device detected',
-                          wx.OK | wx. ICON_INFORMATION)
+                          wx.OK | wx.ICON_INFORMATION)
 
     def on_unit_click(self, model, view):
         view.set_selected(True) if not model.get_selected() else view.set_selected(False)

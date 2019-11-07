@@ -1,12 +1,9 @@
-import os
-
 import wx
-from src import const
+
 from src import mvc
 
 
 class TabView(mvc.View):
-
     COLOR_INACTIVE = (255, 255, 255)
     COLOR_ACTIVE = (200, 200, 200)
 
@@ -33,14 +30,6 @@ class TabView(mvc.View):
         tab_sizer.Add(manual_tab, wx.ID_ANY, wx.EXPAND | wx.ALL)
         tab_sizer.Add(graph_tab, wx.ID_ANY, wx.EXPAND | wx.ALL)
         tab_sizer.Add(settings_tab, wx.ID_ANY, wx.EXPAND | wx.ALL)
-
-        icon0 = wx.Bitmap(os.path.join(const.ICONS_DIR, "manual.ico"), wx.BITMAP_TYPE_ICO)
-        icon1 = wx.Bitmap(os.path.join(const.ICONS_DIR, "graphs.ico"), wx.BITMAP_TYPE_ICO)
-        icon2 = wx.Bitmap(os.path.join(const.ICONS_DIR, "settings.ico"), wx.BITMAP_TYPE_ICO)
-
-        # manual_tab.SetBitmap(icon0)
-        # graph_tab.SetBitmap(icon1)
-        # settings_tab.SetBitmap(icon2)
 
         self.set_manual_active()
 

@@ -1,8 +1,6 @@
 import wx
 import wx.lib.scrolledpanel as scrolled
 
-from src.views.controlunit_view import ControlUnitView
-
 
 class ControlUnitsView(scrolled.ScrolledPanel):
     def __init__(self, parent):
@@ -47,4 +45,3 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         for i, id_ in enumerate(self.unit_indexes):
             if self.unit_indexes[id_] > removed_index:
                 self.unit_indexes[id_] -= 1
-

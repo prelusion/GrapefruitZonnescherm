@@ -1,6 +1,7 @@
-import threading
-import serial as pyserial
 import logging
+import threading
+
+import serial as pyserial
 import wx
 
 from src import controlunit
@@ -63,6 +64,7 @@ class ManualControlController(mvc.Controller):
                 except pyserial.SerialException:
                     logger.warning("Serial error")
                     # TODO: show user error
+
         threading.Thread(target=execute, daemon=True).start()
 
     def on_manual_control_disable(self):
@@ -82,6 +84,7 @@ class ManualControlController(mvc.Controller):
                 except pyserial.SerialException:
                     logger.warning("Serial error")
                     # TODO: show user error
+
         threading.Thread(target=execute, daemon=True).start()
 
     def on_toggle_up(self):
@@ -100,6 +103,7 @@ class ManualControlController(mvc.Controller):
                 except pyserial.SerialException:
                     logger.warning("Serial error")
                     # TODO: show user error
+
         threading.Thread(target=execute, daemon=True).start()
 
     def on_toggle_down(self):
@@ -118,4 +122,5 @@ class ManualControlController(mvc.Controller):
                 except pyserial.SerialException:
                     logger.warning("Serial error")
                     # TODO: show user error
+
         threading.Thread(target=execute, daemon=True).start()

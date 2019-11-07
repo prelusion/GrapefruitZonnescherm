@@ -5,7 +5,6 @@ from src import widgets
 
 
 class FilterView(mvc.View):
-
     CHECKBOX_CONNECTED = "connected"
     CHECKBOX_STATUS_UP = "status up"
     CHECKBOX_STATUS_DOWN = "status down"
@@ -38,8 +37,10 @@ class FilterView(mvc.View):
         checkbox_panel.SetBackgroundColour((255, 255, 255))
         gridsizer = wx.GridSizer(2, 3, 0, 0)
 
-        checkboxes = [wx.CheckBox(checkbox_panel, label=self.CHECKBOX_CONNECTED), wx.CheckBox(checkbox_panel, label=self.CHECKBOX_STATUS_UP),
-                      wx.CheckBox(checkbox_panel, label=self.CHECKBOX_SELECT_ALL), wx.CheckBox(checkbox_panel, label=self.CHECKBOX_STATUS_DOWN)]
+        checkboxes = [wx.CheckBox(checkbox_panel, label=self.CHECKBOX_CONNECTED),
+                      wx.CheckBox(checkbox_panel, label=self.CHECKBOX_STATUS_UP),
+                      wx.CheckBox(checkbox_panel, label=self.CHECKBOX_SELECT_ALL),
+                      wx.CheckBox(checkbox_panel, label=self.CHECKBOX_STATUS_DOWN)]
         counter = 0
         for index in range(6):
             if index == 1 or index == 4:
@@ -50,15 +51,14 @@ class FilterView(mvc.View):
         checkbox_panel.SetSizer(gridsizer)
         checkbox_panel.Layout()
 
-
         # Add checkbox panel to lower panel and center it
         checkbox_sizer.Add(checkbox_panel, 0, wx.ALIGN_CENTER)
         checkbox_sizer.AddStretchSpacer(1)
         lower_panel.SetSizer(checkbox_sizer)
 
         # add all elements to main sizer
-        main_sizer.Add(title_panel,  wx.ID_ANY, wx.EXPAND | wx.ALL)
-        main_sizer.Add(lower_panel,  wx.ID_ANY, wx.EXPAND | wx.ALL)
+        main_sizer.Add(title_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        main_sizer.Add(lower_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         # set window border
         self.SetWindowStyle(wx.BORDER_SIMPLE)

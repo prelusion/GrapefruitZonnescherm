@@ -2,8 +2,8 @@ import wx
 
 from src import mvc
 from src.controllers.graphview_controller import GraphViewController
-from src.controllers.settingsview_controller import SettingsViewController
 from src.controllers.manualcontrol_controller import ManualControlController
+from src.controllers.settingsview_controller import SettingsViewController
 
 
 class RightpanelDataController(mvc.Controller):

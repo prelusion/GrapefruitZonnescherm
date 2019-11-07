@@ -4,10 +4,10 @@ import random
 
 import wx
 
+from src import const
 from src.measurement import Measurement
 from src.mvc import View
 from src.views import graph_view
-from src import const
 
 
 class GraphTabView(View):
@@ -47,12 +47,13 @@ class graph_tab(View):
         self.SetSizer(sizer)
         sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
         self.graph.SetSize(200, 200)
-        #TODO Remove test data
+        # TODO Remove test data
         self.create_test_Data()
 
     def create_test_Data(self):
         SetTestData(self.graph)
         self.graph.update_graph()
+
 
 def SetTestData(graph_view: graph_view.GraphView):
     measurements = []

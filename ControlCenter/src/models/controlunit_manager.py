@@ -1,7 +1,10 @@
-from src import mvc
 from collections import OrderedDict
 from logging import getLogger
+
 import serial as pyserial
+
+from src import mvc
+
 logger = getLogger(__name__)
 
 

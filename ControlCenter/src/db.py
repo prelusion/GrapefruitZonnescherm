@@ -32,14 +32,14 @@ def create_table(name, columns):
 
 
 def insert(table, columns, values):
+    """
+    :throws: sqlite3.IntegrityError when UNIQUE constraint fails
+    """
     with contextlib.closing(sqlite3.connect(DB_NAME)) as conn:
         cur = conn.cursor()
         sql = f"INSERT INTO {table} {columns} VALUES {values}"
-        # print("sql:", sql)
         cur.execute(sql)
         conn.commit()
-        # except sqlite3.IntegrityError as e:
-        #     print(e)
 
 
 def update(table, values, where):

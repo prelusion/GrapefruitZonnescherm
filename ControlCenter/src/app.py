@@ -1,10 +1,12 @@
+import logging
 import os
 import threading
-import logging
+
 import wx
-from src import db
+
 from src import const
 from src import controlunit
+from src import db
 from src import util
 from src.controllers.controlunits_controller import ControlUnitsController
 from src.controllers.filterview_controller import FilterViewController
@@ -12,7 +14,6 @@ from src.controllers.rightpaneldata_controller import RightpanelDataController
 from src.controllers.topview_controller import TopViewController
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.tabstate import TabstateModel
-
 
 logger = logging.getLogger(__name__)
 
