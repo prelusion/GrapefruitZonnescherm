@@ -1,6 +1,8 @@
-from src import mvc
-from src import db
 import wx
+
+from src import db
+from src import mvc
+from src import util
 
 
 class ControlUnitModel(mvc.Model):
@@ -16,7 +18,7 @@ class ControlUnitModel(mvc.Model):
         self.name = mvc.Observable(self, "uninitialized")
         self.online = mvc.Observable(self, True)
         self.manual = mvc.Observable(self, False)
-        self.color = mvc.Observable(self, wx.RED)
+        self.color = mvc.Observable(self, wx.NullColour)
         self.measurements = mvc.Observable(self, [])
         self.shutter_status = mvc.Observable(self, None)
         self.temperature = mvc.Observable(self, 0)
@@ -60,7 +62,8 @@ class ControlUnitModel(mvc.Model):
         color = db.select_columns(db.TABLE_CONTROL_UNITS, "color", f"device_id = {self.get_id()}")
         if color and len(color) == 1:
             color = color[0][0]
-            if color: self.set_colour(color)
+            if color:
+                self.color.set(util.deserialize_color(color))
         return self.color.get()
 
     def set_online(self, boolean):

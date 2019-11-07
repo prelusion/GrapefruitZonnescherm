@@ -7,118 +7,114 @@ class SettingsView(mvc.View):
     def __init__(self, parent):
         super().__init__(parent)
 
-        sizer = wx.GridSizer(16, 3, 0, 0)
-        self.SetSizer(sizer)
-        sizer.Add(wx.StaticText(self))
+        settingsizer = wx.GridSizer(1, 1, 0, 0)
+        self.SetSizer(settingsizer)
+
+        main_panel = wx.Panel(self)
+
+        # Create label variables
+        self.device_name_label = "Set device name: "
+        self.device_color_label = "Set device color: "
+        self.window_height_label = "Set window height: "
+        self.temp_treshold_label = "Set temperature treshold: "
+        self.light_intens_label = "Set light intensety treshold: "
+
+        # Create main sizer and set to panel
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        main_panel.SetSizer(main_sizer)
+
+        # Create panels to fit in sizer
+        title_panel = wx.Panel(main_panel)
+        settings_panel = wx.Panel(main_panel)
+        apply_panel = wx.Panel(main_panel)
+
+        # add panels to sizers
+        main_sizer.Add(title_panel, 2, wx.EXPAND | wx.ALL)
+        main_sizer.Add(settings_panel, 5, wx.EXPAND | wx.ALL)
+        main_sizer.Add(apply_panel, 15, wx.EXPAND | wx.ALL)
+
+        # Create content for title panel
+        sizer = wx.GridSizer(2, 3, 0, 0)
+        title_panel.SetSizer(sizer)
+        sizer.Add(wx.StaticText(title_panel))
+
+        settingText = wx.StaticText(title_panel, label="Settings:")
         font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
-        settingText = wx.StaticText(self, label="Settings:")
         settingText.SetFont(font)
 
+        # add title to title panel
         sizer.Add(wx.StaticText())
         sizer.Add(settingText, flag=wx.ALIGN_CENTER)
-        sizer.Add(wx.StaticText(self))
+        sizer.Add(wx.StaticText(title_panel))
 
-        sizer.Add(wx.StaticText(self))
-        sizer.Add(wx.StaticLine(self, pos=(25, 50), size=(600, 1)), flag=wx.ALL | wx.ALIGN_CENTER)
-        sizer.Add(wx.StaticText(self))
+        # Create settingspanel sizer
+        settings_sizer = wx.GridSizer(5, 2, 0, 0)
+        settings_panel.SetSizer(settings_sizer)
 
-        self.device_name = Setting(self, "Set device name: ", "", sizer)
-        # sizer.Add(self.device_name, flag=wx.ALIGN_LEFT | wx.ALL)
+        # Create all settingslabels and inputs
+        labels = [self.device_name_label, self.device_color_label, self.window_height_label, self.temp_treshold_label,
+                  self.light_intens_label]
+        self.inputs = {}
 
-        self.window_height = Setting(self, "Set window height:", " cm", sizer)
-        # sizer.Add(self.window_height, flag=wx.ALIGN_LEFT | wx.ALL)
+        for k in labels:
+            settings_sizer.Add(wx.StaticText(settings_panel, label=k))
+            if k == "Set device color: ":
+                input_type = wx.ColourPickerCtrl(settings_panel)
+            else:
+                input_type = wx.TextCtrl(settings_panel)
+            self.inputs[k] = input_type
+            settings_sizer.Add(input_type)
 
-        self.device_color = Setting(self, "Set device color:", "", sizer)
-        # sizer.Add(self.device_color, flag=wx.ALIGN_LEFT | wx.ALL)
+        # Create apply panel sizer
+        apply_sizer = wx.GridSizer(1, 1, 0, 0)
+        apply_panel.SetSizer(apply_sizer)
 
-        self.max_temp = Setting(self, "Set temperature threshold:", " ℃", sizer)
-        # sizer.Add(self.max_temp, flag=wx.ALIGN_LEFT | wx.ALL)
+        # Create apply button and add to sizer
+        self.apply_button = wx.Button(apply_panel, label="apply")
+        apply_sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
 
-        self.max_light = Setting(self, "Set light sensitivity threshold:", " cd", sizer)
-        sizer.Add(self.max_light, flag=wx.ALIGN_LEFT | wx.ALL)
+        settingsizer.Add(main_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        main_panel.Layout()
 
-        self.apply_button = wx.Button(self, label="apply")
-        sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
+    def get_settings(self):
+        """
+        :return: ['name', wx.Colour(0, 0, 0, 255), 'window', 'temp', 'intensity']
+        """
+        result = []
+        for label in self.inputs:
+            if type(self.inputs[label]) == wx.ColourPickerCtrl:
+                result.append(self.inputs[label].GetColour())
+            else:
+                result.append(self.inputs[label].GetValue())
+        return result
 
     def disable_inputs(self):
-        self.device_name.Disable()
-        self.window_height.Disable()
-        self.device_name.Disable()
-        self.window_height.Disable()
-        self.device_color.Disable()
-        self.max_temp.Disable()
-        self.max_light.Disable()
+        for input in self.inputs.values():
+            input.Disable()
         self.apply_button.Disable()
 
     def enable_inputs(self):
-        self.device_name.Enable()
-        self.window_height.Enable()
-        self.device_name.Enable()
-        self.window_height.Enable()
-        self.device_color.Enable()
-        self.max_temp.Enable()
-        self.max_light.Enable()
+        for input in self.inputs.values():
+            input.Enable()
         self.apply_button.Enable()
 
     def set_name(self, name):
-        self.device_name.set_value(name)
+        self.inputs[self.device_name_label].SetValue(str(name))
 
     def set_window_height(self, height):
-        self.window_height.set_value(height)
+        self.inputs[self.window_height_label].SetValue(str(height))
 
     def set_color(self, color):
-        self.device_name.set_value(color)
+        self.inputs[self.device_color_label].SetColour(color)
 
-    def set_temperature_threshold(self, color):
-        self.max_temp.set_value(color)
+    def set_temperature_threshold(self, temp):
+        self.inputs[self.temp_treshold_label].SetValue(str(temp))
 
     def set_light_intensity_threshold(self, light):
-        self.max_light.set_value(light)
-
-    def get_name(self):
-        return self.device_name.get_value()
-
-    def get_window_height(self):
-        return self.window_height.get_value()
-
-    def get_color(self):
-        return self.device_name.get_value()
-
-    def get_temperature_threshold(self):
-        return self.max_temp.get_value()
-
-    def get_light_intensity_threshold(self):
-        return self.max_light.get_value()
+        self.inputs[self.light_intens_label].SetValue(str(light))
 
     def show_success(self, message, title="Success"):
-        print("show succes", message)
         wx.MessageBox(message, title, wx.OK | wx.ICON_INFORMATION)
 
     def show_error(self, message, title="Error"):
         wx.MessageBox(message, title, wx.OK | wx.ICON_ERROR)
-
-
-class Setting(mvc.View):
-    def __init__(self, parent, prefix, subfix, sizer):
-        super().__init__(parent)
-        font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
-        self.pre_fix = wx.StaticText(parent, label=prefix)
-        self.pre_fix.SetFont(font)
-        self.sub_fix = wx.StaticText(parent, label=subfix)
-        self.sub_fix.SetFont(font)
-        self.input = wx.TextCtrl(parent, size=(80, 20), value="")
-        sizer.Add(self.pre_fix, flag=wx.ALIGN_LEFT | wx.ALL)
-        sizer.Add(self.input, flag=wx.ALIGN_RIGHT | wx.ALL)
-        sizer.Add(self.sub_fix, flag=wx.ALIGN_LEFT | wx.ALL)
-
-    def set_value(self, value):
-        self.input.SetValue(value)
-
-    def get_value(self):
-        return self.input.GetValue()
-
-    def Disable(self):
-        self.input.Disable()
-
-    def Enable(self, **kwargs):
-        self.input.Enable()
