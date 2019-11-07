@@ -23,12 +23,13 @@ class GraphView(mvc.View):
         self.SetSizer(self.graph_sizer)
         self.graph_sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
         self.framecolor = "LightGrey"
+        self.graphmode = graphmode
         self.units = []
 
         if graphmode == GraphMode.Temp:
             self.graph.set_xlabel("test")
-            self.y_min = -40
-            self.y_max = 40
+            self.y_min = -200
+            self.y_max = 200
             self.measure_unit = "Temperature in °C"
             self.autoscale = True
 
@@ -48,8 +49,13 @@ class GraphView(mvc.View):
     def update_graph(self):
         first_drawn = True
         for unit in self.units:
+            if len(unit["measurements"]) < 2 or not unit["selected"]:
+                break
+            times = []
+            #for i in range(len(unit["measurements"])):
+                #times.append(datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)))
             if first_drawn:
-                self.graph.plot(ydata=unit["measurements"], xdata=unit["timestamps"], ymin=self.y_min, ymax=self.y_max, ylabel=self.measure_unit,
+                self.graph.plot(ydata=unit["measurements"], xdata = unit["timestamps"], ymin=self.y_min, ymax=self.y_max, ylabel=self.measure_unit,
                                 side='left', linewidth=1, labelfontsize=6,
                                 legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor,
                                 use_dates=True,
@@ -62,20 +68,29 @@ class GraphView(mvc.View):
             if unit[id] == id:
                 return unit
 
-    def set_unit(self, id, dates, measurements):
-        new_unit = {
-            "id": id,
-            "timestamps": dates,
-            "measurements": measurements,
-            "color": "Green",
-            "visible": True,
-        }
-        for unit in self.units:
-            if unit["id"] == id:
-                unit = new_unit
-                return
+    def set_units(self, units):
 
-        self.units.append(new_unit)
+        values = ""
+        if self.graphmode == GraphMode.Temp:
+            values = "temperatures"
+        elif self.graphmode == GraphMode.Light:
+            values = "light_intensity"
+        elif self.graphmode == GraphMode.Status:
+            values = "shutter_status"
+
+        updated_units = []
+        for unit in units:
+            new_unit = {
+                "id":unit["id"],
+                "selected":unit["selected"],
+                "color":unit["color"],
+                "timestamps":unit["timestamps"],
+                "measurements":unit[values]
+            }
+            updated_units.append(new_unit)
+        self.units = updated_units
+
+
 
     def toggle_visible(self, id):
         unit = self.find_unit(id)

@@ -105,7 +105,7 @@ class Setting(mvc.View):
         sizer.Add(self.sub_fix, flag= wx.ALIGN_LEFT | wx.ALL)
 
     def set_value(self, value):
-        self.input.SetValue(value)
+        self.input.SetValue(str(value))
 
     def get_value(self):
         return self.input.GetValue()

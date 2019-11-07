@@ -38,10 +38,10 @@ class GraphTabView(View):
 
         self.sizer.Add(self.tab_panel, 1, wx.EXPAND)
 
-    def update_graphs(self, id, dates, temps, status, light):
-        self.temps_tab.graph.set_unit(id, dates, temps)
-        self.status_tab.graph.set_unit(id, dates, status)
-        self.light_tab.graph.set_unit(id, dates, light)
+    def update_graphs(self, units):
+        self.temps_tab.graph.set_units(units)
+        self.status_tab.graph.set_units(units)
+        self.light_tab.graph.set_units(units)
         self.temps_tab.graph.update_graph()
 
 
@@ -62,14 +62,18 @@ class graph_tab(View):
         self.graph.update_graph()
 
 def SetTestData(graph_view: graph_view.GraphView):
-    measurements = []
+    timestamps = []
+    temps = []
+    status = []
+    light = []
     temp = 20.000
-    for i in range(100):
+    for i in range(2):
         temp += random.uniform(-3, 3)
-        measurements.append(
-            Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)),
-                        temperature=temp, shutter_status=random.randint(0, 1), light_intensity=0))
-    graph_view.set_unit(1, measurements)
+        temps.append(temp)
+        status.append(1)
+        light.append(500)
+        timestamps.append(datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)))
+    graph_view.temps_tab.graph.set_unit(1, timestamps, temps)
 
 
 if __name__ == "__main__":
@@ -82,5 +86,8 @@ if __name__ == "__main__":
     sizer.Add(graph_tab, 1, wx.EXPAND)
     # graph_tab.SetSize(300,300)
     SetTestData(graph_tab)
+    graph_tab.temps_tab.graph.update_graph()
+    graph_tab.Update()
+    graph_tab.Show()
     frame.Show()
     app.MainLoop()
