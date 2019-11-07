@@ -3,6 +3,8 @@ from src import mvc
 
 class test(wx.Frame):
 
+    settings = {}
+
     def __init__(self, parent):
         super().__init__(parent)
         self.SetTitle("test")
@@ -49,39 +51,84 @@ class test(wx.Frame):
         settings_sizer = wx.GridSizer(5, 2,0,0)
         settings_panel.SetSizer(settings_sizer)
 
-        panel1 = wx.Panel(settings_panel)
-        panel2 = wx.Panel(settings_panel)
-        panel3 = wx.Panel(settings_panel)
-        panel4 = wx.Panel(settings_panel)
-        panel5 = wx.Panel(settings_panel)
-        panel6 = wx.Panel(settings_panel)
-        panel7 = wx.Panel(settings_panel)
-        panel8 = wx.Panel(settings_panel)
-        panel9 = wx.Panel(settings_panel)
-        panel10 = wx.Panel(settings_panel)
+        self.device_name_label = wx.StaticText(settings_panel)
+        self.device_name_label.SetLabelText("Set device name: ")
+        settings_sizer.Add(self.device_name_label)
 
-        panel1.SetBackgroundColour((252, 186, 3))
-        panel2.SetBackgroundColour((0, 0, 0))
-        panel3.SetBackgroundColour((51, 255, 0))
-        panel4.SetBackgroundColour((0, 247, 255))
-        panel5.SetBackgroundColour((81, 0, 255))
-        panel6.SetBackgroundColour((153, 0, 25))
-        panel7.SetBackgroundColour((255, 0, 208))
-        panel8.SetBackgroundColour((255, 0, 106))
-        panel9.SetBackgroundColour((255, 0, 0))
-        panel10.SetBackgroundColour((255,255,255))
+        self.device_name_input = wx.TextCtrl(settings_panel)
+        settings_sizer.Add(self.device_name_input)
 
 
-        settings_sizer.Add(panel1, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        settings_sizer.Add(panel2, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        settings_sizer.Add(panel3, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        settings_sizer.Add(panel4, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        settings_sizer.Add(panel5, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        settings_sizer.Add(panel6, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        settings_sizer.Add(panel7, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        settings_sizer.Add(panel8, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        settings_sizer.Add(panel9, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        settings_sizer.Add(panel10, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        self.window_height_label = wx.StaticText(settings_panel)
+        self.window_height_label.SetLabelText("Set window height: ")
+        settings_sizer.Add(self.window_height_label)
+
+        self.window_height_input = wx.TextCtrl(settings_panel)
+        settings_sizer.Add(self.window_height_input)
+
+        self.device_color_label = wx.StaticText(settings_panel)
+        self.device_color_label.SetLabelText("Set device color: ")
+        settings_sizer.Add(self.device_color_label)
+
+        self.device_color_input = wx.ColourPickerCtrl(settings_panel)
+        settings_sizer.Add(self.device_color_input)
+
+        self.max_temp_label = wx.StaticText(settings_panel)
+        self.max_temp_label.SetLabelText("Set temperature treshold: ")
+        settings_sizer.Add(self.max_temp_label)
+
+        self.max_temp_input = wx.TextCtrl(settings_panel)
+        settings_sizer.Add(self.max_temp_input)
+
+        self.light_intensity_label = wx.StaticText(settings_panel)
+        self.light_intensity_label.SetLabelText("Set light intensety treshold: ")
+        settings_sizer.Add(self.light_intensity_label)
+
+        self.light_intensity_input = wx.TextCtrl(settings_panel)
+        settings_sizer.Add(self.light_intensity_input)
+
+
+
+
+
+
+
+
+
+
+        # panel1 = wx.Panel(settings_panel)
+        # panel2 = wx.Panel(settings_panel)
+        # panel3 = wx.Panel(settings_panel)
+        # panel4 = wx.Panel(settings_panel)
+        # panel5 = wx.Panel(settings_panel)
+        # panel6 = wx.Panel(settings_panel)
+        # panel7 = wx.Panel(settings_panel)
+        # panel8 = wx.Panel(settings_panel)
+        # panel9 = wx.Panel(settings_panel)
+        # panel10 = wx.Panel(settings_panel)
+        #
+        # panel1.SetBackgroundColour((252, 186, 3))
+        # panel2.SetBackgroundColour((0, 0, 0))
+        # panel3.SetBackgroundColour((51, 255, 0))
+        # panel4.SetBackgroundColour((0, 247, 255))
+        # panel5.SetBackgroundColour((81, 0, 255))
+        # panel6.SetBackgroundColour((153, 0, 25))
+        # panel7.SetBackgroundColour((255, 0, 208))
+        # panel8.SetBackgroundColour((255, 0, 106))
+        # panel9.SetBackgroundColour((255, 0, 0))
+        # panel10.SetBackgroundColour((255,255,255))
+        #
+        #
+        # settings_sizer.Add(panel1, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        # settings_sizer.Add(panel2, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        # settings_sizer.Add(panel3, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        # settings_sizer.Add(panel4, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        # settings_sizer.Add(panel5, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        # settings_sizer.Add(panel6, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        # settings_sizer.Add(panel7, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        # settings_sizer.Add(panel8, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        # settings_sizer.Add(panel9, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        # settings_sizer.Add(panel10, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
 
 
