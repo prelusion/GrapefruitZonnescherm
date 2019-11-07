@@ -24,7 +24,7 @@ class FilterView(mvc.View):
         h_sizer = wx.BoxSizer(wx.HORIZONTAL)
         title_panel.SetSizer(h_sizer)
         label = widgets.CenteredLabel(title_panel, "Filters")
-        font = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+        font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.NORMAL, wx.BOLD)
         label.SetFont(font)
         h_sizer.Add(label, wx.ID_ANY, wx.EXPAND | wx.ALL)
 

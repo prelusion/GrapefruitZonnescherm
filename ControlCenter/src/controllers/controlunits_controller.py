@@ -96,6 +96,4 @@ class ControlUnitsController(mvc.Controller):
         model.set_selected(not model.get_selected())
         measurements = model.get_measurements()
 
-        print("unit measurements:")
-        print(measurements)
         print("measurements for unit:", len(measurements))

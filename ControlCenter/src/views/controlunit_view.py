@@ -55,16 +55,17 @@ class ControlUnitView(wx.Panel):
             if name is not "color":
                 infolabel = wx.StaticText(panel, wx.ID_ANY, label="Info label", style=wx.ALIGN_CENTER)
                 infolabel.SetLabelText(name)
-                font = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+                font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.NORMAL, wx.BOLD)
+                # font.SetFamily(wx.FONTFAMILY)
                 infolabel.SetFont(font)
                 datalabel = wx.StaticText(panel, wx.ID_ANY, label="Data label", style=wx.ALIGN_CENTER)
-                font = wx.Font(10, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
+                font = wx.Font(10, wx.FONTFAMILY_SWISS, wx.NORMAL, wx.NORMAL)
                 datalabel.SetFont(font)
 
                 # Create sizer for labels
                 main_sizer = wx.GridSizer(2, 1, 0, 0)
-                main_sizer.Add(infolabel, 1, wx.EXPAND | wx.ALL)
-                main_sizer.Add(datalabel, 1, wx.EXPAND | wx.ALL)
+                main_sizer.Add(infolabel, 1, wx.EXPAND | wx.ALL, 5)
+                main_sizer.Add(datalabel, 1, wx.EXPAND | wx.ALL, 5)
 
                 # set sizer for the main panel
                 panel.SetSizer(main_sizer)
