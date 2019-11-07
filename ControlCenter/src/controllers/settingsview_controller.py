@@ -1,12 +1,13 @@
 import threading
-
+import serial as pyserial
+import logging
 import wx
 
 from src import mvc
 from src import util
 from src.views.settings_view import SettingsView
 
-
+logger = logging.getLogger(__name__)
 class SettingsViewController(mvc.Controller):
     def __init__(self, view_parent, controlunit_manager):
         super().__init__()
@@ -48,10 +49,14 @@ class SettingsViewController(mvc.Controller):
             self.view.Update()
 
         def execute_threaded():
-            window_height = str(comm.get_window_height())
-            temperature_threshold = comm.get_temperature_threshold()
-            light_threshold = comm.get_light_intensity_threshold()
-            wx.CallAfter(lambda: update_view(window_height, temperature_threshold, light_threshold))
+            try:
+                window_height = str(comm.get_window_height())
+                temperature_threshold = comm.get_temperature_threshold()
+                light_threshold = comm.get_light_intensity_threshold()
+                wx.CallAfter(lambda: update_view(window_height, temperature_threshold, light_threshold))
+            except pyserial.SerialException:
+                logger.warning("Serial error")
+                # TODO: show user error
 
         threading.Thread(target=execute_threaded, daemon=True).start()
 
@@ -103,28 +108,31 @@ class SettingsViewController(mvc.Controller):
             return
 
         for comm, model in self.controlunit_manager.get_selected_units():
-            device_id = comm.get_id()
-            print("apply settings on device with id:", device_id)
+            try:
+                device_id = comm.get_id()
 
-            if device_id:
-                self.update_settings(comm,
+                if device_id:
+                    self.update_settings(comm,
+                                         model,
+                                         device_id,
+                                         name,
+                                         color,
+                                         height,
+                                         temperature_threshold,
+                                         light_intensity_threshold)
+                else:
+                    self.init_device(comm,
                                      model,
-                                     device_id,
+                                     model.get_id(),
                                      name,
                                      color,
                                      height,
                                      temperature_threshold,
-                                     light_intensity_threshold)
-            else:
-                self.init_device(comm,
-                                 model,
-                                 model.get_id(),
-                                 name,
-                                 color,
-                                 height,
-                                 temperature_threshold,
-                                 light_intensity_threshold,
-                                 model.get_manual())
+                                     light_intensity_threshold,
+                                     model.get_manual())
+            except pyserial.SerialException:
+                logger.warning("Serial error")
+                # TODO: show user error
 
     def init_device(self, comm, model, device_id, name, color, window_height,
                     temperature_threshold, light_intensity_threshold, manual_mode):

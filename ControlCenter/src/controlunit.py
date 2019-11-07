@@ -30,7 +30,7 @@ class CommandNotImplemented(Exception):
 def get_online_control_units(connected_ports=set(), unused_ports=set()):
     """ :returns new_ports, down_ports """
 
-    @retry_on_given_exception(SerialException, 5)
+    @retry_on_any_exception(5)
     def test_if_port_is_control_unit(port):
         with ser.connect(port, baudrate=BAUDRATE, timeout=0.2) as conn:
             for i in range(20):
@@ -55,7 +55,10 @@ def get_online_control_units(connected_ports=set(), unused_ports=set()):
             try:
                 result = future.result()
                 unconnected_ports.append(result)
-            except SerialException as e:
+            except (
+                    UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                    serialutil.SerialException) as e:
+                logger.exception(e)
                 failed_ports.append(port)
 
     unconnected_ports = list(filter(None, unconnected_ports))
@@ -88,8 +91,12 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
             logger.info(f"control unit connected on port: '{port}'")
             comm = ControlUnitCommunication(port)
 
-            current_id = comm.get_id()
             initialized = True
+
+            try:
+                current_id = comm.get_id()
+            except pyserial.SerialException:
+                current_id = None
 
             if not current_id:
                 initialized = False
@@ -100,12 +107,19 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
 
             model = ControlUnitModel(current_id)
 
-            model.set_manual(comm.get_manual())
+            try:
+                model.set_manual(comm.get_manual())
+            except pyserial.SerialException:
+                pass
+
             model.set_online(True)
             model.set_initialized(initialized)
 
-            history = comm.get_sensor_history()
-            # TODO do something with sensor history
+            try:
+                history = comm.get_sensor_history()
+                # TODO do something with sensor history
+            except pyserial.SerialException:
+                pass
 
             controlunit_manager.add_unit(port, comm, model)
 
