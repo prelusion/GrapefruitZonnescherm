@@ -1,6 +1,9 @@
-import wx
 import threading
+
+import wx
+
 from src import mvc
+from src import util
 from src.views.settings_view import SettingsView
 
 
@@ -63,26 +66,97 @@ class SettingsViewController(mvc.Controller):
     def enable_settings(self):
         self.view.enable_inputs()
 
+    def validate(self, name, height, color, temperature_threshold, light_intensity_threshold):
+        height_ok = False
+        temperature_threshold_ok = False
+        light_intensity_ok = False
+
+        if util.is_int(height) and 0 < int(height) <= 400:
+            height_ok = True
+        if util.is_int(temperature_threshold) and -64 < int(temperature_threshold) <= 63:
+            temperature_threshold_ok = True
+        if util.is_int(light_intensity_threshold) and 0 < int(light_intensity_threshold) <= 100:
+            light_intensity_ok = True
+
+        error = ["Failed to apply settings:\n"]
+        if not height_ok:
+            error.append("- Height must be a value between 0 and 400 in cm.\n")
+        if not temperature_threshold_ok:
+            error.append("- Temperature threshold must be a value between -64 and 63.\n")
+        if not light_intensity_ok:
+            error.append("- Temperature threshold must be a value between 0 and 100.\n")
+
+        if not height_ok or not temperature_threshold_ok or not light_intensity_ok:
+            return "".join(error)
+
     def on_apply(self, event):
+        name = self.view.get_name()
+        height = self.view.get_window_height()
+        color = self.view.get_color()
+        temperature_threshold = self.view.get_temperature_threshold()
+        light_intensity_threshold = self.view.get_light_intensity_threshold()
 
-        settings = {
-            # "name":(self.view.get_name(), lambda x, value: comm.set_name(value)),
-            "height": (self.view.get_window_height(), lambda x, value: comm.set_window_height(value)),
-            # "color": self.view.get_color(),
-            "max_temp": (self.view.get_temperature_threshold(), lambda x, value: comm.set_temperature_threshold(value)),
-            "max_light": (
-                self.view.get_light_intensity_threshold(), lambda x, value: comm.set_light_intensity_threshold(value))
-        }
+        error = self.validate(name, height, color, temperature_threshold, light_intensity_threshold)
 
-        all_errors = []
+        if error:
+            self.view.show_error(error, title="Can not apply settings")
+            return
+
         for comm, model in self.controlunit_manager.get_selected_units():
-            errors = []
+            device_id = comm.get_id()
+            print("apply settings on device with id:", device_id)
 
-            for name, setter in settings.items():
-                value, function = setter
-                if function(comm, value):
-                    function(model, value)
-                else:
-                    errors.append("Error setting " + name)
+            if device_id:
+                self.update_settings(comm,
+                                     model,
+                                     device_id,
+                                     name,
+                                     color,
+                                     height,
+                                     temperature_threshold,
+                                     light_intensity_threshold)
+            else:
+                self.init_device(comm,
+                                 model,
+                                 model.get_id(),
+                                 name,
+                                 color,
+                                 height,
+                                 temperature_threshold,
+                                 light_intensity_threshold,
+                                 model.get_manual())
 
-            all_errors.append((model.get_id(), errors))
+    def init_device(self, comm, model, device_id, name, color, window_height,
+                    temperature_threshold, light_intensity_threshold, manual_mode):
+
+        success = comm.initialize(device_id,
+                                  window_height,
+                                  temperature_threshold,
+                                  light_intensity_threshold,
+                                  manual_mode)
+        if success:
+            model.set_name(name)
+            model.set_colour(color)
+            self.view.show_success("Successfully initialized device")
+        else:
+            self.view.show_error("Failed to initialize device", title="Failure")
+
+    def update_settings(self, comm, model, device_id, name, color, window_height,
+                        temperature_threshold, light_intensity_threshold):
+
+        if not comm.set_id(device_id):
+            self.view.show_error("Failed to to update id", title="Failure")
+            return
+        if not comm.set_window_height(window_height):
+            self.view.show_error("Failed to update window height", title="Failure")
+            return
+        if not comm.set_temperature_threshold(temperature_threshold):
+            self.view.show_error("Failed to update temperature threshold", title="Failure")
+            return
+        if not comm.set_light_intensity_threshold(light_intensity_threshold):
+            self.view.show_error("Failed to update light intensity threshold", title="Failure")
+            return
+
+        model.set_name(name)
+        model.set_colour(color)
+        self.view.show_success("Successfully initialized device")

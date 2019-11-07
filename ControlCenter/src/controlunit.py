@@ -107,7 +107,6 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
             model.set_online(True)
             model.set_initialized(initialized)
 
-
             history = comm.get_sensor_history()
             # TODO do something with sensor history
 
@@ -126,7 +125,7 @@ EXCEPT_RETRIES = 5
 
 
 class ControlUnitCommunication:
-    COMMAND_RETRY = 2
+    COMMAND_RETRY = 4
     BUFFER_READS = 20
     BUFFER_SLEEP = 0.05
     RETRY_SLEEP = 0.1
@@ -136,8 +135,8 @@ class ControlUnitCommunication:
         self.com_port = port
         self._conn = None
 
-    def initialize(self, id):
-        pass
+    def initialize(self, device_id, window_height, temperature_threshold, light_intensity_threshold, manual_mode):
+        return self._set_command("INITIALIZE", f"{device_id},{window_height},{temperature_threshold},{light_intensity_threshold},{int(manual_mode)}")
 
     def get_up_time(self):
         return self._get_command("GET_UP_TIME")
@@ -164,16 +163,20 @@ class ControlUnitCommunication:
         try:
             temp, light, shutter = data.split(",")
         except ValueError:
-            return None
+            return
 
-        return Measurement(
-            time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
-            int(shutter), int(light))
+        try:
+            return Measurement(
+                time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                int(shutter), int(light))
+        except ValueError:
+            return
 
     def get_sensor_history(self):
         conn = self._get_connection()
 
         def execute_command():
+            conn.readbuffer()  # empty buffer
             conn.write("GET_SENSOR_HISTORY")
             time.sleep(0.1)
             t_start = time.time()
@@ -255,6 +258,7 @@ class ControlUnitCommunication:
         logger.debug(f"executing command to control unit: {cmd_with_arg}")
 
         def execute_command():
+            conn.readbuffer()  # empty buffer
             conn.write(cmd_with_arg)
             time.sleep(0.1)
             buffer = ""
@@ -291,6 +295,8 @@ class ControlUnitCommunication:
         logger.debug(f"executing command to control unit: {command}")
 
         def execute_command():
+            conn.readbuffer()  # empty buffer
+
             conn.write(command)
             time.sleep(0.1)
             buffer = ""
@@ -307,7 +313,10 @@ class ControlUnitCommunication:
                 return buffer.split(f"{command}=")[1].strip()
 
         with threading.Lock():
-            return execute_command()
+            for i in range(self.COMMAND_RETRY):
+                data = execute_command()
+                if data: return data
+                time.sleep(self.RETRY_SLEEP)
 
     def _get_connection(self):
         if not self._conn:
