@@ -112,3 +112,9 @@ class SettingsView(mvc.View):
 
     def set_light_intensity_threshold(self, light):
         self.inputs[self.light_intens_label].SetValue(str(light))
+
+    def show_success(self, message, title="Success"):
+        wx.MessageBox(message, title, wx.OK | wx.ICON_INFORMATION)
+
+    def show_error(self, message, title="Error"):
+        wx.MessageBox(message, title, wx.OK | wx.ICON_ERROR)

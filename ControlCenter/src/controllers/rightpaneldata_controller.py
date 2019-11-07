@@ -33,7 +33,6 @@ class RightpanelDataController(mvc.Controller):
         self.main_sizer.Add(self.manualcontrolview_controller.view, wx.ID_ANY, wx.EXPAND | wx.ALL, 10)
         self.main_sizer.Add(self.settingsview_controller.view, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
-        self.show_graph()
         self.show_manual_control()
 
     def on_tab_change(self, model, data):

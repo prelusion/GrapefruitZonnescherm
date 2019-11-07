@@ -42,6 +42,8 @@ class TabView(mvc.View):
         # graph_tab.SetBitmap(icon1)
         # settings_tab.SetBitmap(icon2)
 
+        self.set_manual_active()
+
     def set_manual_active(self):
         self.manual_tab.SetBackgroundColour(self.COLOR_ACTIVE)
         self.graph_tab.SetBackgroundColour(self.COLOR_INACTIVE)
