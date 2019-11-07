@@ -51,9 +51,6 @@ class GraphView(mvc.View):
         for unit in self.units:
             if len(unit["measurements"]) < 2 or not unit["selected"]:
                 break
-            times = []
-            #for i in range(len(unit["measurements"])):
-                #times.append(datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)))
             if first_drawn:
                 self.graph.plot(ydata=unit["measurements"], xdata = unit["timestamps"], ymin=self.y_min, ymax=self.y_max, ylabel=self.measure_unit,
                                 side='left', linewidth=1, labelfontsize=6,
@@ -61,7 +58,7 @@ class GraphView(mvc.View):
                                 use_dates=True,
                                 color=unit["color"])
             else:
-                self.graph.oplot(unit["timestamps"], unit["measurements"], side='left', linewidth=1, color=unit["color"])
+                self.graph.oplot(ydata=unit["measurementx"], xdata=unit["timestamps"], side='left', linewidth=1, color=unit["color"])
 
     def find_unit(self, id):
         for unit in self.units:

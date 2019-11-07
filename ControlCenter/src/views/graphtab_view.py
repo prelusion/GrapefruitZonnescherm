@@ -43,6 +43,8 @@ class GraphTabView(View):
         self.status_tab.graph.set_units(units)
         self.light_tab.graph.set_units(units)
         self.temps_tab.graph.update_graph()
+        self.status_tab.graph.update_graph()
+        self.light_tab.graph.update_graph()
 
 
 class graph_tab(View):

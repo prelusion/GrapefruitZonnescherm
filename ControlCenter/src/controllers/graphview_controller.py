@@ -30,7 +30,6 @@ class GraphViewController(mvc.Controller):
         light = []
 
         for measurement in data:
-            #timestamps.append(int(datetime.datetime.timestamp(datetime.datetime.now())))
             timestamps.append(int(measurement.timestamp))
             temps.append(measurement.temperature)
             status.append(measurement.shutter_status)
