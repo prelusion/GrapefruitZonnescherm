@@ -1,8 +1,8 @@
 import os
 import threading
-
+import logging
 import wx
-
+from src import db
 from src import const
 from src import controlunit
 from src import util
@@ -10,11 +10,11 @@ from src.controllers.controlunits_controller import ControlUnitsController
 from src.controllers.filterview_controller import FilterViewController
 from src.controllers.rightpaneldata_controller import RightpanelDataController
 from src.controllers.topview_controller import TopViewController
-from src.controllers.graphview_controller import GraphViewController
-from src.controllers.manualcontrol_controller import ManualControlController
-from src.controllers.settingsview_controller import SettingsViewController
 from src.models.controlunit_manager import ControlUnitManager
 from src.models.tabstate import TabstateModel
+
+
+logger = logging.getLogger(__name__)
 
 
 class App(wx.App):
@@ -32,6 +32,9 @@ class App(wx.App):
     def init(self):
         if not os.path.exists(const.DATA_DIR):
             os.makedirs(const.DATA_DIR)
+
+        db.init()
+        logger.info(f"current control units in database: {db.select_all(db.TABLE_CONTROL_UNITS)}")
 
         app_data = util.load_json_from_file(const.APP_DATA_FILE)
 
@@ -98,10 +101,6 @@ class MainView(wx.Frame):
                                                          self.app.tabstate_model)
         right_panel_sizer_vbox.Add(rightpanel_controller.view, 10, wx.EXPAND | wx.ALL)
         center_panel_sizer.Add(right_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-
-
-def on_click(e):
-    print(e)
 
 
 def mainloop():

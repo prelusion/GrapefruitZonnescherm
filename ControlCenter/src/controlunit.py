@@ -1,18 +1,20 @@
 import concurrent
 import threading
 import time
+from src import db
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from logging import getLogger
 
-from serial.serialutil import SerialException
+import serial as pyserial
+from serial import serialutil
 
 from src import serialinterface as ser
 from src import util
 from src.decorators import retry_on_any_exception, retry_on_given_exception
 from src.models.controlunit import ControlUnitModel
-import threading
+
 logger = getLogger(__name__)
 BAUDRATE = 19200
 
@@ -29,7 +31,7 @@ class CommandNotImplemented(Exception):
 def get_online_control_units(connected_ports=set(), unused_ports=set()):
     """ :returns new_ports, down_ports """
 
-    @retry_on_given_exception(SerialException, 5)
+    @retry_on_any_exception(5)
     def test_if_port_is_control_unit(port):
         with ser.connect(port, baudrate=BAUDRATE, timeout=0.2) as conn:
             for i in range(20):
@@ -54,7 +56,10 @@ def get_online_control_units(connected_ports=set(), unused_ports=set()):
             try:
                 result = future.result()
                 unconnected_ports.append(result)
-            except SerialException as e:
+            except (
+                    UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                    serialutil.SerialException) as e:
+                logger.exception(e)
                 failed_ports.append(port)
 
     unconnected_ports = list(filter(None, unconnected_ports))
@@ -87,19 +92,42 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
             logger.info(f"control unit connected on port: '{port}'")
             comm = ControlUnitCommunication(port)
 
-            current_id = comm.get_id()
+            initialized = True
+
+            try:
+                current_id = comm.get_id()
+            except pyserial.SerialException:
+                current_id = None
 
             if not current_id:
+                initialized = False
                 unit_id = util.generate_16bit_int()
                 current_id = util.encode_controlunit_id(app_id, unit_id)
-                comm.set_id(current_id)
+            else:
+                logger.info("checking if device is already in database")
+                device = db.select_columns(db.TABLE_CONTROL_UNITS, "*", f"device_id = {current_id}")
+                if not device:
+                    logger.info("resetting device")
+                    comm.reset()
+                    initialized = False
 
             logger.info(f"control unit with port '{port}' has id: {current_id}")
 
             model = ControlUnitModel(current_id)
 
-            model.set_manual(comm.get_manual())
+            try:
+                model.set_manual(comm.get_manual())
+            except pyserial.SerialException:
+                pass
+
             model.set_online(True)
+            model.set_initialized(initialized)
+
+            try:
+                history = comm.get_sensor_history()
+                # TODO do something with sensor history
+            except pyserial.SerialException:
+                pass
 
             controlunit_manager.add_unit(port, comm, model)
 
@@ -116,7 +144,7 @@ EXCEPT_RETRIES = 5
 
 
 class ControlUnitCommunication:
-    COMMAND_RETRY = 2
+    COMMAND_RETRY = 4
     BUFFER_READS = 20
     BUFFER_SLEEP = 0.05
     RETRY_SLEEP = 0.1
@@ -126,13 +154,23 @@ class ControlUnitCommunication:
         self.com_port = port
         self._conn = None
 
-    @retry_on_any_exception(retries=EXCEPT_RETRIES)
+    def initialize(self, device_id, window_height, temperature_threshold, light_intensity_threshold, manual_mode):
+        return self._set_command("INITIALIZE",
+                                 f"{device_id},{window_height},{temperature_threshold},{light_intensity_threshold},{int(manual_mode)}")
+
+    def reset(self):
+        return self._set_command("RESET")
+
     def get_up_time(self):
         return self._get_command("GET_UP_TIME")
 
-    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_id(self):
-        return int(self._get_command("GET_ID"))
+        device_id = self._get_command("GET_ID")
+        try:
+            if device_id: device_id = int(device_id)
+            return device_id
+        except ValueError:
+            pass
 
     def set_id(self, id_):
         """ id is a 32-bit int. """
@@ -141,18 +179,79 @@ class ControlUnitCommunication:
     def is_online(self):
         pass
 
-    @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def get_sensor_data(self):
         data = self._get_command("GET_SENSOR_DATA")
 
         if not data:
             return
 
-        temp, light, shutter = data.split(",")
+        try:
+            temp, light, shutter = data.split(",")
+        except ValueError:
+            return
 
-        return Measurement(
-            time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
-            int(shutter), int(light))
+        try:
+            return Measurement(
+                time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                int(shutter), int(light))
+        except ValueError:
+            return
+
+    def get_sensor_history(self):
+        conn = self._get_connection()
+
+        def execute_command():
+            conn.readbuffer()  # empty buffer
+            conn.write("GET_SENSOR_HISTORY")
+            time.sleep(0.1)
+            t_start = time.time()
+            values = []
+
+            while not util.timeout_exceeded(t_start, 30):
+                data = conn.readline()
+
+                if not data:
+                    continue
+
+                if "GET_SENSOR_HISTORY=L" in data:
+                    datalength = data.split("GET_SENSOR_HISTORY=L")[1].strip()
+                elif "GET_SENSOR_HISTORY=OK" in data:
+                    return ";".join(values)
+                elif "GET_SENSOR_HISTORY=" in data:
+                    values.append(data.split("GET_SENSOR_HISTORY=")[1].strip())
+
+        with threading.Lock():
+            try:
+                history_string = execute_command()
+            except (
+                    UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                    serialutil.SerialException) as e:
+                logger.exception(e)
+                raise pyserial.SerialException
+
+        if not history_string:
+            return
+
+        splitted = history_string.split(";")
+        splitted.reverse()
+
+        try:
+            measurements = []
+            for i, value in enumerate(splitted):
+                temp, light, shutter = value.split(",")
+
+                measurement = Measurement(
+                    time.time() - ((i + 1) * 60), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                    int(shutter), int(light))
+
+                measurements.append(measurement)
+
+            measurements.reverse()
+
+            return measurements
+
+        except ValueError:
+            pass
 
     def get_window_height(self):
         return self._get_command("GET_WINDOW_HEIGHT")
@@ -179,7 +278,12 @@ class ControlUnitCommunication:
         return self._set_command("ROLL_DOWN")
 
     def get_manual(self):
-        return bool(int(self._get_command("GET_MANUAL")))
+        value = self._get_command("GET_MANUAL")
+        try:
+            if value: value = bool(int(value))
+            return value
+        except ValueError:
+            pass
 
     def set_manual(self, boolean):
         return self._set_command("SET_MANUAL", int(boolean))
@@ -192,16 +296,18 @@ class ControlUnitCommunication:
         if arg is not None:
             cmd_with_arg += "=" + str(arg)
 
-        logger.info(f"executing command to control unit: {cmd_with_arg}")
+        logger.debug(f"executing command to control unit: {cmd_with_arg}")
 
         def execute_command():
+            conn.readbuffer()  # empty buffer
             conn.write(cmd_with_arg)
             time.sleep(0.1)
             buffer = ""
             for i in range(self.BUFFER_READS):
                 data = conn.readbuffer()
 
-                buffer += data
+                if data:
+                    buffer += data
 
                 if f"{command}=" in buffer:
                     if "NOT_IMPLEMENTED" in buffer:
@@ -217,10 +323,16 @@ class ControlUnitCommunication:
             buffer = None
 
             for i in range(self.COMMAND_RETRY):
-                success, buffer = execute_command()
-                if success:
-                    break
-                time.sleep(self.RETRY_SLEEP)
+                try:
+                    success, buffer = execute_command()
+                    if success:
+                        break
+                    time.sleep(self.RETRY_SLEEP)
+                except (
+                        UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                        serialutil.SerialException) as e:
+                    logger.exception(e)
+                    raise pyserial.SerialException
 
             return True if f"{command}=OK" in buffer else False
 
@@ -228,9 +340,11 @@ class ControlUnitCommunication:
     def _get_command(self, command):
         conn = self._get_connection()
 
-        logger.info(f"executing command to control unit: {command}")
+        logger.debug(f"executing command to control unit: {command}")
 
         def execute_command():
+            conn.readbuffer()  # empty buffer
+
             conn.write(command)
             time.sleep(0.1)
             buffer = ""
@@ -238,7 +352,8 @@ class ControlUnitCommunication:
             for i in range(self.BUFFER_READS):
                 data = conn.readbuffer()
 
-                buffer += data
+                if data:
+                    buffer += data
 
                 if f"{command}=" not in buffer:
                     time.sleep(self.BUFFER_SLEEP)
@@ -247,7 +362,16 @@ class ControlUnitCommunication:
                 return buffer.split(f"{command}=")[1].strip()
 
         with threading.Lock():
-            return execute_command()
+            for i in range(self.COMMAND_RETRY):
+                try:
+                    data = execute_command()
+                    if data: return data
+                    time.sleep(self.RETRY_SLEEP)
+                except (
+                        UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                        serialutil.SerialException) as e:
+                    logger.exception(e)
+                    raise pyserial.SerialException
 
     def _get_connection(self):
         if not self._conn:

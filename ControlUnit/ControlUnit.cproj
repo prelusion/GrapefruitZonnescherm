@@ -169,16 +169,16 @@
     <Compile Include="scheduler.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="status\output.c">
+    <Compile Include="output\status.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="status\output.h">
+    <Compile Include="output\status.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="status\shutter.c">
+    <Compile Include="output\shutter.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="status\shutter.h">
+    <Compile Include="output\shutter.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="storage\history.c">
@@ -194,6 +194,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="storage\manual.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\shutter.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\shutter.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="storage\unit_id.h">
@@ -237,7 +243,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="status" />
+    <Folder Include="output" />
     <Folder Include="ports" />
     <Folder Include="storage" />
     <Folder Include="sensors" />
@@ -247,6 +253,9 @@
       <SubType>compile</SubType>
     </None>
     <None Include="storage\README.md">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="README.md">
       <SubType>compile</SubType>
     </None>
   </ItemGroup>

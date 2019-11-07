@@ -7,7 +7,7 @@ class SettingsView(mvc.View):
     def __init__(self, parent):
         super().__init__(parent)
 
-        sizer = wx.GridSizer(16,3,0,0)
+        sizer = wx.GridSizer(16, 3, 0, 0)
         self.SetSizer(sizer)
         sizer.Add(wx.StaticText(self))
         font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
@@ -19,22 +19,22 @@ class SettingsView(mvc.View):
         sizer.Add(wx.StaticText(self))
 
         sizer.Add(wx.StaticText(self))
-        sizer.Add(wx.StaticLine(self, pos=(25, 50), size=(600, 1)), flag= wx.ALL | wx.ALIGN_CENTER)
+        sizer.Add(wx.StaticLine(self, pos=(25, 50), size=(600, 1)), flag=wx.ALL | wx.ALIGN_CENTER)
         sizer.Add(wx.StaticText(self))
 
-        self.device_name = Setting(self,"Set device name: ", "", sizer)
-        #sizer.Add(self.device_name, flag=wx.ALIGN_LEFT | wx.ALL)
+        self.device_name = Setting(self, "Set device name: ", "", sizer)
+        # sizer.Add(self.device_name, flag=wx.ALIGN_LEFT | wx.ALL)
 
-        self.window_height = Setting(self,"Set window height:", " cm", sizer)
-        #sizer.Add(self.window_height, flag=wx.ALIGN_LEFT | wx.ALL)
+        self.window_height = Setting(self, "Set window height:", " cm", sizer)
+        # sizer.Add(self.window_height, flag=wx.ALIGN_LEFT | wx.ALL)
 
-        self.device_color = Setting(self,"Set device color:", "", sizer)
-        #sizer.Add(self.device_color, flag=wx.ALIGN_LEFT | wx.ALL)
+        self.device_color = Setting(self, "Set device color:", "", sizer)
+        # sizer.Add(self.device_color, flag=wx.ALIGN_LEFT | wx.ALL)
 
-        self.max_temp = Setting(self,"Set temperature threshold:", " ℃", sizer)
-        #sizer.Add(self.max_temp, flag=wx.ALIGN_LEFT | wx.ALL)
+        self.max_temp = Setting(self, "Set temperature threshold:", " ℃", sizer)
+        # sizer.Add(self.max_temp, flag=wx.ALIGN_LEFT | wx.ALL)
 
-        self.max_light = Setting(self,"Set light sensitivity threshold:", " cd", sizer)
+        self.max_light = Setting(self, "Set light sensitivity threshold:", " cd", sizer)
         sizer.Add(self.max_light, flag=wx.ALIGN_LEFT | wx.ALL)
 
         self.apply_button = wx.Button(self, label="apply")
@@ -75,7 +75,6 @@ class SettingsView(mvc.View):
     def set_light_intensity_threshold(self, light):
         self.max_light.set_value(light)
 
-
     def get_name(self):
         return self.device_name.get_value()
 
@@ -91,6 +90,14 @@ class SettingsView(mvc.View):
     def get_light_intensity_threshold(self):
         return self.max_light.get_value()
 
+    def show_success(self, message, title="Success"):
+        print("show succes", message)
+        wx.MessageBox(message, title, wx.OK | wx.ICON_INFORMATION)
+
+    def show_error(self, message, title="Error"):
+        wx.MessageBox(message, title, wx.OK | wx.ICON_ERROR)
+
+
 class Setting(mvc.View):
     def __init__(self, parent, prefix, subfix, sizer):
         super().__init__(parent)
@@ -102,7 +109,7 @@ class Setting(mvc.View):
         self.input = wx.TextCtrl(parent, size=(80, 20), value="")
         sizer.Add(self.pre_fix, flag=wx.ALIGN_LEFT | wx.ALL)
         sizer.Add(self.input, flag=wx.ALIGN_RIGHT | wx.ALL)
-        sizer.Add(self.sub_fix, flag= wx.ALIGN_LEFT | wx.ALL)
+        sizer.Add(self.sub_fix, flag=wx.ALIGN_LEFT | wx.ALL)
 
     def set_value(self, value):
         self.input.SetValue(str(value))

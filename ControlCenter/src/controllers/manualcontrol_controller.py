@@ -1,10 +1,13 @@
 import threading
-
+import serial as pyserial
+import logging
 import wx
 
 from src import controlunit
 from src import mvc
 from src.views.manualcontrol_view import ManualControlView
+
+logger = logging.getLogger(__name__)
 
 
 class ManualControlController(mvc.Controller):
@@ -57,7 +60,9 @@ class ManualControlController(mvc.Controller):
                 except controlunit.CommandNotImplemented:
                     wx.CallAfter(lambda: self.view.show_error(
                         "Enable manual control failure: functionality was not implemented on this control unit"))
-
+                except pyserial.SerialException:
+                    logger.warning("Serial error")
+                    # TODO: show user error
         threading.Thread(target=execute, daemon=True).start()
 
     def on_manual_control_disable(self):
@@ -74,7 +79,9 @@ class ManualControlController(mvc.Controller):
                 except controlunit.CommandNotImplemented:
                     wx.CallAfter(lambda: self.view.show_error(
                         "Disable manual control failure: functionality was not implemented on this control unit"))
-
+                except pyserial.SerialException:
+                    logger.warning("Serial error")
+                    # TODO: show user error
         threading.Thread(target=execute, daemon=True).start()
 
     def on_toggle_up(self):
@@ -90,7 +97,9 @@ class ManualControlController(mvc.Controller):
                 except controlunit.CommandNotImplemented:
                     wx.CallAfter(lambda: self.view.show_error(
                         "Toggle up failure: functionality was not implemented on this control unit"))
-
+                except pyserial.SerialException:
+                    logger.warning("Serial error")
+                    # TODO: show user error
         threading.Thread(target=execute, daemon=True).start()
 
     def on_toggle_down(self):
@@ -106,5 +115,7 @@ class ManualControlController(mvc.Controller):
                 except controlunit.CommandNotImplemented:
                     wx.CallAfter(lambda: self.view.show_error(
                         "Toggle down failure: functionality was not implemented on this control unit"))
-
+                except pyserial.SerialException:
+                    logger.warning("Serial error")
+                    # TODO: show user error
         threading.Thread(target=execute, daemon=True).start()

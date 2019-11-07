@@ -27,7 +27,7 @@ class ControlUnitView(wx.Panel):
         self.boxes = {
             "name": None,
             "temperature": None,
-            "status": None,
+            "shutter status": None,
             "color": None,
             "connection": None,
             "mode": None,
@@ -92,7 +92,7 @@ class ControlUnitView(wx.Panel):
 
     def set_shutter_status(self, value):
 
-        box = self.boxes["status"]
+        box = self.boxes["shutter status"]
         box.label.SetLabelText(translate_shutter_status(value))
         self._refresh(box.panel)
 
