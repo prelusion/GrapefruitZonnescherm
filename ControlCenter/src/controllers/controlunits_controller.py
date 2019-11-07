@@ -1,9 +1,10 @@
-import wx
 import random
-from src import mvc
-from src.views.controlunits_view import ControlUnitsView
-from src.views.controlunit_view import ControlUnitView
 
+import wx
+
+from src import mvc
+from src.views.controlunit_view import ControlUnitView
+from src.views.controlunits_view import ControlUnitsView
 
 tmp = []
 unit_colors = [
@@ -67,10 +68,10 @@ class ControlUnitsController(mvc.Controller):
     def create_control_unit_view(self, model):
         view = ControlUnitView(self.view)
         view.set_connection(model.get_online())
-        view.set_name(model.get_id())
+        view.set_name(model.get_name())
         view.set_manual(model.get_manual())
         view.set_shutter_status(model.get_shutter_status())
-        view.set_device_color(randcolor())
+        view.set_device_color(model.get_color())
         view.set_temperature(model.get_temperature())
         view.set_selected(model.get_selected())
 
@@ -78,12 +79,17 @@ class ControlUnitsController(mvc.Controller):
         model.temperature.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_temperature(value)))
         model.shutter_status.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_shutter_status(value)))
         model.online.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_connection(value)))
-        model.color.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_device_color(value)))
+        # model.color.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_device_color(value)))
         model.manual.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_manual(value)))
         model.selected.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_selected(value)))
 
         view.set_on_click_callback(lambda e: self.on_unit_click(model, view))
         self.view.render_unit(model.get_id(), view)
+
+        if not model.get_initialized():
+            wx.MessageBox("Please select your new device and go to the settings tab",
+                          'New device detected',
+                          wx.OK | wx. ICON_INFORMATION)
 
     def on_unit_click(self, model, view):
         view.set_selected(True) if not model.get_selected() else view.set_selected(False)
