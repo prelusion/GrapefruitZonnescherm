@@ -35,7 +35,7 @@ def insert(table, columns, values):
     with contextlib.closing(sqlite3.connect(DB_NAME)) as conn:
         cur = conn.cursor()
         sql = f"INSERT INTO {table} {columns} VALUES {values}"
-        print("sql:", sql)
+        # print("sql:", sql)
         cur.execute(sql)
         conn.commit()
         # except sqlite3.IntegrityError as e:
@@ -66,6 +66,12 @@ def select_columns(table, columns, where):
         cur.execute(sql)
         return cur.fetchall()
 
+
+def select_by_where(table, where):
+    with contextlib.closing(sqlite3.connect(DB_NAME)) as conn:
+        cur = conn.cursor()
+        cur.execute(f"SELECT * FROM {table} WHERE {where}")
+        return cur.fetchall()
 """
 init()
 insert(TABLE_CONTROL_UNITS, "(unit_id, name, color)", "(5,'my_unit','blue')")

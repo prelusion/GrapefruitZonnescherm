@@ -1,6 +1,7 @@
 from src import mvc
 from src import db
 import wx
+from src.measurement import Measurement
 
 
 class ControlUnitModel(mvc.Model):
@@ -100,8 +101,22 @@ class ControlUnitModel(mvc.Model):
         measurements.append(measurement)
         self.measurements.set(measurements)
 
+        db.insert(db.TABLE_MEASUREMENTS,
+                  "(device_id, temperature, light_intensity, shutter_status, from_history, timestamp)",
+                  f"({self.get_id()}, {measurement.temperature}, {measurement.light_intensity}, {measurement.shutter_status}, 0, {measurement.timestamp})")
+
     def get_measurements(self):
-        return self.measurements
+        # return self.measurements
+        measurements = db.select_columns(db.TABLE_MEASUREMENTS,
+                                         "temperature, light_intensity, shutter_status, timestamp",
+                                         f"device_id = {self.get_id()}")
+
+        converted = []
+        for measurement in measurements:
+            temperature, light_intensity, shutter_status, timestamp = measurement
+            converted.append(Measurement(timestamp, temperature, shutter_status, light_intensity))
+
+        return converted
 
     def set_selected(self, value):
         self.selected.set(value)

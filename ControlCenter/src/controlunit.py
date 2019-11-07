@@ -2,7 +2,6 @@ import concurrent
 import threading
 import time
 from src import db
-from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
 from logging import getLogger
@@ -12,16 +11,12 @@ from serial import serialutil
 
 from src import serialinterface as ser
 from src import util
-from src.decorators import retry_on_any_exception, retry_on_given_exception
+from src.decorators import retry_on_any_exception
+from src.measurement import Measurement
 from src.models.controlunit import ControlUnitModel
 
 logger = getLogger(__name__)
 BAUDRATE = 19200
-
-Measurement = namedtuple("Measurement", ["timestamp",
-                                         "temperature",
-                                         "shutter_status",
-                                         "light_intensity"])
 
 
 class CommandNotImplemented(Exception):
