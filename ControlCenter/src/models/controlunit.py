@@ -1,4 +1,5 @@
 from src import mvc
+from src import db
 import wx
 
 
@@ -28,16 +29,28 @@ class ControlUnitModel(mvc.Model):
     def get_initialized(self):
         return self.initialized
 
-    def set_id(self, id):
+    def set_id(self, id, save_db=False):
+        """ ID is not automatically saved to database because we only
+        want to save it when the device has been configured / initialized. """
         self.id.set(id)
+
+        if save_db:
+            db.insert(db.TABLE_CONTROL_UNITS, "(device_id)", f"('{id}')")
 
     def get_id(self):
         return self.id.get()
 
     def set_name(self, name):
+        if not name:
+            name = "uninitialized"
         self.name.set(name)
+        db.update(db.TABLE_CONTROL_UNITS, f"name = '{name}'", f"device_id = {self.get_id()}")
 
     def get_name(self):
+        name = db.select_columns(db.TABLE_CONTROL_UNITS, "name", f"device_id = {self.get_id()}")
+        print("name from db:", name)
+        if name and len(name) == 1:
+            self.set_name(name[0][0])
         return self.name.get()
 
     def set_colour(self, colour):

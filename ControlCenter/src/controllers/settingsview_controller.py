@@ -143,6 +143,7 @@ class SettingsViewController(mvc.Controller):
                                   light_intensity_threshold,
                                   manual_mode)
         if success:
+            model.set_id(model.get_id(), save_db=True)
             model.set_name(name)
             model.set_colour(color)
             self.view.show_success("Successfully initialized device")
