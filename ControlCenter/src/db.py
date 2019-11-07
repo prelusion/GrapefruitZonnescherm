@@ -10,10 +10,18 @@ TABLE_CONTROL_UNITS = "control_units"
 TABLE_MEASUREMENTS = "measurements"
 
 TABLE_CONTROL_UNITS_DEFINITION = "(id INTEGER PRIMARY KEY, device_id INTEGER UNIQUE, name STRING, color STRING, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)"
+TABLE_MEASUREMENTS_DEFINITION = "(id INTEGER PRIMARY KEY, device_id INTEGER, temperature INTEGER, light_intensity INTEGER, shutter_status INTEGER, from_history INTEGER, timestamp REAL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(device_id) REFERENCES control_units(device_id) )"
 
 
 def init():
+    # Enable foreign key constraints
+    with contextlib.closing(sqlite3.connect(DB_NAME)) as conn:
+        cur = conn.cursor()
+        cur.execute("PRAGMA foreign_keys = ON;")
+        conn.commit()
+
     create_table(TABLE_CONTROL_UNITS, TABLE_CONTROL_UNITS_DEFINITION)
+    create_table(TABLE_MEASUREMENTS, TABLE_MEASUREMENTS_DEFINITION)
 
 
 def create_table(name, columns):

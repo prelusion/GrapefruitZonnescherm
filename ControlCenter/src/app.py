@@ -35,6 +35,7 @@ class App(wx.App):
 
         db.init()
         logger.info(f"current control units in database: {db.select_all(db.TABLE_CONTROL_UNITS)}")
+        logger.info(f"current measurements in database: {db.select_all(db.TABLE_MEASUREMENTS)}")
 
         app_data = util.load_json_from_file(const.APP_DATA_FILE)
 
