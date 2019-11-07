@@ -1,6 +1,7 @@
 import concurrent
 import threading
 import time
+from src import db
 from collections import namedtuple
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal
@@ -102,6 +103,13 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
                 initialized = False
                 unit_id = util.generate_16bit_int()
                 current_id = util.encode_controlunit_id(app_id, unit_id)
+            else:
+                logger.info("checking if device is already in database")
+                device = db.select_columns(db.TABLE_CONTROL_UNITS, "*", f"device_id = {current_id}")
+                if not device:
+                    logger.info("resetting device")
+                    comm.reset()
+                    initialized = False
 
             logger.info(f"control unit with port '{port}' has id: {current_id}")
 
@@ -149,6 +157,9 @@ class ControlUnitCommunication:
     def initialize(self, device_id, window_height, temperature_threshold, light_intensity_threshold, manual_mode):
         return self._set_command("INITIALIZE",
                                  f"{device_id},{window_height},{temperature_threshold},{light_intensity_threshold},{int(manual_mode)}")
+
+    def reset(self):
+        return self._set_command("RESET")
 
     def get_up_time(self):
         return self._get_command("GET_UP_TIME")

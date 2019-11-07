@@ -30,11 +30,11 @@ class App(wx.App):
         self.start_background_services()
 
     def init(self):
-        db.init()
-        logger.info(f"current control units in database: {db.select_all(db.TABLE_CONTROL_UNITS)}")
-
         if not os.path.exists(const.DATA_DIR):
             os.makedirs(const.DATA_DIR)
+
+        db.init()
+        logger.info(f"current control units in database: {db.select_all(db.TABLE_CONTROL_UNITS)}")
 
         app_data = util.load_json_from_file(const.APP_DATA_FILE)
 
