@@ -1,51 +1,67 @@
-import datetime
 import wx
 
-def note_book(self):
-    # don't want to be typing 'self.' a bunch of times ;)
-    notebook = self.notebook
+class test(wx.Frame):
 
-    # make the notebook pages:
-    # in this case each notebook page (or panel) is its own class, they are too
-    # large to keep all in one file. The function called is
-    # the panel constructor (wx.Panel). They need to be passed the 'notebook' so
-    # they know what their parent is.
-    pickerPanel = wxc.picker.pickerPanel(notebook)
-    mainPanel = main.mainPanel(notebook)
-    numberPanel = numbering.numberingPanel(notebook)
-    DateTimePanel = DateTime.DateTimePanel(notebook)
-    errorPanel = errors.errorPanel(notebook)
+    CHECKBOX_CONNECTED = "connected"
+    CHECKBOX_STATUS_UP = "status up"
+    CHECKBOX_STATUS_DOWN = "status down"
+    CHECKBOX_SELECT_ALL = "select all"
 
-    # add notebook pages to notebook:
-    # 1st variable of 'AddPage' is previously described panel, 2nd
-    # variable is text to be displayed
-    notebook.AddPage(pickerPanel, 'Picker')
-    notebook.AddPage(mainPanel, '- Main -')
-    notebook.AddPage(numberPanel, 'Numbering')
-    notebook.AddPage(DateTimePanel, 'Date and Time ')
-    notebook.AddPage(errorPanel, 'Errors: 0    ')
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.SetTitle("test")
 
-    # list containing notebook images:
-    # .ico seem to be more OS portable 
-    il = wx.ImageList(16, 16)  # the (16, 16) is the size in pixels of the images
-    img0 = il.Add(wx.Bitmap('art/icons/picker.ico', wx.BITMAP_TYPE_ICO))
-    img1 = il.Add(wx.Bitmap('art/icons/main.ico', wx.BITMAP_TYPE_ICO))
-    img2 = il.Add(wx.Bitmap('art/icons/numbering.ico', wx.BITMAP_TYPE_ICO))
-    img3 = il.Add(wx.Bitmap('art/icons/date_time.ico', wx.BITMAP_TYPE_ICO))
-    img4 = il.Add(wx.Bitmap('art/icons/errors.png', wx.BITMAP_TYPE_PNG))
+        checkbox_panel = wx.Panel(self)
+        checkbox_panel.SetBackgroundColour((255, 255, 255))
 
-    # set images to pages:
-    # first assign image list created above to notebook:
-    notebook.AssignImageList(il)
-    # then assign each image in list to coresponding page.
-    # the sharp-eyed will see you could use a loop for this,
-    # but for maximum clarity/understanding I'm using the long way...
-    notebook.SetPageImage(0, img0)
-    notebook.SetPageImage(1, img1)
-    notebook.SetPageImage(2, img2)
-    notebook.SetPageImage(3, img3)
-    notebook.SetPageImage(4, img4)
+        # Create vertical sizer and set sizer to checkboxpanel
+        vertical_sizer = wx.BoxSizer(wx.VERTICAL)
+        checkbox_panel.SetSizer(vertical_sizer)
 
-    # if this isn't called the notebook background color doesn't work right when switching
-    # themes in XP.
-    self.notebook.SetBackgroundColour(self.notebook.GetThemeBackgroundColour())
+        # create an upper and lower panel and add horzontal sizers to it
+        upperpanel = wx.Panel(checkbox_panel)
+        lowerpanel = wx.Panel(checkbox_panel)
+
+        # create sizers for upper and lower panel
+        upper_horizontal_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        lower_horizontal_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        upperpanel.SetSizer(upper_horizontal_sizer)
+        lowerpanel.SetSizer(lower_horizontal_sizer)
+
+        # add upper and lower panel to main sizer
+        vertical_sizer.Add(upperpanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        vertical_sizer.Add(lowerpanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+
+
+        checkboxes = [wx.CheckBox(upperpanel, label=self.CHECKBOX_CONNECTED), wx.CheckBox(upperpanel, label=self.CHECKBOX_STATUS_UP),
+                       wx.CheckBox(lowerpanel, label=self.CHECKBOX_SELECT_ALL), wx.CheckBox(lowerpanel, label=self.CHECKBOX_STATUS_DOWN)]
+
+        counter = 0
+        for index in range(6):
+            if index < 3:
+                if index == 1:
+                    upper_horizontal_sizer.AddSpacer(300)
+                    print("spacing: ", index, "spacer object -upper")
+                else:
+                    upper_horizontal_sizer.Add(checkboxes[counter], wx.ID_ANY, wx.EXPAND | wx.ALL)
+                    print("element: ", index, checkboxes[counter], " index in list: ", counter, " -upper")
+                    counter += 1
+            elif index >= 3:
+                if index == 4:
+                    lower_horizontal_sizer.AddSpacer(300)
+                    print("spacing: ", index, "spacer object -lower")
+                else:
+                    lower_horizontal_sizer.Add(checkboxes[counter], wx.ID_ANY, wx.EXPAND | wx.ALL)
+                    print("element: ", index, checkboxes[counter], " index in list: ", counter, " -lower")
+                    counter += 1
+
+
+
+
+
+
+
+app = wx.App(False)
+window = test(None)
+window.Show()
+app.MainLoop()
