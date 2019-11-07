@@ -107,32 +107,35 @@ class SettingsViewController(mvc.Controller):
             self.view.show_error(error, title="Can not apply settings")
             return
 
-        for comm, model in self.controlunit_manager.get_selected_units():
-            try:
-                device_id = comm.get_id()
+        def execute_threaded():
+            for comm, model in self.controlunit_manager.get_selected_units():
+                try:
+                    device_id = comm.get_id()
 
-                if device_id:
-                    self.update_settings(comm,
+                    if device_id:
+                        self.update_settings(comm,
+                                             model,
+                                             device_id,
+                                             name,
+                                             color,
+                                             height,
+                                             temperature_threshold,
+                                             light_intensity_threshold)
+                    else:
+                        self.init_device(comm,
                                          model,
-                                         device_id,
+                                         model.get_id(),
                                          name,
                                          color,
                                          height,
                                          temperature_threshold,
-                                         light_intensity_threshold)
-                else:
-                    self.init_device(comm,
-                                     model,
-                                     model.get_id(),
-                                     name,
-                                     color,
-                                     height,
-                                     temperature_threshold,
-                                     light_intensity_threshold,
-                                     model.get_manual())
-            except pyserial.SerialException:
-                logger.warning("Serial error")
-                # TODO: show user error
+                                         light_intensity_threshold,
+                                         model.get_manual())
+                except pyserial.SerialException:
+                    logger.warning("Serial error")
+                    # TODO: show user error
+
+        threading.Thread(target=execute_threaded, daemon=True).start()
 
     def init_device(self, comm, model, device_id, name, color, window_height,
                     temperature_threshold, light_intensity_threshold, manual_mode):
@@ -146,26 +149,26 @@ class SettingsViewController(mvc.Controller):
             model.set_id(model.get_id(), save_db=True)
             model.set_name(name)
             # model.set_colour(color) # TODO set color
-            self.view.show_success("Successfully initialized device")
+            wx.CallAfter(lambda: self.view.show_success("Successfully initialized device"))
         else:
-            self.view.show_error("Failed to initialize device", title="Failure")
+            wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))
 
     def update_settings(self, comm, model, device_id, name, color, window_height,
                         temperature_threshold, light_intensity_threshold):
 
         if not comm.set_id(device_id):
-            self.view.show_error("Failed to to update id", title="Failure")
+            wx.CallAfter(lambda: self.view.show_error("Failed to to update id", title="Failure"))
             return
         if not comm.set_window_height(window_height):
-            self.view.show_error("Failed to update window height", title="Failure")
+            wx.CallAfter(lambda: self.view.show_error("Failed to update window height", title="Failure"))
             return
         if not comm.set_temperature_threshold(temperature_threshold):
-            self.view.show_error("Failed to update temperature threshold", title="Failure")
+            wx.CallAfter(lambda: self.view.show_error("Failed to update temperature threshold", title="Failure"))
             return
         if not comm.set_light_intensity_threshold(light_intensity_threshold):
-            self.view.show_error("Failed to update light intensity threshold", title="Failure")
+            wx.CallAfter(lambda: self.view.show_error("Failed to update light intensity threshold", title="Failure"))
             return
 
         model.set_name(name)
         # model.set_colour(color) # TODO set color
-        self.view.show_success("Successfully updated device")
+        wx.CallAfter(lambda: self.view.show_success("Successfully updated device"))
