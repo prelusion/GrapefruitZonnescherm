@@ -46,38 +46,26 @@ class GraphView(mvc.View):
             self.autoscale = True
 
     def update_graph(self):
-        dates = []
-        temps = []
-        status = []
-        xdata = []
-        x = 0
-
         first_drawn = True
         for unit in self.units:
-            if unit["visible"]:
-                for measurement in unit["measurements"]:
-                    time = int(measurement.timestamp)
-                    dates.append(time)
-                    temps.append(measurement.temperature)
-                    status.append(measurement.shutter_status)
-                    xdata.append(x)
-                if first_drawn:
-                    self.graph.plot(dates, temps, ymin=self.y_min, ymax=self.y_max, ylabel=self.measure_unit,
-                                    side='left', linewidth=1, labelfontsize=6,
-                                    legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor,
-                                    use_dates=True,
-                                    color=unit["color"])
-                else:
-                    self.graph.oplot(dates, temps, side='left', linewidth=1, color=unit["color"])
+            if first_drawn:
+                self.graph.plot(ydata=unit["measurements"], xdata=unit["timestamps"], ymin=self.y_min, ymax=self.y_max, ylabel=self.measure_unit,
+                                side='left', linewidth=1, labelfontsize=6,
+                                legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor,
+                                use_dates=True,
+                                color=unit["color"])
+            else:
+                self.graph.oplot(unit["timestamps"], unit["measurements"], side='left', linewidth=1, color=unit["color"])
 
     def find_unit(self, id):
         for unit in self.units:
             if unit[id] == id:
                 return unit
 
-    def set_unit(self, id, measurements):
+    def set_unit(self, id, dates, measurements):
         new_unit = {
             "id": id,
+            "timestamps": dates,
             "measurements": measurements,
             "color": "Green",
             "visible": True,
@@ -86,6 +74,7 @@ class GraphView(mvc.View):
             if unit["id"] == id:
                 unit = new_unit
                 return
+
         self.units.append(new_unit)
 
     def toggle_visible(self, id):

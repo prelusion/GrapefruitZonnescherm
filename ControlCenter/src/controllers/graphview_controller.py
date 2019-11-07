@@ -1,3 +1,5 @@
+import datetime
+
 from src import mvc
 from src.views.graphtab_view import GraphTabView
 
@@ -27,14 +29,13 @@ class GraphViewController(mvc.Controller):
         light = []
 
         for measurement in data:
-            dates.append(measurement.timestamp)
+            dates.append(int(datetime.datetime.timestamp(datetime.datetime.now())))
+            #dates.append(int(measurement.timestamp))
             temps.append(measurement.temperature)
             status.append(measurement.shutter_status)
             light.append(measurement.light_intensity)
 
-        # self.temp_view.set_unit(model.get_id(), [dates, temps])
-        # self.status_view.set_unit(model.get_id, [dates, status])
-        # self.light_view.set_unit(model.get_id, [dates, light])
+        self.view.update_graphs(model.get_id(), dates, temps, status, light)
 
     def on_controlunit_color_change(self, model, data):
         pass

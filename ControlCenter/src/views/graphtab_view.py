@@ -38,6 +38,12 @@ class GraphTabView(View):
 
         self.sizer.Add(self.tab_panel, 1, wx.EXPAND)
 
+    def update_graphs(self, id, dates, temps, status, light):
+        self.temps_tab.graph.set_unit(id, dates, temps)
+        self.status_tab.graph.set_unit(id, dates, status)
+        self.light_tab.graph.set_unit(id, dates, light)
+        self.temps_tab.graph.update_graph()
+
 
 class graph_tab(View):
     def __init__(self, parent, graphmode: graph_view.GraphMode):
@@ -49,7 +55,7 @@ class graph_tab(View):
         self.SetBackgroundColour(colour=(0, 255, 0))
         self.graph.SetSize(200, 200)
         #TODO Remove test data
-        self.create_test_Data()
+        #self.create_test_Data()
 
     def create_test_Data(self):
         SetTestData(self.graph)
@@ -75,5 +81,6 @@ if __name__ == "__main__":
     graph_tab = GraphTabView(frame)
     sizer.Add(graph_tab, 1, wx.EXPAND)
     # graph_tab.SetSize(300,300)
+    SetTestData(graph_tab)
     frame.Show()
     app.MainLoop()
