@@ -1,54 +1,30 @@
 #ifndef _STATUS_SHUTTER_H_
 #define _STATUS_SHUTTER_H_
+
 #include <stdint.h>
 #include "../data.h"
 
 /** 
  * \brief  
- * Initializes the shutter status at startup 
- *  
- * Void no returns 
+ * Initializes the shutter status at startup
  */ 
 void init_shutter_status(void); 
- 
-/** 
-* \brief 
-* Checks if the task should end the opening or closed shutter status 
-* 
-* Returns a ShutterStatus 
-*/ 
-ShutterStatus check_shutter_reached_endpoint(ShutterStatus status, uint16_t distance, uint16_t window_height); 
- 
+
 /** 
  * \brief  
  * Checks if the next shutter status should be open or closed.
- * After checks set the right shutter status and update leds.  
- *
- * Void no returns 
+ * After checks set the right shutter status and update leds.
  */
-void update_shutter_status(void);
-
-/** 
- * \brief  
- * Checks every minute if the shutter should change checking the temperature and light intensity
- *  
- * Void no returns 
- */
-void check_shutter_status(void);
-
+void control_shutter(void);
 /** 
  * \brief  
  * Removes last shutter task and starts a roll_up task
- *  
- * Void no returns 
  */
 void shutter_roll_up(void);
 
 /** 
  * \brief
  * Removes last shutter task and starts a roll_down task
- *  
- * Void no returns 
  */
 void shutter_roll_down(void);
 
