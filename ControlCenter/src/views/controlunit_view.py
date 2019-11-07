@@ -101,9 +101,9 @@ class ControlUnitView(wx.Panel):
         panel.SetBackgroundColour(value)
         self._refresh(panel)
 
-    def set_connection(self, value):
+    def set_connection(self, boolean):
         box = self.boxes["connection"]
-        box.label.SetLabelText(str(value))
+        box.label.SetLabelText("online" if boolean else "offline")
         self._refresh(box.panel)
 
     def set_manual(self, boolean):
