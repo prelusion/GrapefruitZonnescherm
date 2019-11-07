@@ -30,9 +30,9 @@ class SettingsView(mvc.View):
         apply_panel = wx.Panel(main_panel)
 
         # add panels to sizers
-        main_sizer.Add(title_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        main_sizer.Add(settings_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        main_sizer.Add(apply_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        main_sizer.Add(title_panel, 2, wx.EXPAND | wx.ALL)
+        main_sizer.Add(settings_panel, 5, wx.EXPAND | wx.ALL)
+        main_sizer.Add(apply_panel, 15, wx.EXPAND | wx.ALL)
 
         # Create content for title panel
         sizer = wx.GridSizer(2,3,0,0)
@@ -47,11 +47,6 @@ class SettingsView(mvc.View):
         sizer.Add(wx.StaticText())
         sizer.Add(settingText, flag=wx.ALIGN_CENTER)
         sizer.Add(wx.StaticText(title_panel))
-
-        # add line to title panel
-        # sizer.Add(wx.StaticText(title_panel))
-        # sizer.Add(wx.StaticLine(title_panel, size=(600, 1)), flag= wx.EXPAND | wx.ALIGN_CENTER)
-        # sizer.Add(wx.StaticText(title_panel))
 
         # Create settingspanel sizer
         settings_sizer = wx.GridSizer(5, 2,0,0)
