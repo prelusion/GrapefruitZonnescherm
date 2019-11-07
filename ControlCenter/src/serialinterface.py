@@ -2,8 +2,8 @@ from contextlib import contextmanager
 from logging import getLogger
 
 import serial as pyserial
-from serial.serialutil import SerialException
 from serial.tools import list_ports
+
 from src.decorators import retry_on_any_exception
 
 logger = getLogger(__name__)
@@ -67,7 +67,7 @@ class Connection:
 
         data = self._interface.read(self._interface.inWaiting()).decode()
         # if data:
-            # logger.info(f"read serial data: {data}")
+        # logger.info(f"read serial data: {data}")
         return data
 
     @retry_on_any_exception(RETRIES)
