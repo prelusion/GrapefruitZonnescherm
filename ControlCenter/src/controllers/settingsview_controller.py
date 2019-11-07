@@ -106,8 +106,9 @@ class SettingsViewController(mvc.Controller):
             self.view.show_error(error, title="Can not apply settings")
             return
 
-        print(color)
-        print("color rgb:", color.GetRGB())
+        if not color.IsOk():
+            self.view.show_error("Please select a different color", title="Can not apply settings")
+            return
 
         def execute_threaded():
             for comm, model in self.controlunit_manager.get_selected_units():
