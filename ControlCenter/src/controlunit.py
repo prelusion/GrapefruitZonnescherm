@@ -142,10 +142,12 @@ class ControlUnitCommunication:
         return self._get_command("GET_UP_TIME")
 
     def get_id(self):
-        id_ = self._get_command("GET_ID")
-        if id_:
-            id_ = int(id_)
-        return id_
+        device_id = self._get_command("GET_ID")
+        try:
+            if device_id: device_id = int(device_id)
+            return device_id
+        except ValueError:
+            pass
 
     def set_id(self, id_):
         """ id is a 32-bit int. """
@@ -201,19 +203,23 @@ class ControlUnitCommunication:
         splitted = history_string.split(";")
         splitted.reverse()
 
-        measurements = []
-        for i, value in enumerate(splitted):
-            temp, light, shutter = value.split(",")
+        try:
+            measurements = []
+            for i, value in enumerate(splitted):
+                temp, light, shutter = value.split(",")
 
-            measurement = Measurement(
-                time.time() - ((i + 1) * 60), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
-                int(shutter), int(light))
+                measurement = Measurement(
+                    time.time() - ((i + 1) * 60), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                    int(shutter), int(light))
 
-            measurements.append(measurement)
+                measurements.append(measurement)
 
-        measurements.reverse()
+            measurements.reverse()
 
-        return measurements
+            return measurements
+
+        except ValueError:
+            pass
 
     def get_window_height(self):
         return self._get_command("GET_WINDOW_HEIGHT")
@@ -241,8 +247,11 @@ class ControlUnitCommunication:
 
     def get_manual(self):
         value = self._get_command("GET_MANUAL")
-        if value: value = bool(int(value))
-        return value
+        try:
+            if value: value = bool(int(value))
+            return value
+        except ValueError:
+            pass
 
     def set_manual(self, boolean):
         return self._set_command("SET_MANUAL", int(boolean))
