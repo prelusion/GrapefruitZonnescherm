@@ -98,7 +98,6 @@ class ControlUnitView(wx.Panel):
 
     def set_device_color(self, value):
         panel = self.boxes["color"].panel
-        print("set device color value:", value)
         panel.SetBackgroundColour(value)
         self._refresh(panel)
 
