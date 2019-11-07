@@ -58,8 +58,8 @@ class Connection:
         if '\r' not in data:
             data += '\r'
 
-        try:
-            self._interface.write(data.encode())
+
+        self._interface.write(data.encode())
 
     @retry_on_any_exception(RETRIES)
     def readbuffer(self):
