@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include "data.h"
 
+
+//status includes
+#include "output/shutter.h"
+
 // Storage includes.
 #include "storage/unit_id.h"
 #include "storage/window_height.h"
@@ -39,53 +43,53 @@ Command* get_available_commands()
 	available_commands[4].function = &cmd_set_id;
 	available_commands[4].parameters_required = 1;
 	
-	strcpy(available_commands[6].name, "GET_WINDOW_HEIGHT");
-	available_commands[6].function = &cmd_get_window_height;
-	available_commands[6].parameters_required = 0;
+	strcpy(available_commands[5].name, "GET_WINDOW_HEIGHT");
+	available_commands[5].function = &cmd_get_window_height;
+	available_commands[5].parameters_required = 0;
 	
-	strcpy(available_commands[7].name, "SET_WINDOW_HEIGHT");
-	available_commands[7].function = &cmd_set_window_height;
-	available_commands[7].parameters_required = 1;
+	strcpy(available_commands[6].name, "SET_WINDOW_HEIGHT");
+	available_commands[6].function = &cmd_set_window_height;
+	available_commands[6].parameters_required = 1;
 	
-	strcpy(available_commands[8].name, "GET_TEMP_THRESHOLD");
-	available_commands[8].function = &cmd_get_temperature_threshold;
-	available_commands[8].parameters_required = 0;
+	strcpy(available_commands[7].name, "GET_TEMP_THRESHOLD");
+	available_commands[7].function = &cmd_get_temperature_threshold;
+	available_commands[7].parameters_required = 0;
 	
-	strcpy(available_commands[9].name, "SET_TEMP_THRESHOLD");
-	available_commands[9].function = &cmd_set_temperature_threshold;
-	available_commands[9].parameters_required = 1;
+	strcpy(available_commands[8].name, "SET_TEMP_THRESHOLD");
+	available_commands[8].function = &cmd_set_temperature_threshold;
+	available_commands[8].parameters_required = 1;
 	
-	strcpy(available_commands[10].name, "GET_LI_THRESHOLD");
-	available_commands[10].function = &cmd_get_light_intensity_threshold;
-	available_commands[10].parameters_required = 0;
+	strcpy(available_commands[9].name, "GET_LI_THRESHOLD");
+	available_commands[9].function = &cmd_get_light_intensity_threshold;
+	available_commands[9].parameters_required = 0;
 	
-	strcpy(available_commands[11].name, "SET_LI_THRESHOLD");
-	available_commands[11].function = &cmd_set_light_intensity_threshold;
-	available_commands[11].parameters_required = 1;
+	strcpy(available_commands[10].name, "SET_LI_THRESHOLD");
+	available_commands[10].function = &cmd_set_light_intensity_threshold;
+	available_commands[10].parameters_required = 1;
 	
-	strcpy(available_commands[12].name, "GET_MANUAL");
-	available_commands[12].function = &cmd_get_manual;
-	available_commands[12].parameters_required = 0;
+	strcpy(available_commands[11].name, "GET_MANUAL");
+	available_commands[11].function = &cmd_get_manual;
+	available_commands[11].parameters_required = 0;
 	
-	strcpy(available_commands[13].name, "SET_MANUAL");
-	available_commands[13].function = &cmd_set_manual;
-	available_commands[13].parameters_required = 1;
+	strcpy(available_commands[12].name, "SET_MANUAL");
+	available_commands[12].function = &cmd_set_manual;
+	available_commands[12].parameters_required = 1;
 	
-	strcpy(available_commands[14].name, "GET_SENSOR_DATA");
-	available_commands[14].function = &cmd_get_sensor_data;
+	strcpy(available_commands[13].name, "GET_SENSOR_DATA");
+	available_commands[13].function = &cmd_get_sensor_data;
+	available_commands[13].parameters_required = 0;
+	
+	strcpy(available_commands[14].name, "GET_SENSOR_HISTORY");
+	available_commands[14].function = &cmd_get_sensor_history;
 	available_commands[14].parameters_required = 0;
 	
-	strcpy(available_commands[15].name, "GET_SENSOR_HISTORY");
-	available_commands[15].function = &cmd_get_sensor_history;
+	strcpy(available_commands[15].name, "ROLL_UP");
+	available_commands[15].function = &cmd_roll_up;
 	available_commands[15].parameters_required = 0;
 	
-	strcpy(available_commands[16].name, "ROLL_UP");
-	available_commands[16].function = &cmd_roll_up;
+	strcpy(available_commands[16].name, "ROLL_DOWN");
+	available_commands[16].function = &cmd_roll_down;
 	available_commands[16].parameters_required = 0;
-	
-	strcpy(available_commands[17].name, "ROLL_DOWN");
-	available_commands[17].function = &cmd_roll_down;
-	available_commands[17].parameters_required = 0;
 	
 	return available_commands;
 }
@@ -115,7 +119,7 @@ void process_input(char* input)
 	}
 }
 
-void execute_command(char name[20], char parameters[20])
+void execute_command(char name[20], char parameters[30])
 {
 	// TODO load available commands only once
 	Command* commands = get_available_commands();
@@ -143,12 +147,12 @@ void execute_command(char name[20], char parameters[20])
 	free(commands);
 }
 
-void cmd_ping(char parameters[20], char result[50])
+void cmd_ping(char parameters[30], char result[50])
 {
 	strcpy(result, "PONG");
 }
 
-void cmd_initialize(char parameters[20], char result[50])
+void cmd_initialize(char parameters[30], char result[50])
 {
 	if (get_current_unit_status() != INITIALIZING) {
 		// Don't initialize the unit when it already is.
@@ -160,6 +164,9 @@ void cmd_initialize(char parameters[20], char result[50])
 	
 	parameter = strtok(parameters, ",");
 	cmd_set_id(parameter, result);
+	
+	parameter = strtok(NULL, ",");
+	cmd_set_window_height(parameter, result);
 	
 	parameter = strtok(NULL, ",");
 	cmd_set_temperature_threshold(parameter, result);
@@ -183,7 +190,7 @@ void cmd_initialize(char parameters[20], char result[50])
 	}
 }
 
-void cmd_reset(char parameters[20], char result[50])
+void cmd_reset(char parameters[30], char result[50])
 {
 	set_unit_id(0);
 	set_temperature_threshold(0);
@@ -196,12 +203,12 @@ void cmd_reset(char parameters[20], char result[50])
 	strcpy(result, "OK");
 }
 
-void cmd_get_id(char parameters[20], char result[50])
+void cmd_get_id(char parameters[30], char result[50])
 {
 	sprintf(result, "%lu", get_unit_id());
 }
 
-void cmd_set_id(char parameters[20], char result[50])
+void cmd_set_id(char parameters[30], char result[50])
 {
 	uint32_t unit_id = atol(parameters);
 	
@@ -216,12 +223,12 @@ void cmd_set_id(char parameters[20], char result[50])
 	}
 }
 
-void cmd_get_window_height(char parameters[20], char result[50])
+void cmd_get_window_height(char parameters[30], char result[50])
 {
 	sprintf(result, "%u", get_window_height());
 }
 
-void cmd_set_window_height(char parameters[20], char result[50])
+void cmd_set_window_height(char parameters[30], char result[50])
 {
 	uint16_t window_height = atoi(parameters);
 	
@@ -236,12 +243,12 @@ void cmd_set_window_height(char parameters[20], char result[50])
 	}
 }
 
-void cmd_get_temperature_threshold(char parameters[20], char result[50])
+void cmd_get_temperature_threshold(char parameters[30], char result[50])
 {
 	sprintf(result, "%d", get_temperature_threshold());
 }
 
-void cmd_set_temperature_threshold(char parameters[20], char result[50])
+void cmd_set_temperature_threshold(char parameters[30], char result[50])
 {
 	int8_t temperature_threshold = atoi(parameters);
 	
@@ -256,12 +263,12 @@ void cmd_set_temperature_threshold(char parameters[20], char result[50])
 	}
 }
 
-void cmd_get_light_intensity_threshold(char parameters[20], char result[50])
+void cmd_get_light_intensity_threshold(char parameters[30], char result[50])
 {
 	sprintf(result, "%u", get_light_intensity_threshold());
 }
 
-void cmd_set_light_intensity_threshold(char parameters[20], char result[50])
+void cmd_set_light_intensity_threshold(char parameters[30], char result[50])
 {
 	uint8_t light_intensity_threshold = atoi(parameters);
 	
@@ -276,18 +283,18 @@ void cmd_set_light_intensity_threshold(char parameters[20], char result[50])
 	}
 }
 
-void cmd_get_manual(char parameters[20], char result[50])
+void cmd_get_manual(char parameters[30], char result[50])
 {
 	sprintf(result, "%u", get_manual());
 }
 
-void cmd_set_manual(char parameters[20], char result[50])
+void cmd_set_manual(char parameters[30], char result[50])
 {
 	set_manual(atoi(parameters));
 	strcpy(result, "OK");
 }
 
-void cmd_get_sensor_data(char parameters[20], char result[50])
+void cmd_get_sensor_data(char parameters[30], char result[50])
 {
 	// When the unit is initializing sensor data cannot be read.
 	if (get_current_unit_status() == INITIALIZING)
@@ -303,7 +310,7 @@ void cmd_get_sensor_data(char parameters[20], char result[50])
 	sprintf(result, "%d,%u,%u", current_temperature, current_light_intensity, current_shutter_status);
 }
 
-void cmd_get_sensor_history(char parameters[20], char result[50])
+void cmd_get_sensor_history(char parameters[30], char result[50])
 {
 	History history = load_history();
 	
@@ -358,24 +365,24 @@ void cmd_get_sensor_history(char parameters[20], char result[50])
 	strcpy(result, "OK");
 }
 
-void cmd_roll_up(char parameters[20], char result[50])
+void cmd_roll_up(char parameters[30], char result[50])
 {
 	if (!get_manual())
 	{
 		strcpy(result, "ERROR");
 		return;
 	}
-	
-	strcpy(result, "NOT_IMPLEMENTED");
+	shutter_roll_up();
+	strcpy(result, "OK");
 }
 
-void cmd_roll_down(char parameters[20], char result[50])
+void cmd_roll_down(char parameters[30], char result[50])
 {
 	if (!get_manual())
 	{
 		strcpy(result, "ERROR");
 		return;
 	}
-	
-	strcpy(result, "NOT_IMPLEMENTED");
+	shutter_roll_down();
+	strcpy(result, "OK");
 }

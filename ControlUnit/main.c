@@ -7,6 +7,10 @@
 //serial includes
 #include "serial.h"
 
+//status includes
+#include "output/shutter.h"
+#include "output/status.h"
+
 //ports includes
 #include "ports/adc.h"
 
@@ -18,6 +22,11 @@
 // Storage includes
 #include "storage/unit_id.h"
 #include "storage/history.h"
+#include "storage/manual.h"
+#include "storage/temperature_threshold.h"
+#include "storage/light_intensity_threshold.h"
+#include "storage/window_height.h"
+
 
 void update_history(void)
 {
@@ -58,12 +67,35 @@ void update_light_intensity(void)
 	set_current_light_intensity(get_light_intensity());
 }
 
+/**
+ * \brief 
+ * Check if the shutter has to be opened or closed based on the temperature and light intensity.
+ */	
+void check_thresholds(void)
+{
+	if (!get_manual())
+	{
+		return;
+	}
+	
+	if (get_current_temperature() > get_temperature_threshold() || get_current_light_intensity() > get_light_intensity_threshold())
+	{
+		shutter_roll_down();
+	}
+	else
+	{
+		shutter_roll_up();
+	}
+}
+
 int main(void)
 {
 	adc_init();
 	init_history();
 	serial_init();
 	init_distance_sensor();
+	init_leds();
+	init_shutter_status();
 	
 	if (!has_unit_id())
 	{
@@ -88,6 +120,7 @@ int main(void)
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
 	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
 	timer_add_task(&update_history, (uint16_t)200, (uint16_t)6000); // 6000 * 10ms = 60sec
+	timer_add_task(&check_thresholds, (uint16_t)10, (uint16_t)6000); // 6000 * 10ms = 60sec
 	timer_start();
 	
 	if (get_current_unit_status() == STARTING)
