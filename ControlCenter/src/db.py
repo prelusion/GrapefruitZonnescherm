@@ -58,13 +58,18 @@ def select_all(table):
         return cur.fetchall()
 
 
-def select_columns(table, columns, where):
+def select_columns(table, columns, where, orderby=None, size=None):
     with contextlib.closing(sqlite3.connect(DB_NAME)) as conn:
         cur = conn.cursor()
         sql = f"SELECT {columns} FROM {table} WHERE {where}"
+        if orderby:
+            sql += f" ORDER BY {orderby}"
         print("sql:", sql)
         cur.execute(sql)
-        return cur.fetchall()
+        if not size:
+            return cur.fetchall()
+        else:
+            return cur.fetchmany(size)
 
 
 def select_by_where(table, where):

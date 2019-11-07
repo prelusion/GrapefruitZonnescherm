@@ -109,12 +109,16 @@ class ControlUnitModel(mvc.Model):
         # return self.measurements
         measurements = db.select_columns(db.TABLE_MEASUREMENTS,
                                          "temperature, light_intensity, shutter_status, timestamp",
-                                         f"device_id = {self.get_id()}")
+                                         f"device_id = {self.get_id()}",
+                                         orderby="timestamp ASC",
+                                         size=self.MEMORY_COUNT_THRESHOLD)
 
         converted = []
         for measurement in measurements:
             temperature, light_intensity, shutter_status, timestamp = measurement
             converted.append(Measurement(timestamp, temperature, shutter_status, light_intensity))
+
+        self.measurements.set(converted)
 
         return converted
 
