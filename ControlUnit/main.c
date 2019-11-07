@@ -67,11 +67,24 @@ void update_light_intensity(void)
 	set_current_light_intensity(get_light_intensity());
 }
 
+/**
+ * \brief 
+ * Check if the shutter has to be opened or closed based on the temperature and light intensity.
+ */	
 void check_thresholds(void)
 {
 	if (!get_manual())
 	{
-		check_shutter_status();
+		return;
+	}
+	
+	if (get_current_temperature() > get_temperature_threshold() || get_current_light_intensity() > get_light_intensity_threshold())
+	{
+		shutter_roll_down();
+	}
+	else
+	{
+		shutter_roll_up();
 	}
 }
 
