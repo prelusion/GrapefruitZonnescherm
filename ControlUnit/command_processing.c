@@ -41,7 +41,7 @@ Command* get_available_commands()
 	strcpy(available_commands[3].name, "GET_ID");
 	available_commands[3].function = &cmd_get_id;
 	available_commands[3].parameters_required = 0;
-	available_commands[3].init_required = 1;
+	available_commands[3].init_required = 0;
 	
 	strcpy(available_commands[4].name, "SET_ID");
 	available_commands[4].function = &cmd_set_id;
