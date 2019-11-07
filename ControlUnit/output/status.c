@@ -1,34 +1,34 @@
-#include <avr/io.h>
 #include "status.h"
+#include <avr/io.h>
+#include <stdio.h>
+#include "../data.h"
 
-//Sets the led ports
 void init_leds(void)
 {
 	DDRB = 0b00000111;
 	PORTB = 0x00;
 }
 
-//Controls the leds with the shutter status
-void control_leds(ShutterStatus status)
+void update_leds(void)
 {
-	switch(status)
+	switch(get_current_shutter_status())
 	{
 		case CLOSED:
-		//Makes the red led emit light consistently
-		PORTB = 0b00000100;
-		break;
+			// Enable the red LED.
+			PORTB = 0b00000100;
+			break;
 		case OPEN:
-		//Makes the green led emit light consistently
-		PORTB = 0b00000010;
-		break;
-		//Checks if the red and yellow leds are already emitting light. If so stop. If not emit light.
+			// Enable the green LED.
+			PORTB = 0b00000010;
+			break;
 		case CLOSING:
-		PORTB = (~PORTB & 0b00000101);
-		break;
-		//Checks if the green and yellow leds are already emitting light. If so stop. If not emit light.
+			// Blink the red and yellow LEDs.
+			PORTB =(~PORTB & 0b00000101);
+			break;
 		case OPENING:
-		PORTB = (~PORTB & 0b00000011);
-		break;
+			// Blink the green and yellow LEDs.
+			PORTB = (~PORTB & 0b00000011);
+			break;
 	}
 }
 
