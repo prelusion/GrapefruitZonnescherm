@@ -187,6 +187,9 @@ class ControlUnitCommunication:
             while not util.timeout_exceeded(t_start, 30):
                 data = conn.readline()
 
+                if not data:
+                    continue
+
                 if "GET_SENSOR_HISTORY=L" in data:
                     datalength = data.split("GET_SENSOR_HISTORY=L")[1].strip()
                 elif "GET_SENSOR_HISTORY=OK" in data:
@@ -274,7 +277,8 @@ class ControlUnitCommunication:
             for i in range(self.BUFFER_READS):
                 data = conn.readbuffer()
 
-                buffer += data
+                if data:
+                    buffer += data
 
                 if f"{command}=" in buffer:
                     if "NOT_IMPLEMENTED" in buffer:
@@ -313,7 +317,8 @@ class ControlUnitCommunication:
             for i in range(self.BUFFER_READS):
                 data = conn.readbuffer()
 
-                buffer += data
+                if data:
+                    buffer += data
 
                 if f"{command}=" not in buffer:
                     time.sleep(self.BUFFER_SLEEP)
