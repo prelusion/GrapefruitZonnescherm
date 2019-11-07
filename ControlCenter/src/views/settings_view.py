@@ -7,11 +7,10 @@ class SettingsView(mvc.View):
     def __init__(self, parent):
         super().__init__(parent)
 
-        settingsizer = wx.GridSizer(1,1,0,0)
+        settingsizer = wx.GridSizer(1, 1, 0, 0)
         self.SetSizer(settingsizer)
 
         main_panel = wx.Panel(self)
-
 
         # Create label variables
         self.device_name_label = "Set device name: "
@@ -35,7 +34,7 @@ class SettingsView(mvc.View):
         main_sizer.Add(apply_panel, 15, wx.EXPAND | wx.ALL)
 
         # Create content for title panel
-        sizer = wx.GridSizer(2,3,0,0)
+        sizer = wx.GridSizer(2, 3, 0, 0)
         title_panel.SetSizer(sizer)
         sizer.Add(wx.StaticText(title_panel))
 
@@ -49,11 +48,12 @@ class SettingsView(mvc.View):
         sizer.Add(wx.StaticText(title_panel))
 
         # Create settingspanel sizer
-        settings_sizer = wx.GridSizer(5, 2,0,0)
+        settings_sizer = wx.GridSizer(5, 2, 0, 0)
         settings_panel.SetSizer(settings_sizer)
 
         # Create all settingslabels and inputs
-        labels = [self.device_name_label, self.device_color_label, self.window_height_label, self.temp_treshold_label, self.light_intens_label]
+        labels = [self.device_name_label, self.device_color_label, self.window_height_label, self.temp_treshold_label,
+                  self.light_intens_label]
         self.inputs = {}
 
         for k in labels:
@@ -65,9 +65,8 @@ class SettingsView(mvc.View):
             self.inputs[k] = input_type
             settings_sizer.Add(input_type)
 
-
         # Create apply panel sizer
-        apply_sizer = wx.GridSizer(1,1,0,0)
+        apply_sizer = wx.GridSizer(1, 1, 0, 0)
         apply_panel.SetSizer(apply_sizer)
 
         # Create apply button and add to sizer
@@ -76,7 +75,6 @@ class SettingsView(mvc.View):
 
         settingsizer.Add(main_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         main_panel.Layout()
-
 
     def get_settings(self):
         """
