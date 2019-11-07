@@ -8,6 +8,12 @@ from random import randint
 QUANTIZE_ONE_DIGIT = Decimal(10) ** -1  # e.g. Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT)
 
 
+def deserialize_color(colorstring):
+    colorstring = colorstring.split("(")[1].split(")")[0]
+    r, g, b, a = colorstring.split(",")
+    return int(r), int(g), int(b)
+
+
 def is_int(s):
     try:
         int(s)
