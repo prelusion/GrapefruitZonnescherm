@@ -11,105 +11,96 @@
 #include "../sensors/temperature.h"
 
 // Storage includes
-#include "../storage/temperature_threshold.h"
-#include "../storage/light_intensity_threshold.h"
 #include "../storage/window_height.h"
+#include "../storage/shutter.h"
 
+// The scheduler index of the task that controls the shutter.
+uint8_t shutter_task_index;
 
-//Sets the shutter
+//Sets the last saved shutter status from the eeprom to the current shutter status.
 void init_shutter_status(void)
 {
-	//TODO initialize the right shutter status at the start of the control unit
-	set_current_shutter_status(CLOSED);
+	ShutterStatus status = get_shutter_status();
+	if(status == OPENING)
+	{
+		set_current_shutter_status(CLOSED);
+		shutter_roll_up();
+	}
+	else if(status == CLOSING)
+	{
+		set_current_shutter_status(OPEN);
+		shutter_roll_down();			
+	}
+	else 
+	{
+		set_current_shutter_status(status);
+		update_leds();
+	}
 }
 
-//Checks if the shutter reached its status destination and returns it. Returns the same status if its not yet reached
-ShutterStatus check_shutter_reached_endpoint(ShutterStatus status, uint16_t distance, uint16_t window_height)
-{
-	if(status == CLOSING && distance < 10)
-	{
-		return CLOSED;
-	}
-	if(status == OPENING && distance >= window_height)
-	{
-		return OPEN;
-	}
-	return status;
-}
-
-uint8_t shutter_task_index = 255;
-void update_shutter_status(void)
+void control_shutter(void)
 {
 	uint16_t distance = get_distance();
 	uint16_t window_height = get_window_height();
 	ShutterStatus current_shutter_status = get_current_shutter_status();
-	//Updates the new shutter status
-	ShutterStatus new_shutter_status = check_shutter_reached_endpoint(current_shutter_status, distance, window_height);
-	//If the shutter status is open of closed. Remove the task and change the leds
-	if(new_shutter_status == OPEN || new_shutter_status == CLOSED)
+	
+	if (current_shutter_status == CLOSING && distance < 10)
 	{
+		set_current_shutter_status(CLOSED);
+		set_shutter_status(CLOSED);
 		timer_delete_task(shutter_task_index);
-		shutter_task_index = 255;
-		current_shutter_status = new_shutter_status;
-		set_current_shutter_status(current_shutter_status);
 	}
-	control_leds(current_shutter_status);
-}
-
-void check_shutter_status(void)
-{
-	int8_t current_temperature = get_current_temperature();
-	uint8_t current_light_intensity = get_current_light_intensity();
-	ShutterStatus current_shutter_status = get_current_shutter_status();
-	//Check if the shutter has to close or open
-	if (current_temperature > get_temperature_threshold() || current_light_intensity > get_light_intensity_threshold())
+	
+	if (current_shutter_status == OPENING && distance >= window_height)
 	{
-		if(current_shutter_status != CLOSED)
-		{
-			//Set shutter status to closing
-			set_current_shutter_status(CLOSING);
-		}
+		set_current_shutter_status(OPEN);
+		set_shutter_status(OPEN);
+		timer_delete_task(shutter_task_index);
 	}
-	else
-	{
-		if(current_shutter_status != OPEN)
-		{
-			//Set shutter status to opening
-			set_current_shutter_status(OPENING);
-		}
-	}
-	control_leds(current_shutter_status);
-	//if the shutter status is opening or closing add a task;
-	if (current_shutter_status == OPENING || current_shutter_status == CLOSING)
-	{
-		shutter_task_index = timer_add_task(&update_shutter_status, (uint16_t)0, (uint16_t)50); // 40 * 10ms = .5sec
-	}
+	
+	update_leds();
 }
 
 void shutter_roll_up(void)
 {
-	if(get_current_shutter_status() != OPEN)
+	ShutterStatus current_shutter_status = get_current_shutter_status();
+	
+	// Check if the shutter is already open or is opening.
+	if (current_shutter_status == OPEN || current_shutter_status == OPENING)
 	{
-		if(shutter_task_index != 255)
-		{
-			timer_delete_task(shutter_task_index);
-			shutter_task_index = 255;
-		}
-		set_current_shutter_status(OPENING);
-		shutter_task_index = timer_add_task(&update_shutter_status, (uint16_t)0, (uint16_t)50); // 40 * 10ms = .5sec
+		return;
 	}
+	
+	// Check if the shutter is closing.
+	if (current_shutter_status == CLOSING)
+	{
+		// Cancel the closing of the shutter.
+		timer_delete_task(shutter_task_index);
+	}
+	
+	set_current_shutter_status(OPENING);
+	set_shutter_status(OPENING);
+	shutter_task_index = timer_add_task(&control_shutter, (uint16_t)0, (uint16_t)50); // 50 * 10ms = .5sec
 }
 
 void shutter_roll_down(void)
 {
-	if(get_current_shutter_status() != CLOSED)
+	ShutterStatus current_shutter_status = get_current_shutter_status();
+	
+	// Check if the shutter is already closed or is closing.
+	if (current_shutter_status == CLOSED || current_shutter_status == CLOSING)
 	{
-		if(shutter_task_index != 255)
-		{
-			timer_delete_task(shutter_task_index);
-			shutter_task_index = 255;
-		}
-		set_current_shutter_status(CLOSING);
-		shutter_task_index = timer_add_task(&update_shutter_status, (uint16_t)0, (uint16_t)50); // 40 * 10ms = .5sec
+		return;
 	}
+	
+	// Check if the shutter is opening.
+	if (current_shutter_status == OPENING)
+	{
+		// Cancel the opening of the shutter.
+		timer_delete_task(shutter_task_index);
+	}
+	
+	set_current_shutter_status(CLOSING);
+	set_shutter_status(CLOSING);
+	shutter_task_index = timer_add_task(&control_shutter, (uint16_t)0, (uint16_t)50); // 50 * 10ms = .5sec
 }

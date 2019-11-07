@@ -196,6 +196,12 @@
     <Compile Include="storage\manual.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="storage\shutter.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="storage\shutter.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="storage\unit_id.h">
       <SubType>compile</SubType>
     </Compile>

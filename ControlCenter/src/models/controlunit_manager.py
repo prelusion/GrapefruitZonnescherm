@@ -1,7 +1,7 @@
 from src import mvc
 from collections import OrderedDict
 from logging import getLogger
-
+import serial as pyserial
 logger = getLogger(__name__)
 
 
@@ -21,7 +21,10 @@ class ControlUnitManager:
             return
 
         comm, model = units[port]
-        comm.close()
+        try:
+            comm.close()
+        except pyserial.SerialException:
+            pass
         del units[port]
         self.units.set(units)
 
@@ -51,15 +54,21 @@ class ControlUnitManager:
         for i, port in enumerate(units):
             comm, model = units[port]
 
-            data = comm.get_sensor_data()
+            try:
+                data = comm.get_sensor_data()
 
-            if data:
-                model.add_measurement(data)
-                model.set_temperature(data.temperature)
-                model.set_shutter_status(data.shutter_status)
-                model.set_light_intensity(data.light_intensity)
+                if data:
+                    model.add_measurement(data)
+                    model.set_temperature(data.temperature)
+                    model.set_shutter_status(data.shutter_status)
+                    model.set_light_intensity(data.light_intensity)
+            except pyserial.SerialException:
+                pass
 
     def close_connections(self):
         for unit in self.units.get().items():
             comm, model = unit
-            comm.close()
+            try:
+                comm.close()
+            except pyserial.SerialException:
+                pass
