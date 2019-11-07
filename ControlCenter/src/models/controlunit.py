@@ -1,4 +1,6 @@
 from src import mvc
+from src import db
+import wx
 
 
 class ControlUnitModel(mvc.Model):
@@ -9,33 +11,56 @@ class ControlUnitModel(mvc.Model):
     SHUTTER_GOING_DOWN = 3
 
     def __init__(self, id):
+        self.initialized = mvc.Observable(self, False)
         self.id = mvc.Observable(self, id)
-        self.name = mvc.Observable(self, "unnamed")
+        self.name = mvc.Observable(self, "uninitialized")
         self.online = mvc.Observable(self, True)
         self.manual = mvc.Observable(self, False)
-        self.color = mvc.Observable(self, None)
+        self.color = mvc.Observable(self, wx.RED)
         self.measurements = mvc.Observable(self, [])
         self.shutter_status = mvc.Observable(self, None)
         self.temperature = mvc.Observable(self, 0)
         self.light_intensity = mvc.Observable(self, 0)
         self.selected = mvc.Observable(self, False)
 
-    def set_id(self, id):
+    def set_initialized(self, boolean):
+        self.initialized = boolean
+
+    def get_initialized(self):
+        return self.initialized
+
+    def set_id(self, id, save_db=False):
+        """ ID is not automatically saved to database because we only
+        want to save it when the device has been configured / initialized. """
         self.id.set(id)
+
+        if save_db:
+            db.insert(db.TABLE_CONTROL_UNITS, "(device_id)", f"('{id}')")
 
     def get_id(self):
         return self.id.get()
 
     def set_name(self, name):
+        if not name:
+            name = "uninitialized"
         self.name.set(name)
+        db.update(db.TABLE_CONTROL_UNITS, f"name = '{name}'", f"device_id = {self.get_id()}")
 
     def get_name(self):
+        name = db.select_columns(db.TABLE_CONTROL_UNITS, "name", f"device_id = {self.get_id()}")
+        if name and len(name) == 1:
+            self.set_name(name[0][0])
         return self.name.get()
 
     def set_colour(self, colour):
         self.color.set(colour)
+        db.update(db.TABLE_CONTROL_UNITS, f"color = '{colour}'", f"device_id = {self.get_id()}")
 
     def get_colour(self):
+        color = db.select_columns(db.TABLE_CONTROL_UNITS, "color", f"device_id = {self.get_id()}")
+        if color and len(color) == 1:
+            color = color[0][0]
+            if color: self.set_colour(color)
         return self.color.get()
 
     def set_online(self, boolean):

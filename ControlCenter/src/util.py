@@ -8,6 +8,14 @@ from random import randint
 QUANTIZE_ONE_DIGIT = Decimal(10) ** -1  # e.g. Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT)
 
 
+def is_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError:
+        return False
+
+
 def timeout_exceeded(start, timeout):
     if not timeout or timeout == 0:
         return False
