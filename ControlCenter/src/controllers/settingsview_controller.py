@@ -160,3 +160,4 @@ class SettingsViewController(mvc.Controller):
         model.set_name(name)
         model.set_colour(color)
         self.view.show_success("Successfully updated device")
+()

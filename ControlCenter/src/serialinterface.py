@@ -43,6 +43,8 @@ class Connection:
             self._interface = None
         except (OSError, SerialException):
             pass
+        except Exception as e:
+            logger.exception(e)
 
     def write(self, data):
         if not self._interface:
@@ -53,7 +55,12 @@ class Connection:
         if '\r' not in data:
             data += '\r'
 
-        self._interface.write(data.encode())
+        try:
+            self._interface.write(data.encode())
+        except (OSError, SerialException):
+            pass
+        except Exception as e:
+            logger.exception(e)
 
     def readbuffer(self):
         if not self._interface:
@@ -64,8 +71,10 @@ class Connection:
             # if data:
                 # logger.info(f"read serial data: {data}")
             return data
-        except UnicodeDecodeError:
+        except (OSError, SerialException, UnicodeDecodeError):
             pass
+        except Exception as e:
+            logger.exception(e)
 
     def readline(self):
         if not self._interface:
@@ -73,5 +82,7 @@ class Connection:
 
         try:
             return self._interface.readline().decode()
-        except UnicodeDecodeError:
+        except (OSError, SerialException, UnicodeDecodeError):
             pass
+        except Exception as e:
+            logger.exception(e)
