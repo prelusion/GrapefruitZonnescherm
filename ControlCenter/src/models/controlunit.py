@@ -48,15 +48,19 @@ class ControlUnitModel(mvc.Model):
 
     def get_name(self):
         name = db.select_columns(db.TABLE_CONTROL_UNITS, "name", f"device_id = {self.get_id()}")
-        print("name from db:", name)
         if name and len(name) == 1:
             self.set_name(name[0][0])
         return self.name.get()
 
     def set_colour(self, colour):
         self.color.set(colour)
+        db.update(db.TABLE_CONTROL_UNITS, f"color = '{colour}'", f"device_id = {self.get_id()}")
 
     def get_colour(self):
+        color = db.select_columns(db.TABLE_CONTROL_UNITS, "color", f"device_id = {self.get_id()}")
+        if color and len(color) == 1:
+            color = color[0][0]
+            if color: self.set_colour(color)
         return self.color.get()
 
     def set_online(self, boolean):

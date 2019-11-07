@@ -145,7 +145,7 @@ class SettingsViewController(mvc.Controller):
         if success:
             model.set_id(model.get_id(), save_db=True)
             model.set_name(name)
-            model.set_colour(color)
+            # model.set_colour(color) # TODO set color
             self.view.show_success("Successfully initialized device")
         else:
             self.view.show_error("Failed to initialize device", title="Failure")
@@ -167,6 +167,5 @@ class SettingsViewController(mvc.Controller):
             return
 
         model.set_name(name)
-        model.set_colour(color)
+        # model.set_colour(color) # TODO set color
         self.view.show_success("Successfully updated device")
-()
