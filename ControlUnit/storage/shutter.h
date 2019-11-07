@@ -9,7 +9,7 @@
  * 
  * \return uint8_t The shutter status in CM
  */
-uint16_t get_shutter_status(void);
+uint8_t get_shutter_status(void);
 
 /**
  * \brief 

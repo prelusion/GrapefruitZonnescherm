@@ -4,7 +4,7 @@
 // The shutter status will be stored in EEPROM at address 0x0009.
 #define SHUTTER_STATUS_ADDRESS 0x0009
 
-uint16_t get_shutter_status(void)
+uint8_t get_shutter_status(void)
 {
 	return eeprom_read_byte((uint8_t*)SHUTTER_STATUS_ADDRESS);
 }
