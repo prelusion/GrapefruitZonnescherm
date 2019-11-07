@@ -103,6 +103,21 @@ class test(wx.Frame):
             input.Enable()
         self.apply_button.Enable()
 
+    def set_name(self, name):
+        self.inputs[self.device_name_label].SetValue(str(name))
+
+    def set_window_height(self, height):
+        self.inputs[self.window_height_label].SetValue(str(height))
+
+    def set_color(self, color):
+        self.inputs[self.device_color_label].SetColour(color)
+
+    def set_temperature_threshold(self, temp):
+        self.inputs[self.temp_treshold_label].SetValue(str(temp))
+
+    def set_light_intensity_threshold(self, light):
+        self.inputs[self.light_intens_label].SetValue(str(light))
+
 app = wx.App(False)
 window = test(None)
 window.Show()
