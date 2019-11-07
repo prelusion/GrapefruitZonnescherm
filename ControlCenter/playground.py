@@ -1,63 +1,151 @@
 import wx
+from src import mvc
 
 class test(wx.Frame):
-
-    CHECKBOX_CONNECTED = "connected"
-    CHECKBOX_STATUS_UP = "status up"
-    CHECKBOX_STATUS_DOWN = "status down"
-    CHECKBOX_SELECT_ALL = "select all"
 
     def __init__(self, parent):
         super().__init__(parent)
         self.SetTitle("test")
 
-        checkbox_panel = wx.Panel(self)
-        checkbox_panel.SetBackgroundColour((255, 255, 255))
-
-        # Create vertical sizer and set sizer to checkboxpanel
-        vertical_sizer = wx.BoxSizer(wx.VERTICAL)
-        checkbox_panel.SetSizer(vertical_sizer)
-
-        # create an upper and lower panel and add horzontal sizers to it
-        upperpanel = wx.Panel(checkbox_panel)
-        lowerpanel = wx.Panel(checkbox_panel)
-
-        # create sizers for upper and lower panel
-        upper_horizontal_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        lower_horizontal_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        upperpanel.SetSizer(upper_horizontal_sizer)
-        lowerpanel.SetSizer(lower_horizontal_sizer)
-
-        # add upper and lower panel to main sizer
-        vertical_sizer.Add(upperpanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        vertical_sizer.Add(lowerpanel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        # Create main sizer and set to panel
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(main_sizer)
 
 
-        checkboxes = [wx.CheckBox(upperpanel, label=self.CHECKBOX_CONNECTED), wx.CheckBox(upperpanel, label=self.CHECKBOX_STATUS_UP),
-                       wx.CheckBox(lowerpanel, label=self.CHECKBOX_SELECT_ALL), wx.CheckBox(lowerpanel, label=self.CHECKBOX_STATUS_DOWN)]
+        # Create panels to fit in sizer
+        title_panel = wx.Panel(self)
+        settings_panel = wx.Panel(self)
+        settings_panel.SetBackgroundColour((255, 255, 255))
+        settings_panel.SetWindowStyle(wx.BORDER_SIMPLE)
+        apply_panel = wx.Panel(self)
+        apply_panel.SetBackgroundColour((200,1,111))
 
-        counter = 0
-        for index in range(6):
-            if index < 3:
-                if index == 1:
-                    upper_horizontal_sizer.AddSpacer(300)
-                    print("spacing: ", index, "spacer object -upper")
-                else:
-                    upper_horizontal_sizer.Add(checkboxes[counter], wx.ID_ANY, wx.EXPAND | wx.ALL)
-                    print("element: ", index, checkboxes[counter], " index in list: ", counter, " -upper")
-                    counter += 1
-            elif index >= 3:
-                if index == 4:
-                    lower_horizontal_sizer.AddSpacer(300)
-                    print("spacing: ", index, "spacer object -lower")
-                else:
-                    lower_horizontal_sizer.Add(checkboxes[counter], wx.ID_ANY, wx.EXPAND | wx.ALL)
-                    print("element: ", index, checkboxes[counter], " index in list: ", counter, " -lower")
-                    counter += 1
+        # add panels to sizers
+        main_sizer.Add(title_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        main_sizer.Add(settings_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        main_sizer.Add(apply_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+
+        # Create content for title panel
+        sizer = wx.GridSizer(2,3,0,0)
+        title_panel.SetSizer(sizer)
+        sizer.Add(wx.StaticText(title_panel))
+
+        settingText = wx.StaticText(title_panel, label="Settings:")
+        font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
+        settingText.SetFont(font)
+
+        # add title to title panel
+        sizer.Add(wx.StaticText())
+        sizer.Add(settingText, flag=wx.ALIGN_CENTER)
+        sizer.Add(wx.StaticText(title_panel))
+
+        # add line to title panel
+        sizer.Add(wx.StaticText(title_panel))
+        sizer.Add(wx.StaticLine(title_panel, pos=(25, 50), size=(600, 1)), flag= wx.ALL | wx.ALIGN_CENTER)
+        sizer.Add(wx.StaticText(title_panel))
 
 
 
+        settings_sizer = wx.GridSizer(5, 2,0,0)
+        settings_panel.SetSizer(settings_sizer)
 
+        panel1 = wx.Panel(settings_panel)
+        panel2 = wx.Panel(settings_panel)
+        panel3 = wx.Panel(settings_panel)
+        panel4 = wx.Panel(settings_panel)
+        panel5 = wx.Panel(settings_panel)
+        panel6 = wx.Panel(settings_panel)
+        panel7 = wx.Panel(settings_panel)
+        panel8 = wx.Panel(settings_panel)
+        panel9 = wx.Panel(settings_panel)
+        panel10 = wx.Panel(settings_panel)
+
+        panel1.SetBackgroundColour((252, 186, 3))
+        panel2.SetBackgroundColour((0, 0, 0))
+        panel3.SetBackgroundColour((51, 255, 0))
+        panel4.SetBackgroundColour((0, 247, 255))
+        panel5.SetBackgroundColour((81, 0, 255))
+        panel6.SetBackgroundColour((153, 0, 25))
+        panel7.SetBackgroundColour((255, 0, 208))
+        panel8.SetBackgroundColour((255, 0, 106))
+        panel9.SetBackgroundColour((255, 0, 0))
+        panel10.SetBackgroundColour((255,255,255))
+
+
+        settings_sizer.Add(panel1, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        settings_sizer.Add(panel2, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        settings_sizer.Add(panel3, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        settings_sizer.Add(panel4, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        settings_sizer.Add(panel5, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        settings_sizer.Add(panel6, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        settings_sizer.Add(panel7, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        settings_sizer.Add(panel8, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        settings_sizer.Add(panel9, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        settings_sizer.Add(panel10, wx.ID_ANY, wx.EXPAND | wx.ALL)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # Create apply panel sizer
+        apply_sizer = wx.GridSizer(1,1,0,0)
+        apply_panel.SetSizer(apply_sizer)
+
+        # Create apply button and add to sizer
+        self.apply_button = wx.Button(apply_panel, label="apply")
+        apply_sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
+
+
+
+class Setting(mvc.View):
+    def __init__(self, parent, prefix, subfix, sizer):
+        super().__init__(parent)
+        font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
+        self.pre_fix = wx.StaticText(parent, label=prefix)
+        self.pre_fix.SetFont(font)
+        self.sub_fix = wx.StaticText(parent, label=subfix)
+        self.sub_fix.SetFont(font)
+        self.input = wx.TextCtrl(parent, size=(80, 20), value="")
+        sizer.Add(self.pre_fix, flag=wx.ALIGN_LEFT | wx.ALL)
+        sizer.Add(self.input, flag=wx.ALIGN_RIGHT | wx.ALL)
+        sizer.Add(self.sub_fix, flag= wx.ALIGN_LEFT | wx.ALL)
+
+    def set_value(self, value):
+        self.input.SetValue(value)
+
+    def get_value(self):
+        return self.input.GetValue()
+
+    def Disable(self):
+        self.input.Disable()
+
+    def Enable(self, **kwargs):
+        self.input.Enable()
 
 
 
