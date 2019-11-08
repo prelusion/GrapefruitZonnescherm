@@ -64,8 +64,10 @@ class GraphViewController(mvc.Controller):
         wx.CallAfter(lambda: self.update_graph(model, model.get_measurements()))
 
     def update_graph(self, model, measurements):
-        if model.get_color().Get(False) == (-1, -1, -1):
-            model.set_color(wx.Colour(colour=(100,100,100)))
+        color = model.get_color()
+        if color == wx.NullColour:
+            color = wx.BLACK
+
         timestamps = list(map(lambda x: x.timestamp, measurements))
         temperatures = list(map(lambda x: x.temperature, measurements))
         shutter_status = list(map(lambda x: x.shutter_status, measurements))
@@ -82,16 +84,16 @@ class GraphViewController(mvc.Controller):
             light_intensity.append(0)
 
         self.view.update_temperature_graph(model.get_id(),
-                                           model.get_color(),
+                                           color,
                                            timestamps,
                                            temperatures)
 
         self.view.update_status_graph(model.get_id(),
-                                      model.get_color(),
+                                      color,
                                       timestamps,
                                       shutter_status)
 
         self.view.update_light_graph(model.get_id(),
-                                     model.get_color(),
+                                     color,
                                      timestamps,
                                      light_intensity)
