@@ -31,19 +31,14 @@ class SettingsViewController(mvc.Controller):
             model.selected.add_callback(self.on_controlunit_selected_change)
 
     def on_controlunit_selected_change(self, model, data):
+        self.disable_settings()
         units = self.controlunit_manager.get_selected_units()
-        if len(units) > 1:
-            self.disable_settings()
-        elif len(units) < 1:
-            self.disable_settings()
-        elif len(units) == 1:
+        if len(units) == 1:
             self.init_settings_panel(units[0])
-            self.enable_settings()
-        else:
-            self.disable_settings()
 
     def init_settings_panel(self, unit):
         comm, model = unit
+        print("init settings panel device with id:", model.get_id(), "and name:", model.get_name())
 
         def update_view(window_height, temperature_threshold, light_threshold, color):
             self.view.set_name(model.get_name())

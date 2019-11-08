@@ -43,10 +43,7 @@ class GraphViewController(mvc.Controller):
     def on_controlunit_color_change(self, model, data):
         pass
 
-    def update_graph(self, model, data=None):
-        if not data:
-            data = model.get_measurements()
-
+    def update_graph(self, model, data):
         measurements = copy.deepcopy(
             data)  # copy otherwise we get RuntimeError if new measurements are added during iteration
         timestamps = list(map(lambda x: x.timestamp, measurements))
