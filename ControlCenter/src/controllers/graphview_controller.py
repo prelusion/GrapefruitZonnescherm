@@ -33,36 +33,40 @@ class GraphViewController(mvc.Controller):
             self.update_graph(model, model.get_measurements())
 
     def on_controlunit_selected_change(self, model, selected):
+        pass
+        # def execute_threaded():
 
-        def execute_threaded():
-            with threading.Lock():
-                logger.info("[THREADING] enter lock")
-                print("RE_RENDER UNITS IN GRAPH")
-                if not selected:
-                    self.view.remove_device(model.get_id())
+        with threading.Lock():
+            logger.info("[THREADING] enter lock")
+            print("RE_RENDER UNITS IN GRAPH")
+            if not selected:
+                self.view.remove_device(model.get_id())
 
-                self.redraw_all_units()
+            self.redraw_all_units()
 
-                if selected:
-                    model.measurements.add_callback(self.on_controlunit_measurement_change)
-                else:
-                    try:
-                        model.measurements.del_callback(self.on_controlunit_measurement_change)
-                    except KeyError as e:
-                        logger.exception(e)
-                wx.CallAfter(model.done_selecting)
-                print("RE_RENDER UNITS IN GRAPH DONE")
-            logger.info("[THREADING] exit lock")
+            if selected:
+                model.measurements.add_callback(self.on_controlunit_measurement_change)
+            else:
+                try:
+                    model.measurements.del_callback(self.on_controlunit_measurement_change)
+                except KeyError as e:
+                    logger.exception(e)
+            # wx.CallAfter(model.done_selecting)
+            wx.CallAfter(self.view.Layout)
+            print("RE_RENDER UNITS IN GRAPH DONE")
+        logger.info("[THREADING] exit lock")
 
-        threading.Thread(target=execute_threaded, daemon=True).start()
+        # threading.Thread(target=execute_threaded, daemon=True).start()
 
     def on_controlunit_measurement_change(self, model, data):
         with threading.Lock():
             logger.info("[THREADING] enter lock")
             if model.get_selected():
                 print("UPDATE MEASUREMENT IN GRAPH")
-                self.update_graph(model, data)
+                wx.CallAfter(lambda: self.update_graph(model, data))
+
                 print("UPDATE MEASUREMENT IN GRAPH DONE")
+
         logger.info("[THREADING] exit lock")
 
     def update_graph(self, model, measurements):
