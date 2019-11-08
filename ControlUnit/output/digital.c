@@ -1,13 +1,16 @@
 #include "digital.h"
+
+//serial includes
+#include "../serial.h"
+
  #include <avr/io.h>
  #include <stdint.h>
- #include <util/delay.h>
- #define F_CPU 16000000UL
+ 
  /*
  * Vcc : +5V, GND : ground
- * DIO : data (board pin 8)     (PD5)
- * CLK : clock (board pin 9)    (PD6)
- * STB : strobe (board pin 10) (PD7)
+ * DIO : data (board pin 5)     (PD5)
+ * CLK : clock (board pin 6)    (PD6)
+ * STB : strobe (board pin 7) (PD7)
  */
 
 #define HIGH 0x1
@@ -17,21 +20,24 @@ const uint8_t data = 5;
 const uint8_t clock = 6;
 const uint8_t strobe = 7;
 
-
-void show_temperature_digital(uint8_t temperature)
-{
-	show_measurement(TEMPERATURE, temperature);
-}
- 
-void show_light_intensity_digital(uint8_t light_intensity)
-{
-	show_measurement(LIGHT_INTENSITY, light_intensity);
-}
+/*0*/  /*1*/   /*2*/  /*3*/  /*4*/  /*5*/  /*6*/  /*7*/  /*8*/  /*9*/
+const uint8_t digits[] = { 0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f };
+	
+/*T*/ /*E*/ /*M*/ /*P*/
+const uint8_t temperature_display[] = { 0x78, 0x79, 0x15, 0x73 };
+	
+/*L*/  /*I*/   /* */  /* */
+const uint8_t light_intesity_display[] = { 0x38, 0x30, 0x00, 0x00 };
+	
+/*D*/ /*I*/ /*S*/ /*T*/
+const uint8_t distance_display[] = { 0x5e, 0x30, 0x6d, 0x78 };
+	
+uint8_t toggled_buttons;
 
 // read value from pin
 int read(uint8_t pin)
 {
-    if (PINB & _BV(pin)) { // if pin set in port
+    if (PIND & _BV(pin)) { // if pin set in port
         return HIGH;
     } else {
         return LOW;
@@ -42,14 +48,14 @@ int read(uint8_t pin)
 void write(uint8_t pin, uint8_t val)
 {
     if (val == LOW) {
-        PORTB &= ~(_BV(pin)); // clear bit
+        PORTD &= ~(_BV(pin)); // clear bit
     } else {
-        PORTB |= _BV(pin); // set bit
+        PORTD |= _BV(pin); // set bit
     }
 }
 
 // shift out value to data
-void shiftOut (uint8_t val)
+void shift_out (uint8_t val)
 {
     uint8_t i;
     for (i = 0; i < 8; i++)  {
@@ -61,7 +67,7 @@ void shiftOut (uint8_t val)
 }
 
 // shift in value from data
-uint8_t shiftIn(void)
+uint8_t shift_in(void)
 {
     uint8_t value = 0;
     uint8_t i;
@@ -79,90 +85,153 @@ uint8_t shiftIn(void)
     return value;
 }
 
-void sendCommand(uint8_t value)
+//Sends internal command to the digital display
+void send_command(uint8_t value)
 {
     write(strobe, LOW);
-    shiftOut(value);
+    shift_out(value);
     write(strobe, HIGH);
 }
 
+//Resets the display
 void reset()
 {
     // clear memory - all 16 addresses
-    sendCommand(0x40); // set auto increment mode
+    send_command(0x40); // set auto increment mode
     write(strobe, LOW);
-    shiftOut(0xc0);   // set starting address to 0
+    shift_out(0xc0);   // set starting address to 0
     for(uint8_t i = 0; i < 16; i++)
     {
-        shiftOut(0x00);
+        shift_out(0x00);
     }
     write(strobe, HIGH);
 }
 
-void setup()
+//Makes the ports valid for the display
+void digital_setup()
 {
-     DDRD |= 0b11100000; // set pins 7,6,5 from port D as out put
-
-    sendCommand(0x89);  // activate and set brightness to medium
+    DDRD |= 0b11100000; // set pins 7,6,5 from port D as out put
+    uint8_t buttons = 0;	
+    send_command(0x89);  // activate and set brightness to medium
 	reset();
 }
 
-void show_measurement(Sensor sensor, uint8_t measurement)
+//Gives a display on the led board of the selected measurement
+void display_measurement(Sensor sensor, uint8_t measurement)
 {
-	/*0*/  /*1*/   /*2*/  /*3*/  /*4*/  /*5*/  /*6*/  /*7*/  /*8*/  /*9*/
-	uint8_t digits[] = { 0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f };
-	uint8_t temperaturedisplay[] = { 0xf0, 0xf2, 0x2a, 0xce };
-	uint8_t light_intesitydisplay[] = { 0x70, 0x60, 0x00, 0x00 };
-
-    sendCommand(0x40); // auto-increment address
+	reset();
+    send_command(0x40); // auto-increment address
     write(strobe, LOW);
-    shiftOut(0xc0); // set starting address = 0
+    shift_out(0xc0); // set starting address = 0
+	
     for(uint8_t position = 0; position < 8; position++)
     {
 		if (position < 4)
 		{
 			if(sensor == TEMPERATURE)
-			{
-				shiftOut(temperaturedisplay[position]);
+			{	
+				shift_out(temperature_display[position]);
 			}
-			else
+			else if (sensor == LIGHT_INTENSITY)
 			{
-				shiftOut(light_intesitydisplay[position]);
+				shift_out(light_intesity_display[position]);
+			} 
+			else if (sensor == DISTANCE)
+			{
+				shift_out(distance_display[position]);
 			}
 		} 
 		else if(position < 7)
 		{
-			if(measurement < 100 && measurement >= 10)
+			if (position == 4)
 			{
-				measurement -= (measurement % 10)*10;
-				shiftOut(digits[measurement]);
+				uint8_t new_measurement = (measurement / 100);
+				if (new_measurement == 0)
+				{
+					shift_out(0x00);
+				}
+				else
+				{
+					measurement -= new_measurement * 100;
+					shift_out(digits[new_measurement]);
+				}
 			}
-			else if(measurement >= 0 && measurement < 10)
+			else if(measurement < 100 && measurement >= 10 && position != 4)
 			{
-				shiftOut(digits[measurement]);	
+				uint8_t new_measurement = (measurement / 10);
+				measurement -= new_measurement * 10;
+				shift_out(digits[new_measurement]);	
+			}
+			else if(measurement >= 0 && measurement < 10 && position != 4)
+			{
+				shift_out(digits[measurement]);	
 			}
 			else if(measurement < 0 && position == 4 && sensor == TEMPERATURE)
 			{
-				shiftOut(0x40);
-			}
-			else
-			{
-				shiftOut(0x3f);
+				shift_out(0xe3);
 			}
 		}
 		else
 		{
 			if(sensor == TEMPERATURE)
 			{
-				shiftOut(0x63);
+				shift_out(0xe3);
 			}
-			else
+			else if (sensor == LIGHT_INTENSITY)
 			{
-				shiftOut(0xb8);
+				shift_out(0x73);
+			}
+			else if (DISTANCE)
+			{	
+				shift_out(0x39);
 			}
 		}
-        shiftOut(0x00);
+        shift_out(0x00);
     }
-
     write(strobe, HIGH);
+}
+
+//Checks if new pressed button is valid
+uint8_t check_new_pressed_buttons(void)
+{
+	uint8_t new_pressed_buttons = read_buttons();
+	uint8_t buttons = get_toggled_buttons();
+	if(new_pressed_buttons != buttons && new_pressed_buttons != 0x00)
+	{
+		buttons = new_pressed_buttons;
+	}	
+	return buttons;
+}
+
+//Reads all the digital buttons that are pressed
+uint8_t read_buttons()
+{
+	uint8_t checked_buttons = 0;
+	write(strobe, LOW);
+	shift_out(0x42); // key scan (read buttons)
+
+	DDRD &= ~(_BV(data)); // clear bit, direction = input
+
+	for (uint8_t i = 0; i < 4; i++)
+	{
+		uint8_t v = shift_in() << i;
+		checked_buttons |= v;
+	}
+
+	DDRD |= _BV(data); // set bit, direction = output
+	write(strobe, HIGH);
+	return (uint8_t)checked_buttons;
+
+}
+
+//Get the last pressed buttons
+uint8_t get_toggled_buttons()
+{
+	return toggled_buttons;
+}
+
+//Set pressed button
+void set_toggled_buttons(uint8_t new_toggled_buttons)
+{
+	toggled_buttons = new_toggled_buttons;
 }

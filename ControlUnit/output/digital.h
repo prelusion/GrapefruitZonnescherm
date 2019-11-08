@@ -6,25 +6,57 @@
 
 typedef enum {
 	TEMPERATURE = 0,
-	LIGHT_INTENSITY = 1
+	LIGHT_INTENSITY = 1,
+	DISTANCE = 2
 } Sensor;
 
 /** 
  * \brief  
- * The numberboard shows the current temperature
+ * displays the measurement on the digital display
  */ 
-void show_temperature_digital(uint8_t temperature); 
+ void display_measurement(Sensor sensor, uint8_t measurement);
+ 
  
 /** 
  * \brief  
- * The numberboard shows the current light intensity;
+ * Setups the digital display ports
  */ 
-void show_light_intensity_digital(uint8_t light_intensity); 
+ void digital_setup(void);
+ 
+ 
+/**
+ * \brief 
+ * Checks if a new button is pressed. Also checks if its a valid press if not return the same as last time
+ * 
+ * \returns the last valid pressed button
+ */
+ uint8_t check_new_pressed_buttons(void);
+ 
+
+/**
+ * \brief 
+ * Checks a new pressed button.
+ * 
+ * \returns the pressed new button
+ */
+ uint8_t read_buttons();
+
+
+/**
+ * \brief 
+ * Get the last pressed button
+ * 
+ * \returns last valid button
+ */
+ uint8_t get_toggled_buttons();
  
 /** 
  * \brief  
- * Gives the measurement to the digital display
- */ 
- void show_measurement(Sensor sensor, uint8_t measurement);
+ * Set new pressed button/
+ *
+ *\param new_toggled_buttons a new toggle button. 
+ */
+
+ void set_toggled_buttons(uint8_t new_toggled_buttons);
  
  #endif
