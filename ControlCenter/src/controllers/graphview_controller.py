@@ -1,8 +1,8 @@
-import datetime
+import copy
 
 from src import mvc
 from src.views.graphtab_view import GraphTabView
-import copy
+
 
 class GraphViewController(mvc.Controller):
     def __init__(self, view_parent, controlunit_manager):
@@ -30,14 +30,24 @@ class GraphViewController(mvc.Controller):
             self.view.clear_trace(model.get_id())
 
     def on_controlunit_measurement_change(self, model, data):
-        print("on measurement change")
-
-        data = copy.deepcopy(data) # copy otherwise we get RuntimeError if new measurements are added during iteration
+        data = copy.deepcopy(data)  # copy otherwise we get RuntimeError if new measurements are added during iteration
 
         timestamps = list(map(lambda x: x.timestamp, data))
         temperatures = list(map(lambda x: x.temperature, data))
-        self.view.update_temperature_graph(model.get_id(), model.get_name(), model.get_color(), timestamps, temperatures)
+        shutter_status = list(map(lambda x: x.shutter_status, data))
+        light_intensity = list(map(lambda x: x.light_intensity, data))
+
+        self.view.update_temperature_graph(model.get_id(),
+                                           model.get_name(),
+                                           model.get_color(),
+                                           timestamps,
+                                           temperatures)
 
     def on_controlunit_color_change(self, model, data):
         pass
+
+
+# [Measurement(), Measurment()]
+# [100, 123, 99, 32]
+
 

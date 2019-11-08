@@ -1,12 +1,9 @@
-import datetime
 import enum
-import random
 
 import wx
 import wxmplot
 
 from src import mvc
-from src.measurement import Measurement
 
 
 class GraphMode(enum.Enum):
