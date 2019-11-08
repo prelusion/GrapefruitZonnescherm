@@ -71,7 +71,7 @@ class ControlUnitsController(mvc.Controller):
         view.set_name(model.get_name())
         view.set_manual(model.get_manual())
         view.set_shutter_status(model.get_shutter_status())
-        view.set_device_color(model.get_colour())
+        view.set_device_color(model.get_color())
         view.set_temperature(model.get_temperature())
         view.set_selected(model.get_selected())
 

@@ -1,3 +1,5 @@
+import copy
+
 from src import mvc
 from src.views.graphtab_view import GraphTabView
 
@@ -8,37 +10,61 @@ class GraphViewController(mvc.Controller):
 
         self.controlunit_manager = controlunit_manager
 
-        # self.graphs_view = src.views.tab_data_view.GraphView(view_parent)
         self.view = GraphTabView(view_parent)
 
         self.controlunit_manager.units.add_callback(self.on_controlunits_change)
+        self.units = []
 
     def on_controlunits_change(self, model, data):
         for port, unit in data.items():
             comm, model = unit
-            model.measurements.add_callback(self.on_controlunit_measurement_change)
-            model.color.add_callback(self.on_controlunit_color_change)
             model.selected.add_callback(self.on_controlunit_selected_change)
 
+    def redraw_all_units(self):
+        units = self.controlunit_manager.get_selected_units()
+
+        for unit in units:
+            comm, model = unit
+            self.update_graph(model, model.get_measurements())
+
+    def on_controlunit_selected_change(self, model, selected):
+        if selected:
+            model.measurements.add_callback(self.on_controlunit_measurement_change)
+            model.color.add_callback(self.on_controlunit_color_change)
+        else:
+            model.measurements.del_callback(self.on_controlunit_measurement_change)
+            model.color.del_callback(self.on_controlunit_color_change)
+            self.view.remove_device(model.get_id())
+            self.redraw_all_units()
+
     def on_controlunit_measurement_change(self, model, data):
-        dates = []
-        temps = []
-        status = []
-        light = []
-
-        for measurement in data:
-            dates.append(measurement.timestamp)
-            temps.append(measurement.temperature)
-            status.append(measurement.shutter_status)
-            light.append(measurement.light_intensity)
-
-        # self.temp_view.set_unit(model.get_id(), [dates, temps])
-        # self.status_view.set_unit(model.get_id, [dates, status])
-        # self.light_view.set_unit(model.get_id, [dates, light])
+        self.update_graph(model, data)
 
     def on_controlunit_color_change(self, model, data):
         pass
 
-    def on_controlunit_selected_change(self, model, data):
-        pass
-        # print("Model with id:", model.get_id(), "selected:", data)
+    def update_graph(self, model, data=None):
+        if not data:
+            data = model.get_measurements()
+
+        measurements = copy.deepcopy(
+            data)  # copy otherwise we get RuntimeError if new measurements are added during iteration
+        timestamps = list(map(lambda x: x.timestamp, measurements))
+        temperatures = list(map(lambda x: x.temperature, measurements))
+        shutter_status = list(map(lambda x: x.shutter_status, measurements))
+        light_intensity = list(map(lambda x: x.light_intensity, measurements))
+
+        self.view.update_temperature_graph(model.get_id(),
+                                           model.get_color(),
+                                           timestamps,
+                                           temperatures)
+
+        self.view.update_status_graph(model.get_id(),
+                                      model.get_color(),
+                                      timestamps,
+                                      shutter_status)
+
+        self.view.update_light_graph(model.get_id(),
+                                     model.get_color(),
+                                     timestamps,
+                                     light_intensity)

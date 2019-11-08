@@ -1,13 +1,21 @@
-import datetime
 import os
-import random
 
 import wx
 
 from src import const
-from src.measurement import Measurement
 from src.mvc import View
 from src.views import graph_view
+
+
+class GraphTab(View):
+    def __init__(self, parent, graphmode: graph_view.GraphMode):
+        super().__init__(parent)
+        self.graph = graph_view.GraphView(self, graphmode)
+        sizer = wx.GridSizer(1, 1, 1, 1)
+        self.SetSizer(sizer)
+        sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
+        self.SetBackgroundColour(colour=(0, 255, 0))
+        self.graph.SetSize(200, 200)
 
 
 class GraphTabView(View):
@@ -19,14 +27,15 @@ class GraphTabView(View):
         self.tab_panel = wx.Notebook(self)
         self.tab_panel.SetWindowStyle(wx.NB_TOP)
 
-        self.temps_tab = graph_tab(self.tab_panel, graph_view.GraphMode.Temp)
-        self.status_tab = graph_tab(self.tab_panel, graph_view.GraphMode.Status)
-        self.light_tab = graph_tab(self.tab_panel, graph_view.GraphMode.Light)
+        self.temps_tab = GraphTab(self.tab_panel, graph_view.GraphMode.Temp)
+        self.status_tab = GraphTab(self.tab_panel, graph_view.GraphMode.Status)
+        self.light_tab = GraphTab(self.tab_panel, graph_view.GraphMode.Light)
 
         self.tab_panel.AddPage(self.temps_tab, "Temperatures")
         self.tab_panel.AddPage(self.status_tab, "Shutter status")
         self.tab_panel.AddPage(self.light_tab, "Light intensity")
 
+        # Icons
         icons = wx.ImageList(16, 16)
         self.tab_panel.AssignImageList(icons)
         icon0 = icons.Add(wx.Bitmap(os.path.join(const.ICONS_DIR, "small_temp.ico"), wx.BITMAP_TYPE_ICO))
@@ -38,42 +47,14 @@ class GraphTabView(View):
 
         self.sizer.Add(self.tab_panel, 1, wx.EXPAND)
 
+    def update_temperature_graph(self, device_id, color, timestamps, temperatures):
+        self.temps_tab.graph.update_graph(device_id, color, timestamps, temperatures)
 
-class graph_tab(View):
-    def __init__(self, parent, graphmode: graph_view.GraphMode):
-        super().__init__(parent)
-        self.graph = graph_view.GraphView(self, graphmode)
-        sizer = wx.GridSizer(1, 1, 1, 1)
-        self.SetSizer(sizer)
-        sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
-        self.graph.SetSize(200, 200)
-        # TODO Remove test data
-        self.create_test_Data()
+    def remove_device(self, device_id):
+        self.temps_tab.graph.remove_device(device_id)
 
-    def create_test_Data(self):
-        SetTestData(self.graph)
-        self.graph.update_graph()
+    def update_status_graph(self, device_id, color, timestamps, status):
+        self.status_tab.graph.update_graph(device_id, color, timestamps, status)
 
-
-def SetTestData(graph_view: graph_view.GraphView):
-    measurements = []
-    temp = 20.000
-    for i in range(100):
-        temp += random.uniform(-3, 3)
-        measurements.append(
-            Measurement(timestamp=datetime.datetime.timestamp(datetime.datetime.now() + datetime.timedelta(hours=i)),
-                        temperature=temp, shutter_status=random.randint(0, 1), light_intensity=0))
-    graph_view.set_unit(1, measurements)
-
-
-if __name__ == "__main__":
-    app = wx.App()
-    frame = wx.Frame(None, title="Test", size=(600, 400))
-    sizer = wx.GridSizer(1, 1, 1, 1)
-    frame.SetSizer(sizer)
-    # frame.Show()
-    graph_tab = GraphTabView(frame)
-    sizer.Add(graph_tab, 1, wx.EXPAND)
-    # graph_tab.SetSize(300,300)
-    frame.Show()
-    app.MainLoop()
+    def update_light_graph(self, device_id, color, timestamps, light):
+        self.light_tab.graph.update_graph(device_id, color, timestamps, light)
