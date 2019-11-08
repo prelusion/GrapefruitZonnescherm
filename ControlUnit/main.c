@@ -55,6 +55,7 @@ void update_history(void)
  */
 void update_temperature(void)
 {
+	show_temperature_digital(get_temperature());
 	set_current_temperature(get_temperature());
 }
 
@@ -64,6 +65,7 @@ void update_temperature(void)
  */	
 void update_light_intensity(void)
 {
+	show_light_intensity_digital(get_light_intensity());
 	set_current_light_intensity(get_light_intensity());
 }
 
@@ -77,6 +79,8 @@ void check_thresholds(void)
 	{
 		return;
 	}
+	printf("Temperature %u \n", get_current_temperature());
+	printf("Light intensity %u \n", get_current_light_intensity());
 	
 	if (get_current_temperature() > get_temperature_threshold() || get_current_light_intensity() > get_light_intensity_threshold())
 	{
@@ -119,10 +123,10 @@ int main(void)
 	// Initialize the timer.
 	timer_init();
 
-	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
-	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
+	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)400); // 4000 * 10ms = 40sec
+	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)300); // 3000 * 10ms = 30sec
 	timer_add_task(&update_history, (uint16_t)200, (uint16_t)6000); // 6000 * 10ms = 60sec
-	timer_add_task(&check_thresholds, (uint16_t)10, (uint16_t)6000); // 6000 * 10ms = 60sec
+	timer_add_task(&check_thresholds, (uint16_t)10, (uint16_t)600); // 6000 * 10ms = 60sec
 	//Initializes the status as a task because the  timer has to be initialized before this works.
 	timer_add_task(&initialize_shutter, (uint16_t)0, (uint16_t)0);
 	timer_start();
