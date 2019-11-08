@@ -70,7 +70,7 @@ def save_json_to_file(filepath, data):
 
 class MainFont(wx.Font):
 
-    def __init__(self, texttype, fontsize=10):
+    def __init__(self, texttype, fontsize=10, bold=False):
         super().__init__()
         self.SetFamily(wx.FONTFAMILY_SWISS)
         if texttype == "title":
@@ -80,4 +80,6 @@ class MainFont(wx.Font):
             else:
                 self.SetPointSize(fontsize)
         elif texttype == "normal":
+            if bold is True:
+                self.MakeBold()
             self.SetPointSize(fontsize)
