@@ -1,0 +1,4 @@
+-unitview delete left top render
+-when device is selected and usb is disconnected, settings panel is not updated (also settingspanel)
+-unitview color not changing when settings applied, when device is deselected the color is updated
+
