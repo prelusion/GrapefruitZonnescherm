@@ -164,7 +164,7 @@ class SettingsViewController(mvc.Controller):
                     wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))
 
             model.set_name(name)
-            model.set_colour(color)
+            model.set_color(color)
             wx.CallAfter(lambda: self.view.show_success("Successfully initialized device"))
         else:
             wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))
@@ -186,5 +186,5 @@ class SettingsViewController(mvc.Controller):
             return
 
         model.set_name(name)
-        model.set_colour(color)
+        model.set_color(color)
         wx.CallAfter(lambda: self.view.show_success("Successfully updated device"))

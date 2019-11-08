@@ -5,7 +5,6 @@ import random
 import wx
 
 from src import const
-from src.measurement import Measurement
 from src.mvc import View
 from src.views import graph_view
 
@@ -27,6 +26,7 @@ class GraphTabView(View):
         self.tab_panel.AddPage(self.status_tab, "Shutter status")
         self.tab_panel.AddPage(self.light_tab, "Light intensity")
 
+        # Icons
         icons = wx.ImageList(16, 16)
         self.tab_panel.AssignImageList(icons)
         icon0 = icons.Add(wx.Bitmap(os.path.join(const.ICONS_DIR, "small_temp.ico"), wx.BITMAP_TYPE_ICO))
@@ -38,13 +38,11 @@ class GraphTabView(View):
 
         self.sizer.Add(self.tab_panel, 1, wx.EXPAND)
 
-    def update_graphs(self, units):
-        self.temps_tab.graph.set_units(units)
-        self.status_tab.graph.set_units(units)
-        self.light_tab.graph.set_units(units)
-        self.temps_tab.graph.update_graph()
-        self.status_tab.graph.update_graph()
-        self.light_tab.graph.update_graph()
+    def update_temperature_graph(self, device_id, name, color, timestamps, temperatures):
+        self.temps_tab.graph.update_graph(device_id, name, color, timestamps, temperatures)
+
+    def clear_trace(self, device_id):
+        self.temps_tab.graph.clear_trace(device_id)
 
 
 class graph_tab(View):
@@ -56,12 +54,13 @@ class graph_tab(View):
         sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
         self.SetBackgroundColour(colour=(0, 255, 0))
         self.graph.SetSize(200, 200)
-        #TODO Remove test data
-        #self.create_test_Data()
+        # TODO Remove test data
+        # self.create_test_Data()
 
     def create_test_Data(self):
         SetTestData(self.graph)
         self.graph.update_graph()
+
 
 def SetTestData(graph_view: graph_view.GraphView):
     timestamps = []

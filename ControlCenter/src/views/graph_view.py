@@ -18,15 +18,19 @@ class GraphMode(enum.Enum):
 class GraphView(mvc.View):
     def __init__(self, parent, graphmode: GraphMode):
         super().__init__(parent)
+        self.parent = parent
         self.graph = Graph(self)
         self.graph_sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(self.graph_sizer)
         self.graph_sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
         self.framecolor = "LightGrey"
         self.graphmode = graphmode
-        self.units = []
+        self.units = {}
+        self.lines = None
+        self.index = 0
         self.traces = []
         self.draw_num = 0
+        self.first_drawn = False
 
         if graphmode == GraphMode.Temp:
             self.graph.set_xlabel("test")
@@ -59,19 +63,58 @@ class GraphView(mvc.View):
             if trace[0] == id:
                 return trace[1]
 
-    def update_graph(self):
-        first_drawn = True
-        for unit in self.units:
-            if len(unit["measurements"]) > 1 and unit["selected"]:
+    def update_graph(self, device_id, name, color, timestamps, measurements):
+        if device_id not in self.units:
+            self.index = 0
+            self.lines = self.graph.plot(ydata=measurements,
+                                         xdata=timestamps,
+                                         ymin=self.y_min,
+                                         ymax=self.y_max,
+                                         ylabel=self.measure_unit,
+                                         side='left',
+                                         linewidth=1,
+                                         labelfontsize=6,
+                                         legendfontsize=6,
+                                         autoscale=self.autoscale,
+                                         framecolor=self.framecolor,
+                                         use_dates=True,
+                                         color=color)
+            self.units[device_id] = self.index
+            self.index += 1
+        else:
+            self.graph.oplot(
+                ydata=measurements,
+                xdata=timestamps,
+                side='left',
+                linewidth=1,
+                color=color)
 
-                if len(self.traces) < 1:
-                    self.graph.plot(ydata=unit["measurements"], xdata = unit["timestamps"], ymin=self.y_min, ymax=self.y_max, ylabel=self.measure_unit,
-                                    side='left', linewidth=1, labelfontsize=6,
-                                    legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor,
-                                    use_dates=True,
-                                    color=unit["color"])
-                else:
-                    self.graph.oplot(ydata=unit["measurementx"], xdata=unit["timestamps"], side='left', linewidth=1, color=unit["color"])
+    def clear_trace(self, device_id):
+        self.graph.clear()
+        self.graph.Update()
+        self.graph.Layout()
+        self.Layout()
+        self.parent.Layout()
+
+        # print(self.lines)
+        # line = self.lines.pop(self.units[device_id])
+        # del line
+        #
+        # print(self.lines)
+        # if self.graph:
+        #     self.graph.pop(self.units[device_id])
+        # first_drawn = True
+        # for unit in self.units:
+        #     if len(unit["measurements"]) > 1 and unit["selected"]:
+        #
+        #         if len(self.traces) < 1:
+        #             self.graph.plot(ydata=unit["measurements"], xdata = unit["timestamps"], ymin=self.y_min, ymax=self.y_max, ylabel=self.measure_unit,
+        #                             side='left', linewidth=1, labelfontsize=6,
+        #                             legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor,
+        #                             use_dates=True,
+        #                             color=unit["color"])
+        #         else:
+        #             self.graph.oplot(ydata=unit["measurementx"], xdata=unit["timestamps"], side='left', linewidth=1, color=unit["color"])
 
     def find_unit(self, id):
         for unit in self.units:
@@ -90,17 +133,15 @@ class GraphView(mvc.View):
         updated_units = []
         for unit in units:
             new_unit = {
-                "id":unit["id"],
-                "selected":unit["selected"],
-                "color":unit["color"],
-                "timestamps":unit["timestamps"],
-                "measurements":unit[values],
-                "tracenum":0
+                "id": unit["id"],
+                "selected": unit["selected"],
+                "color": unit["color"],
+                "timestamps": unit["timestamps"],
+                "measurements": unit[values],
+                "tracenum": 0
             }
             updated_units.append(new_unit)
         self.units = updated_units
-
-
 
     def toggle_visible(self, id):
         unit = self.find_unit(id)
