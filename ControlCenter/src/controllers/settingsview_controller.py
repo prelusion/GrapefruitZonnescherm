@@ -46,7 +46,14 @@ class SettingsViewController(mvc.Controller):
             self.view.set_window_height(window_height)
             self.view.set_temperature_threshold(temperature_threshold)
             self.view.set_light_intensity_threshold(light_threshold)
-            self.enable_settings()
+
+            """ This code ensures that when a user clicks VERY FAST on two control units at the same time, 
+            the application doesnt go into a buggy state. """
+            if len(self.controlunit_manager.get_selected_units()) == 1:
+                self.enable_settings()
+            else:
+                self.disable_settings()
+
             self.view.Update()
 
         def execute_threaded():
@@ -65,7 +72,7 @@ class SettingsViewController(mvc.Controller):
     def disable_settings(self):
         self.view.disable_inputs()
         self.view.set_name("")
-        self.view.set_color("")
+        self.view.set_color(wx.LIGHT_GREY)
         self.view.set_window_height("")
         self.view.set_temperature_threshold("")
         self.view.set_light_intensity_threshold("")
