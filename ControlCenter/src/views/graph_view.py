@@ -25,6 +25,8 @@ class GraphView(mvc.View):
         self.framecolor = "LightGrey"
         self.graphmode = graphmode
         self.units = []
+        self.traces = []
+        self.draw_num = 0
 
         if graphmode == GraphMode.Temp:
             self.graph.set_xlabel("test")
@@ -46,19 +48,30 @@ class GraphView(mvc.View):
             # TODO Set light settings
             self.autoscale = True
 
+    def is_drawn(self, id):
+        for trace in self.traces:
+            if trace[0] == id:
+                return True
+        return False
+
+    def find_trace_by_id(self, id):
+        for trace in self.traces:
+            if trace[0] == id:
+                return trace[1]
+
     def update_graph(self):
         first_drawn = True
         for unit in self.units:
-            if len(unit["measurements"]) < 2 or not unit["selected"]:
-                break
-            if first_drawn:
-                self.graph.plot(ydata=unit["measurements"], xdata = unit["timestamps"], ymin=self.y_min, ymax=self.y_max, ylabel=self.measure_unit,
-                                side='left', linewidth=1, labelfontsize=6,
-                                legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor,
-                                use_dates=True,
-                                color=unit["color"])
-            else:
-                self.graph.oplot(ydata=unit["measurementx"], xdata=unit["timestamps"], side='left', linewidth=1, color=unit["color"])
+            if len(unit["measurements"]) > 1 and unit["selected"]:
+
+                if len(self.traces) < 1:
+                    self.graph.plot(ydata=unit["measurements"], xdata = unit["timestamps"], ymin=self.y_min, ymax=self.y_max, ylabel=self.measure_unit,
+                                    side='left', linewidth=1, labelfontsize=6,
+                                    legendfontsize=6, autoscale=self.autoscale, framecolor=self.framecolor,
+                                    use_dates=True,
+                                    color=unit["color"])
+                else:
+                    self.graph.oplot(ydata=unit["measurementx"], xdata=unit["timestamps"], side='left', linewidth=1, color=unit["color"])
 
     def find_unit(self, id):
         for unit in self.units:
@@ -66,7 +79,6 @@ class GraphView(mvc.View):
                 return unit
 
     def set_units(self, units):
-
         values = ""
         if self.graphmode == GraphMode.Temp:
             values = "temperatures"
@@ -82,7 +94,8 @@ class GraphView(mvc.View):
                 "selected":unit["selected"],
                 "color":unit["color"],
                 "timestamps":unit["timestamps"],
-                "measurements":unit[values]
+                "measurements":unit[values],
+                "tracenum":0
             }
             updated_units.append(new_unit)
         self.units = updated_units
