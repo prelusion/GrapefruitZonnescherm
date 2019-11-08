@@ -188,7 +188,7 @@ class ControlUnitCommunication:
 
         try:
             return Measurement(
-                time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                time.time(), int(temp),
                 int(shutter), int(light))
         except ValueError:
             return
@@ -237,7 +237,7 @@ class ControlUnitCommunication:
                 temp, light, shutter = value.split(",")
 
                 measurement = Measurement(
-                    time.time() - ((i + 1) * 60), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                    time.time() - ((i + 1) * 60), int(temp),
                     int(shutter), int(light))
 
                 measurements.append(measurement)
