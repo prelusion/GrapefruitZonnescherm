@@ -33,12 +33,8 @@ class GraphViewController(mvc.Controller):
             self.update_graph(model, model.get_measurements())
 
     def on_controlunit_selected_change(self, model, selected):
-        pass
-        # def execute_threaded():
-
         with threading.Lock():
             logger.info("[THREADING] enter lock")
-            print("RE_RENDER UNITS IN GRAPH")
             if not selected:
                 self.view.remove_device(model.get_id())
 
@@ -53,19 +49,13 @@ class GraphViewController(mvc.Controller):
                     logger.exception(e)
             # wx.CallAfter(model.done_selecting)
             wx.CallAfter(self.view.Layout)
-            print("RE_RENDER UNITS IN GRAPH DONE")
         logger.info("[THREADING] exit lock")
-
-        # threading.Thread(target=execute_threaded, daemon=True).start()
 
     def on_controlunit_measurement_change(self, model, data):
         with threading.Lock():
             logger.info("[THREADING] enter lock")
             if model.get_selected():
-                print("UPDATE MEASUREMENT IN GRAPH")
                 wx.CallAfter(lambda: self.update_graph(model, data))
-
-                print("UPDATE MEASUREMENT IN GRAPH DONE")
 
         logger.info("[THREADING] exit lock")
 

@@ -58,9 +58,7 @@ class GraphView(mvc.View):
             self.autoscale = True
 
     def update_graph(self, device_id, color, timestamps, measurements):
-        print("PLOTTING GRAPH START")
-        if  device_id not in self.units:
-            print("NORMAL PLOT")
+        if device_id not in self.units:
             self.index = 0
             self.lines = self.graph.plot(ydata=measurements,
                                          xdata=timestamps,
@@ -78,18 +76,13 @@ class GraphView(mvc.View):
             self.units[device_id] = self.index
             self.index += 1
         else:
-            print("O PLOT")
             self.graph.oplot(
                 ydata=measurements,
                 xdata=timestamps,
                 side='left',
                 linewidth=1,
                 color=color)
-        print("PLOTTING GRAPH DONE")
+
     def remove_device(self, device_id):
-        print("CLEAR GRAPH START")
         self.graph.clear()
         self.graph.draw()
-        print("CLEAR GRAPH DONE")
-
-        # self.update_graph()
