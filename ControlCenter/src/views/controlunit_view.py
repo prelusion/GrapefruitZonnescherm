@@ -21,7 +21,7 @@ class ControlUnitView(wx.Panel):
     COLOR_INACTIVE = (200, 200, 200)
 
     def __init__(self, parent):
-        super().__init__(parent, size=(500, 120))
+        super().__init__(parent, size=(500, 130))
         self.parent = parent
 
         self.boxes = {
@@ -55,11 +55,11 @@ class ControlUnitView(wx.Panel):
             if name is not "color":
                 infolabel = wx.StaticText(panel, wx.ID_ANY, label="Info label", style=wx.ALIGN_CENTER)
                 infolabel.SetLabelText(name)
-                font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.NORMAL, wx.BOLD)
+                font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.BOLD)
                 # font.SetFamily(wx.FONTFAMILY)
                 infolabel.SetFont(font)
                 datalabel = wx.StaticText(panel, wx.ID_ANY, label="Data label", style=wx.ALIGN_CENTER)
-                font = wx.Font(10, wx.FONTFAMILY_SWISS, wx.NORMAL, wx.NORMAL)
+                font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
                 datalabel.SetFont(font)
 
                 # Create sizer for labels
