@@ -17,7 +17,8 @@ class GraphMode(enum.Enum):
 
 class Graph(wxmplot.PlotPanel):
     def __init__(self, parent):
-        super().__init__(parent, pos=(150, 150), messenger=output, show_config_popup=False)
+        super().__init__(parent, pos=(150, 150), messenger=lambda text, panel: None,
+                         show_config_popup=False)
         self.Show()
 
 
@@ -31,7 +32,7 @@ class GraphView(mvc.View):
         self.SetSizer(self.graph_sizer)
         self.graph_sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
 
-        self.framecolor = wx.LIGHT_GREY
+        self.framecolor = "LightGrey"
         self.graphmode = graphmode
         self.units = {}
         self.lines = None
@@ -89,6 +90,3 @@ class GraphView(mvc.View):
         self.graph.Layout()
         self.Layout()
         self.parent.Layout()
-
-
-
