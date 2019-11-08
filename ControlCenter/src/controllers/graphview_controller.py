@@ -1,8 +1,9 @@
 import copy
 import logging
+import threading
+
 from src import mvc
 from src.views.graphtab_view import GraphTabView
-
 
 logger = logging.getLogger(__name__)
 
@@ -18,46 +19,54 @@ class GraphViewController(mvc.Controller):
         self.controlunit_manager.units.add_callback(self.on_controlunits_change)
         self.units = []
 
+        self._unit_changing = False
+
     def on_controlunits_change(self, model, data):
         for port, unit in data.items():
             comm, model = unit
             model.selected.add_callback(self.on_controlunit_selected_change)
 
     def redraw_all_units(self):
-        units = self.controlunit_manager.get_selected_units()
-
-        for unit in units:
+        for unit in self.controlunit_manager.get_selected_units():
             comm, model = unit
             self.update_graph(model, model.get_measurements())
 
     def on_controlunit_selected_change(self, model, selected):
-        if selected:
-            model.measurements.add_callback(self.on_controlunit_measurement_change)
-            model.color.add_callback(self.on_controlunit_color_change)
-        else:
-            try:
-                model.measurements.del_callback(self.on_controlunit_measurement_change)
-                model.color.del_callback(self.on_controlunit_color_change)
-            except KeyError as e:
-                logger.exception(e)
 
-            self.view.remove_device(model.get_id())
-            self.redraw_all_units()
+        def execute_threaded():
+            with threading.Lock():
+                if not selected:
+                    self.view.remove_device(model.get_id())
+
+                self.redraw_all_units()
+
+                if selected:
+                    model.measurements.add_callback(self.on_controlunit_measurement_change)
+                else:
+                    try:
+                        model.measurements.del_callback(self.on_controlunit_measurement_change)
+                    except KeyError as e:
+                        logger.exception(e)
+
+        threading.Thread(target=execute_threaded, daemon=True).start()
 
     def on_controlunit_measurement_change(self, model, data):
-        if model.get_selected():
-            self.update_graph(model, data)
+        with threading.Lock():
+            if model.get_selected():
+                self.update_graph(model, data)
 
-    def on_controlunit_color_change(self, model, data):
-        pass
-
-    def update_graph(self, model, data):
-        measurements = copy.deepcopy(
-            data)  # copy otherwise we get RuntimeError if new measurements are added during iteration
+    def update_graph(self, model, measurements):
         timestamps = list(map(lambda x: x.timestamp, measurements))
         temperatures = list(map(lambda x: x.temperature, measurements))
         shutter_status = list(map(lambda x: x.shutter_status, measurements))
         light_intensity = list(map(lambda x: x.light_intensity, measurements))
+
+        if not temperatures:
+            temperatures.append(0)
+        if not shutter_status:
+            shutter_status.append(0)
+        if not light_intensity:
+            light_intensity.append(0)
 
         self.view.update_temperature_graph(model.get_id(),
                                            model.get_color(),
