@@ -59,7 +59,7 @@ class SettingsViewController(mvc.Controller):
                 window_height = str(comm.get_window_height())
                 temperature_threshold = comm.get_temperature_threshold()
                 light_threshold = comm.get_light_intensity_threshold()
-                color = model.get_colour()
+                color = model.get_color()
                 wx.CallAfter(lambda: update_view(window_height, temperature_threshold, light_threshold, color))
             except pyserial.SerialException:
                 logger.warning("Serial error")
@@ -164,7 +164,7 @@ class SettingsViewController(mvc.Controller):
                     wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))
 
             model.set_name(name)
-            model.set_colour(color)
+            model.set_color(color)
             wx.CallAfter(lambda: self.view.show_success("Successfully initialized device"))
         else:
             wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))
@@ -186,5 +186,5 @@ class SettingsViewController(mvc.Controller):
             return
 
         model.set_name(name)
-        model.set_colour(color)
+        model.set_color(color)
         wx.CallAfter(lambda: self.view.show_success("Successfully updated device"))
