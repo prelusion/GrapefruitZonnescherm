@@ -52,3 +52,9 @@ class GraphTabView(View):
 
     def remove_device(self, device_id):
         self.temps_tab.graph.remove_device(device_id)
+    def update_status_graph(self, device_id, name, color, timestamps, status):
+        self.status_tab.graph.update_graph(device_id, name, color, timestamps, status)
+
+    def update_light_graph(self, device_id, name, color, timestamps, light):
+        self.light_tab.graph.update_graph(device_id, name, color, timestamps, light)
+

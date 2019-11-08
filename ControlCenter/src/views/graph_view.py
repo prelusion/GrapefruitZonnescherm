@@ -36,19 +36,21 @@ class GraphView(mvc.View):
         self.index = 0
 
         if graphmode == GraphMode.Temp:
-            self.graph.set_xlabel("test")
+            self.graph.set_xlabel("Time")
             self.y_min = -200
             self.y_max = 200
             self.measure_unit = "Temperature in °C"
             self.autoscale = True
 
         if graphmode == GraphMode.Status:
+            self.graph.set_xlabel("Time")
             self.y_min = 0
             self.y_max = 1
             self.measure_unit = "Shutter status: Up or Down"
             self.autoscale = False
 
         if graphmode == GraphMode.Light:
+            self.graph.set_xlabel("Time")
             self.y_min = 0
             self.y_max = 5000
             self.measure_unit = "Light intensity in #TODO"

@@ -32,6 +32,18 @@ class GraphViewController(mvc.Controller):
     def on_controlunit_measurement_change(self, model, data):
         self.update_graph(model, data)
 
+        self.view.update_status_graph(model.get_id(),
+                                           model.get_name(),
+                                           model.get_color(),
+                                           timestamps,
+                                           shutter_status)
+
+        self.view.update_light_graph(model.get_id(),
+                                           model.get_name(),
+                                           model.get_color(),
+                                           timestamps,
+                                           light_intensity)
+
     def on_controlunit_color_change(self, model, data):
         pass
 
