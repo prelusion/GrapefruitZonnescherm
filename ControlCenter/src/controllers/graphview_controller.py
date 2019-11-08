@@ -27,27 +27,26 @@ class GraphViewController(mvc.Controller):
         else:
             model.measurements.del_callback(self.on_controlunit_measurement_change)
             model.color.del_callback(self.on_controlunit_color_change)
-            self.view.clear_trace(model.get_id())
+            self.view.remove_device(model.get_id())
 
     def on_controlunit_measurement_change(self, model, data):
-        data = copy.deepcopy(data)  # copy otherwise we get RuntimeError if new measurements are added during iteration
-
-        timestamps = list(map(lambda x: x.timestamp, data))
-        temperatures = list(map(lambda x: x.temperature, data))
-        shutter_status = list(map(lambda x: x.shutter_status, data))
-        light_intensity = list(map(lambda x: x.light_intensity, data))
-
-        self.view.update_temperature_graph(model.get_id(),
-                                           model.get_name(),
-                                           model.get_color(),
-                                           timestamps,
-                                           temperatures)
+        self.update_graph(model, data)
 
     def on_controlunit_color_change(self, model, data):
         pass
 
+    def update_graph(self, model, data=None):
+        if not data:
+            data = model.get_measurements()
 
-# [Measurement(), Measurment()]
-# [100, 123, 99, 32]
+        measurements = copy.deepcopy(
+            data)  # copy otherwise we get RuntimeError if new measurements are added during iteration
+        timestamps = list(map(lambda x: x.timestamp, measurements))
+        temperatures = list(map(lambda x: x.temperature, measurements))
+        shutter_status = list(map(lambda x: x.shutter_status, measurements))
+        light_intensity = list(map(lambda x: x.light_intensity, measurements))
 
-
+        self.view.update_temperature_graph(model.get_id(),
+                                           model.get_color(),
+                                           timestamps,
+                                           temperatures)
