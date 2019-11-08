@@ -55,11 +55,11 @@ class ControlUnitModel(mvc.Model):
             self.set_name(name[0][0])
         return self.name.get()
 
-    def set_colour(self, colour):
-        self.color.set(colour)
-        db.update(db.TABLE_CONTROL_UNITS, f"color = '{colour}'", f"device_id = {self.get_id()}")
+    def set_color(self, color):
+        self.color.set(color)
+        db.update(db.TABLE_CONTROL_UNITS, f"color = '{color}'", f"device_id = {self.get_id()}")
 
-    def get_colour(self):
+    def get_color(self):
         color = db.select_columns(db.TABLE_CONTROL_UNITS, "color", f"device_id = {self.get_id()}")
         if color and len(color) == 1:
             color = color[0][0]
@@ -98,12 +98,14 @@ class ControlUnitModel(mvc.Model):
         return self.light_intensity.get()
 
     def add_measurement(self, measurement):
-        measurements = self.measurements.get()
-        if len(measurements) > self.MEMORY_COUNT_THRESHOLD:
-            measurements.pop(0)
-        measurements.append(measurement)
-        self.measurements.set(measurements)
         self._insert_measurement(measurement)
+        self._fetch_measurements()
+        # measurements = self.measurements.get()
+        # if len(measurements) > self.MEMORY_COUNT_THRESHOLD:
+        #     measurements.pop(0)
+        # measurements.append(measurement)
+        # self.measurements.set(measurements)
+        #
 
     def _insert_measurement(self, measurement):
         db.insert(db.TABLE_MEASUREMENTS,
@@ -112,13 +114,13 @@ class ControlUnitModel(mvc.Model):
 
     def get_measurements(self):
         self._fetch_measurements()
-        return self.measurements.get()
+        return self.measurements.get().copy()
 
     def _fetch_measurements(self):
         measurements = db.select_columns(db.TABLE_MEASUREMENTS,
                                          "temperature, light_intensity, shutter_status, timestamp",
                                          f"device_id = {self.get_id()}",
-                                         orderby="timestamp ASC",
+                                         orderby="timestamp DESC",
                                          size=self.MEMORY_COUNT_THRESHOLD)
 
         def convert(measurement):
