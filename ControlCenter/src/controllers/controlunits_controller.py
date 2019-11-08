@@ -79,7 +79,7 @@ class ControlUnitsController(mvc.Controller):
         model.temperature.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_temperature(value)))
         model.shutter_status.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_shutter_status(value)))
         model.online.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_connection(value)))
-        # model.color.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_device_color(value)))
+        model.color.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_device_color(value)))
         model.manual.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_manual(value)))
         model.selected.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_selected(value)))
 
@@ -89,8 +89,11 @@ class ControlUnitsController(mvc.Controller):
         if not model.get_initialized():
             wx.MessageBox("Please select your new device and go to the settings tab",
                           'New device detected',
-                          wx.OK | wx. ICON_INFORMATION)
+                          wx.OK | wx.ICON_INFORMATION)
 
     def on_unit_click(self, model, view):
         view.set_selected(True) if not model.get_selected() else view.set_selected(False)
         model.set_selected(not model.get_selected())
+        measurements = model.get_measurements()
+
+        print("measurements for unit:", len(measurements))

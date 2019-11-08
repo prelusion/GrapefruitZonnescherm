@@ -67,38 +67,39 @@ class GraphViewController(mvc.Controller):
         pass
 
     def on_controlunit_selected_change(self, model, data):
-        timestamps = []
-        temps = []
-        status = []
-        light = []
-
-        for measurement in data:
-            timestamps.append(int(measurement.timestamp))
-            temps.append(measurement.temperature)
-            status.append(measurement.shutter_status)
-            light.append(measurement.light_intensity)
-
-        _unit = None
-
-        for unit in self.units:
-            if unit["id"] == model.get_id():
-                for i in range(len(timestamps)):
-                    unit["selected"] = model.get_selected()
-                    unit["color"] = model.get_color()
-                    unit["timestamps"].append(timestamps[i])
-                    unit["temperatures"].append(temps[i])
-                    unit["shutter_status"].append(status[i])
-                    unit["light_intensity"].append(light[i])
-        if _unit is None:
-            _unit = {
-                "id": model.get_id(),
-                "selected": model.get_selected(),
-                "color": model.get_color(),
-                "timestamps": timestamps,
-                "temperatures": temps,
-                "shutter_status": status,
-                "light_intensity": light
-            }
-            self.units.append(_unit)
-
-        self.view.update_graphs(self.units)
+        pass
+        # timestamps = []
+        # temps = []
+        # status = []
+        # light = []
+        #
+        # for measurement in data:
+        #     timestamps.append(int(measurement.timestamp))
+        #     temps.append(measurement.temperature)
+        #     status.append(measurement.shutter_status)
+        #     light.append(measurement.light_intensity)
+        #
+        # _unit = None
+        #
+        # for unit in self.units:
+        #     if unit["id"] == model.get_id():
+        #         for i in range(len(timestamps)):
+        #             unit["selected"] = model.get_selected()
+        #             unit["color"] = model.get_color()
+        #             unit["timestamps"].append(timestamps[i])
+        #             unit["temperatures"].append(temps[i])
+        #             unit["shutter_status"].append(status[i])
+        #             unit["light_intensity"].append(light[i])
+        # if _unit is None:
+        #     _unit = {
+        #         "id": model.get_id(),
+        #         "selected": model.get_selected(),
+        #         "color": model.get_color(),
+        #         "timestamps": timestamps,
+        #         "temperatures": temps,
+        #         "shutter_status": status,
+        #         "light_intensity": light
+        #     }
+        #     self.units.append(_unit)
+        #
+        # self.view.update_graphs(self.units)

@@ -1,7 +1,6 @@
 import wx
 
 from src import widgets
-from src.views.tab_view import TabView
 from src.controllers.tabview_controller import TabviewController
 
 

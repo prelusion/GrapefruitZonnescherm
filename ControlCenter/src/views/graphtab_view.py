@@ -4,10 +4,10 @@ import random
 
 import wx
 
-from src.controlunit import Measurement
+from src import const
+from src.measurement import Measurement
 from src.mvc import View
 from src.views import graph_view
-from src import const
 
 
 class GraphTabView(View):

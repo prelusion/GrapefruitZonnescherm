@@ -1,6 +1,9 @@
-from src import mvc
-from src import db
 import wx
+
+from src import db
+from src import mvc
+from src import util
+from src.measurement import Measurement
 
 
 class ControlUnitModel(mvc.Model):
@@ -16,7 +19,7 @@ class ControlUnitModel(mvc.Model):
         self.name = mvc.Observable(self, "uninitialized")
         self.online = mvc.Observable(self, True)
         self.manual = mvc.Observable(self, False)
-        self.color = mvc.Observable(self, wx.RED)
+        self.color = mvc.Observable(self, wx.NullColour)
         self.measurements = mvc.Observable(self, [])
         self.shutter_status = mvc.Observable(self, None)
         self.temperature = mvc.Observable(self, 0)
@@ -60,7 +63,8 @@ class ControlUnitModel(mvc.Model):
         color = db.select_columns(db.TABLE_CONTROL_UNITS, "color", f"device_id = {self.get_id()}")
         if color and len(color) == 1:
             color = color[0][0]
-            if color: self.set_color(color)
+            if color:
+                self.color.set(util.deserialize_color(color))
         return self.color.get()
 
     def set_online(self, boolean):
@@ -99,9 +103,33 @@ class ControlUnitModel(mvc.Model):
             measurements.pop(0)
         measurements.append(measurement)
         self.measurements.set(measurements)
+        self._insert_measurement(measurement)
+
+    def _insert_measurement(self, measurement):
+        db.insert(db.TABLE_MEASUREMENTS,
+                  "(device_id, temperature, light_intensity, shutter_status, from_history, timestamp)",
+                  f"({self.get_id()}, {measurement.temperature}, {measurement.light_intensity}, {measurement.shutter_status}, 0, {measurement.timestamp})")
 
     def get_measurements(self):
-        return self.measurements
+        self._fetch_measurements()
+        return self.measurements.get()
+
+    def _fetch_measurements(self):
+        measurements = db.select_columns(db.TABLE_MEASUREMENTS,
+                                         "temperature, light_intensity, shutter_status, timestamp",
+                                         f"device_id = {self.get_id()}",
+                                         orderby="timestamp ASC",
+                                         size=self.MEMORY_COUNT_THRESHOLD)
+
+        def convert(measurement):
+            temperature, light_intensity, shutter_status, timestamp = measurement
+            return Measurement(timestamp, temperature, shutter_status, light_intensity)
+
+        self.measurements.set(list(map(convert, measurements)))
+
+    def add_measurements(self, measurements):
+        [self._insert_measurement(measurement) for measurement in measurements]
+        self._fetch_measurements()
 
     def set_selected(self, value):
         self.selected.set(value)

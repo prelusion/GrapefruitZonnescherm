@@ -21,7 +21,7 @@ class ControlUnitView(wx.Panel):
     COLOR_INACTIVE = (200, 200, 200)
 
     def __init__(self, parent):
-        super().__init__(parent, size=(500, 120))
+        super().__init__(parent, size=(500, 130))
         self.parent = parent
 
         self.boxes = {
@@ -55,16 +55,17 @@ class ControlUnitView(wx.Panel):
             if name is not "color":
                 infolabel = wx.StaticText(panel, wx.ID_ANY, label="Info label", style=wx.ALIGN_CENTER)
                 infolabel.SetLabelText(name)
-                font = wx.Font(12, wx.DECORATIVE, wx.NORMAL, wx.BOLD)
+                font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.BOLD)
+                # font.SetFamily(wx.FONTFAMILY)
                 infolabel.SetFont(font)
                 datalabel = wx.StaticText(panel, wx.ID_ANY, label="Data label", style=wx.ALIGN_CENTER)
-                font = wx.Font(10, wx.DECORATIVE, wx.NORMAL, wx.NORMAL)
+                font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
                 datalabel.SetFont(font)
 
                 # Create sizer for labels
                 main_sizer = wx.GridSizer(2, 1, 0, 0)
-                main_sizer.Add(infolabel, 1, wx.EXPAND | wx.ALL)
-                main_sizer.Add(datalabel, 1, wx.EXPAND | wx.ALL)
+                main_sizer.Add(infolabel, 1, wx.EXPAND | wx.ALL, 5)
+                main_sizer.Add(datalabel, 1, wx.EXPAND | wx.ALL, 5)
 
                 # set sizer for the main panel
                 panel.SetSizer(main_sizer)
@@ -101,9 +102,9 @@ class ControlUnitView(wx.Panel):
         panel.SetBackgroundColour(value)
         self._refresh(panel)
 
-    def set_connection(self, value):
+    def set_connection(self, boolean):
         box = self.boxes["connection"]
-        box.label.SetLabelText(str(value))
+        box.label.SetLabelText("online" if boolean else "offline")
         self._refresh(box.panel)
 
     def set_manual(self, boolean):
@@ -128,4 +129,3 @@ class ControlUnitView(wx.Panel):
 
     def set_on_click_callback(self, callback):
         self._select_callback = callback
-
