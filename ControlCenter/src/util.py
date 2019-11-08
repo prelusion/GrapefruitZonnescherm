@@ -75,7 +75,7 @@ class MainFont(wx.Font):
         self.SetFamily(wx.FONTFAMILY_SWISS)
         if texttype == "title":
             self.MakeBold()
-            if fontsize is None:
+            if fontsize is 10:
                 self.SetPointSize(12)
             else:
                 self.SetPointSize(fontsize)
