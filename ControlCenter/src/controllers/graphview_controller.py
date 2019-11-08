@@ -1,6 +1,8 @@
 import logging
 import threading
 
+import wx
+
 from src import mvc
 from src.views.graphtab_view import GraphTabView
 
@@ -34,6 +36,8 @@ class GraphViewController(mvc.Controller):
 
         def execute_threaded():
             with threading.Lock():
+                logger.info("[THREADING] enter lock")
+                print("RE_RENDER UNITS IN GRAPH")
                 if not selected:
                     self.view.remove_device(model.get_id())
 
@@ -46,13 +50,20 @@ class GraphViewController(mvc.Controller):
                         model.measurements.del_callback(self.on_controlunit_measurement_change)
                     except KeyError as e:
                         logger.exception(e)
+                wx.CallAfter(model.done_selecting)
+                print("RE_RENDER UNITS IN GRAPH DONE")
+            logger.info("[THREADING] exit lock")
 
         threading.Thread(target=execute_threaded, daemon=True).start()
 
     def on_controlunit_measurement_change(self, model, data):
         with threading.Lock():
+            logger.info("[THREADING] enter lock")
             if model.get_selected():
+                print("UPDATE MEASUREMENT IN GRAPH")
                 self.update_graph(model, data)
+                print("UPDATE MEASUREMENT IN GRAPH DONE")
+        logger.info("[THREADING] exit lock")
 
     def update_graph(self, model, measurements):
         timestamps = list(map(lambda x: x.timestamp, measurements))
@@ -62,9 +73,12 @@ class GraphViewController(mvc.Controller):
 
         if not temperatures:
             temperatures.append(0)
+            temperatures.append(0)
         if not shutter_status:
             shutter_status.append(0)
+            shutter_status.append(0)
         if not light_intensity:
+            light_intensity.append(0)
             light_intensity.append(0)
 
         self.view.update_temperature_graph(model.get_id(),
