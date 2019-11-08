@@ -20,6 +20,13 @@ class GraphViewController(mvc.Controller):
             comm, model = unit
             model.selected.add_callback(self.on_controlunit_selected_change)
 
+    def redraw_all_units(self):
+        units = self.controlunit_manager.get_selected_units()
+
+        for unit in units:
+            comm, model = unit
+            self.update_graph(model, model.get_measurements())
+
     def on_controlunit_selected_change(self, model, selected):
         if selected:
             model.measurements.add_callback(self.on_controlunit_measurement_change)
@@ -28,21 +35,10 @@ class GraphViewController(mvc.Controller):
             model.measurements.del_callback(self.on_controlunit_measurement_change)
             model.color.del_callback(self.on_controlunit_color_change)
             self.view.remove_device(model.get_id())
+            self.redraw_all_units()
 
     def on_controlunit_measurement_change(self, model, data):
         self.update_graph(model, data)
-
-        self.view.update_status_graph(model.get_id(),
-                                           model.get_name(),
-                                           model.get_color(),
-                                           timestamps,
-                                           shutter_status)
-
-        self.view.update_light_graph(model.get_id(),
-                                           model.get_name(),
-                                           model.get_color(),
-                                           timestamps,
-                                           light_intensity)
 
     def on_controlunit_color_change(self, model, data):
         pass
@@ -62,3 +58,13 @@ class GraphViewController(mvc.Controller):
                                            model.get_color(),
                                            timestamps,
                                            temperatures)
+
+        self.view.update_status_graph(model.get_id(),
+                                      model.get_color(),
+                                      timestamps,
+                                      shutter_status)
+
+        self.view.update_light_graph(model.get_id(),
+                                     model.get_color(),
+                                     timestamps,
+                                     light_intensity)

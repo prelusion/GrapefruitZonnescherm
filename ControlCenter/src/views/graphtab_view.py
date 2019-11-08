@@ -48,13 +48,13 @@ class GraphTabView(View):
         self.sizer.Add(self.tab_panel, 1, wx.EXPAND)
 
     def update_temperature_graph(self, device_id, color, timestamps, temperatures):
-        self.temps_tab.graph.update_graph(color, timestamps, temperatures, device_id=device_id)
+        self.temps_tab.graph.update_graph(device_id, color, timestamps, temperatures)
 
     def remove_device(self, device_id):
         self.temps_tab.graph.remove_device(device_id)
-    def update_status_graph(self, device_id, name, color, timestamps, status):
-        self.status_tab.graph.update_graph(device_id, name, color, timestamps, status)
 
-    def update_light_graph(self, device_id, name, color, timestamps, light):
-        self.light_tab.graph.update_graph(device_id, name, color, timestamps, light)
+    def update_status_graph(self, device_id, color, timestamps, status):
+        self.status_tab.graph.update_graph(device_id, color, timestamps, status)
 
+    def update_light_graph(self, device_id, color, timestamps, light):
+        self.light_tab.graph.update_graph(device_id, color, timestamps, light)
