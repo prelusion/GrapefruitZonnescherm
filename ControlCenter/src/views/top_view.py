@@ -2,6 +2,7 @@ import wx
 
 from src import widgets
 from src.controllers.tabview_controller import TabviewController
+from src import util
 
 
 class TopView(wx.Panel):
@@ -18,7 +19,7 @@ class TopView(wx.Panel):
         left_panel.SetSizer(left_panel_sizer)
 
         label = widgets.CenteredLabel(left_panel, "Devices")
-        label.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
+        label.SetFont(util.MainFont("title", 14))
         left_panel_sizer.Add(label, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         # Right panel
