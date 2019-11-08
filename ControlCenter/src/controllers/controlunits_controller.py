@@ -94,6 +94,3 @@ class ControlUnitsController(mvc.Controller):
     def on_unit_click(self, model, view):
         view.set_selected(True) if not model.get_selected() else view.set_selected(False)
         model.set_selected(not model.get_selected())
-        measurements = model.get_measurements()
-
-        print("measurements for unit:", len(measurements))

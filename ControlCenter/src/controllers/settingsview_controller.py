@@ -31,19 +31,14 @@ class SettingsViewController(mvc.Controller):
             model.selected.add_callback(self.on_controlunit_selected_change)
 
     def on_controlunit_selected_change(self, model, data):
+        self.disable_settings()
         units = self.controlunit_manager.get_selected_units()
-        if len(units) > 1:
-            self.disable_settings()
-        elif len(units) < 1:
-            self.disable_settings()
-        elif len(units) == 1:
+        if len(units) == 1:
             self.init_settings_panel(units[0])
-            self.enable_settings()
-        else:
-            self.disable_settings()
 
     def init_settings_panel(self, unit):
         comm, model = unit
+        print("init settings panel device with id:", model.get_id(), "and name:", model.get_name())
 
         def update_view(window_height, temperature_threshold, light_threshold, color):
             self.view.set_name(model.get_name())
@@ -51,7 +46,14 @@ class SettingsViewController(mvc.Controller):
             self.view.set_window_height(window_height)
             self.view.set_temperature_threshold(temperature_threshold)
             self.view.set_light_intensity_threshold(light_threshold)
-            self.enable_settings()
+
+            """ This code ensures that when a user clicks VERY FAST on two control units at the same time, 
+            the application doesnt go into a buggy state. """
+            if len(self.controlunit_manager.get_selected_units()) == 1:
+                self.enable_settings()
+            else:
+                self.disable_settings()
+
             self.view.Update()
 
         def execute_threaded():
@@ -70,7 +72,7 @@ class SettingsViewController(mvc.Controller):
     def disable_settings(self):
         self.view.disable_inputs()
         self.view.set_name("")
-        self.view.set_color("")
+        self.view.set_color(wx.LIGHT_GREY)
         self.view.set_window_height("")
         self.view.set_temperature_threshold("")
         self.view.set_light_intensity_threshold("")

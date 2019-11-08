@@ -62,6 +62,7 @@ class SettingsView(mvc.View):
             settings_sizer.Add(settings_label)
             if k == "Set device color: ":
                 input_type = wx.ColourPickerCtrl(settings_panel)
+                input_type.SetColour(wx.LIGHT_GREY)
             else:
                 input_type = wx.TextCtrl(settings_panel)
             self.inputs[k] = input_type
