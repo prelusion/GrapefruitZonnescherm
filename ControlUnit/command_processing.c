@@ -26,7 +26,7 @@ Command* get_available_commands()
 	strcpy(available_commands[0].name, "PING");
 	available_commands[0].function = &cmd_ping;
 	available_commands[0].parameters_required = 0;
-	available_commands[1].init_required = 0;
+	available_commands[0].init_required = 0;
 	
 	strcpy(available_commands[1].name, "INITIALIZE");
 	available_commands[1].function = &cmd_initialize;

@@ -96,7 +96,6 @@ void digital_display()
 	//Checks if a new button is pressed. if so set the new pressed button.
 	uint8_t toggle_status = check_new_pressed_buttons();
 	set_toggled_buttons(toggle_status);
-	printf("toggle status %u ", toggle_status);
 	switch(toggle_status)
 	{
 		case 0b00000001:
@@ -147,7 +146,7 @@ int main(void)
 	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
 	timer_add_task(&update_history, (uint16_t)200, (uint16_t)6000); // 6000 * 10ms = 60sec
 	timer_add_task(&check_thresholds, (uint16_t)10, (uint16_t)2000); // 6000 * 10ms = 60sec
-	timer_add_task(&digital_display, (uint16_t)10, (uint16_t)100); // 100 * 10ms = 1sec
+	timer_add_task(&digital_display, (uint16_t)10, (uint16_t)200); // 200 * 10ms = 2sec
 	
 	//Initializes the status as a task because the  timer has to be initialized before this works.
 	timer_add_task(&initialize_shutter, (uint16_t)0, (uint16_t)0);
