@@ -1,7 +1,10 @@
 import copy
-
+import logging
 from src import mvc
 from src.views.graphtab_view import GraphTabView
+
+
+logger = logging.getLogger(__name__)
 
 
 class GraphViewController(mvc.Controller):
@@ -32,13 +35,18 @@ class GraphViewController(mvc.Controller):
             model.measurements.add_callback(self.on_controlunit_measurement_change)
             model.color.add_callback(self.on_controlunit_color_change)
         else:
-            model.measurements.del_callback(self.on_controlunit_measurement_change)
-            model.color.del_callback(self.on_controlunit_color_change)
+            try:
+                model.measurements.del_callback(self.on_controlunit_measurement_change)
+                model.color.del_callback(self.on_controlunit_color_change)
+            except KeyError as e:
+                logger.exception(e)
+
             self.view.remove_device(model.get_id())
             self.redraw_all_units()
 
     def on_controlunit_measurement_change(self, model, data):
-        self.update_graph(model, data)
+        if model.get_selected():
+            self.update_graph(model, data)
 
     def on_controlunit_color_change(self, model, data):
         pass
