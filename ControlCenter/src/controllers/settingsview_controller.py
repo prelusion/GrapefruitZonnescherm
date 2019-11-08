@@ -38,7 +38,6 @@ class SettingsViewController(mvc.Controller):
 
     def init_settings_panel(self, unit):
         comm, model = unit
-        print("init settings panel device with id:", model.get_id(), "and name:", model.get_name())
 
         def update_view(window_height, temperature_threshold, light_threshold, color):
             self.view.set_name(model.get_name())

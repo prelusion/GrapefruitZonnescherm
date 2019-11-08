@@ -26,6 +26,8 @@ class ControlUnitModel(mvc.Model):
         self.light_intensity = mvc.Observable(self, 0)
         self.selected = mvc.Observable(self, False)
 
+        self._selecting = False
+
     def set_initialized(self, boolean):
         self.initialized = boolean
 
@@ -100,12 +102,6 @@ class ControlUnitModel(mvc.Model):
     def add_measurement(self, measurement):
         self._insert_measurement(measurement)
         self._fetch_measurements()
-        # measurements = self.measurements.get()
-        # if len(measurements) > self.MEMORY_COUNT_THRESHOLD:
-        #     measurements.pop(0)
-        # measurements.append(measurement)
-        # self.measurements.set(measurements)
-        #
 
     def _insert_measurement(self, measurement):
         db.insert(db.TABLE_MEASUREMENTS,
@@ -135,6 +131,13 @@ class ControlUnitModel(mvc.Model):
 
     def set_selected(self, value):
         self.selected.set(value)
+        self._selecting = True
+
+    def is_selecting(self):
+        return self._selecting
+
+    def done_selecting(self):
+        self._selecting = False
 
     def get_selected(self):
         return self.selected.get()

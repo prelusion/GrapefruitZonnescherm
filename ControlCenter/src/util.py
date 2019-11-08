@@ -5,6 +5,11 @@ import time
 from decimal import Decimal
 from random import randint
 import wx
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 QUANTIZE_ONE_DIGIT = Decimal(10) ** -1  # e.g. Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT)
 
@@ -64,8 +69,10 @@ def load_json_from_file(filepath):
 
 def save_json_to_file(filepath, data):
     with threading.Lock():
+        logger.info("[THREADING] enter lock")
         with open(filepath, "w") as f:
             json.dump(data, f, indent=4)
+    logger.info("[THREADING] exit lock")
 
 
 class MainFont(wx.Font):

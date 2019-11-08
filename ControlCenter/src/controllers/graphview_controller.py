@@ -1,6 +1,8 @@
 import logging
 import threading
 
+import wx
+
 from src import mvc
 from src.views.graphtab_view import GraphTabView
 
@@ -31,28 +33,31 @@ class GraphViewController(mvc.Controller):
             self.update_graph(model, model.get_measurements())
 
     def on_controlunit_selected_change(self, model, selected):
+        with threading.Lock():
+            logger.info("[THREADING] enter lock")
+            if not selected:
+                self.view.remove_device(model.get_id())
 
-        def execute_threaded():
-            with threading.Lock():
-                if not selected:
-                    self.view.remove_device(model.get_id())
+            self.redraw_all_units()
 
-                self.redraw_all_units()
-
-                if selected:
-                    model.measurements.add_callback(self.on_controlunit_measurement_change)
-                else:
-                    try:
-                        model.measurements.del_callback(self.on_controlunit_measurement_change)
-                    except KeyError as e:
-                        logger.exception(e)
-
-        threading.Thread(target=execute_threaded, daemon=True).start()
+            if selected:
+                model.measurements.add_callback(self.on_controlunit_measurement_change)
+            else:
+                try:
+                    model.measurements.del_callback(self.on_controlunit_measurement_change)
+                except KeyError as e:
+                    logger.exception(e)
+            # wx.CallAfter(model.done_selecting)
+            wx.CallAfter(self.view.Layout)
+        logger.info("[THREADING] exit lock")
 
     def on_controlunit_measurement_change(self, model, data):
         with threading.Lock():
+            logger.info("[THREADING] enter lock")
             if model.get_selected():
-                self.update_graph(model, data)
+                wx.CallAfter(lambda: self.update_graph(model, data))
+
+        logger.info("[THREADING] exit lock")
 
     def update_graph(self, model, measurements):
         timestamps = list(map(lambda x: x.timestamp, measurements))
@@ -62,9 +67,12 @@ class GraphViewController(mvc.Controller):
 
         if not temperatures:
             temperatures.append(0)
+            temperatures.append(0)
         if not shutter_status:
             shutter_status.append(0)
+            shutter_status.append(0)
         if not light_intensity:
+            light_intensity.append(0)
             light_intensity.append(0)
 
         self.view.update_temperature_graph(model.get_id(),

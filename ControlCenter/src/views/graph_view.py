@@ -58,7 +58,7 @@ class GraphView(mvc.View):
             self.autoscale = True
 
     def update_graph(self, device_id, color, timestamps, measurements):
-        if  device_id not in self.units:
+        if device_id not in self.units:
             self.index = 0
             self.lines = self.graph.plot(ydata=measurements,
                                          xdata=timestamps,
@@ -84,8 +84,5 @@ class GraphView(mvc.View):
                 color=color)
 
     def remove_device(self, device_id):
-        print("clear trace:", device_id)
         self.graph.clear()
         self.graph.draw()
-
-        # self.update_graph()
