@@ -66,7 +66,8 @@ class ControlUnitModel(mvc.Model):
         if color and len(color) == 1:
             color = color[0][0]
             if color:
-                self.color.set(util.deserialize_color(color))
+                return util.deserialize_color(color)
+
         return self.color.get()
 
     def set_online(self, boolean):

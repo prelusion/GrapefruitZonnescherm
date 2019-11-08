@@ -41,11 +41,13 @@ class GraphViewController(mvc.Controller):
 
             if selected:
                 model.measurements.add_callback(self.on_controlunit_measurement_change)
+                model.color.add_callback(self.on_controlunit_color_change)
             else:
                 try:
                     model.measurements.del_callback(self.on_controlunit_measurement_change)
-                except KeyError as e:
-                    logger.exception(e)
+                    model.color.del_callback(self.on_controlunit_color_change)
+                except KeyError:
+                    pass
             # wx.CallAfter(model.done_selecting)
             wx.CallAfter(self.view.Layout)
         logger.info("[THREADING] exit lock")
@@ -57,6 +59,9 @@ class GraphViewController(mvc.Controller):
                 wx.CallAfter(lambda: self.update_graph(model, data))
 
         logger.info("[THREADING] exit lock")
+
+    def on_controlunit_color_change(self, model, data):
+        wx.CallAfter(lambda: self.update_graph(model, model.get_measurements()))
 
     def update_graph(self, model, measurements):
         if model.get_color().Get(False) == (-1, -1, -1):
