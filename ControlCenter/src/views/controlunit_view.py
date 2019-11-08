@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 import wx
+from src import util
 
 UnitValueBox = namedtuple("UnitValueBox", ["panel", "label"])
 
@@ -55,11 +56,10 @@ class ControlUnitView(wx.Panel):
             if name is not "color":
                 infolabel = wx.StaticText(panel, wx.ID_ANY, label="Info label", style=wx.ALIGN_CENTER)
                 infolabel.SetLabelText(name)
-                font = wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.BOLD)
-                # font.SetFamily(wx.FONTFAMILY)
+                font = util.MainFont("title")
                 infolabel.SetFont(font)
                 datalabel = wx.StaticText(panel, wx.ID_ANY, label="Data label", style=wx.ALIGN_CENTER)
-                font = wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.NORMAL, wx.NORMAL)
+                font = util.MainFont("normal")
                 datalabel.SetFont(font)
 
                 # Create sizer for labels

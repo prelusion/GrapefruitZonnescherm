@@ -2,6 +2,7 @@ import wx
 
 from src import mvc
 from src import widgets
+from src import util
 
 
 class LabeledDoubleToggleButton(wx.Panel):
@@ -15,6 +16,9 @@ class LabeledDoubleToggleButton(wx.Panel):
         self._button2_callback = None
 
         self.label = widgets.CenteredLabel(parent, label=label, horizontal=False)
+        self.label.SetFont(util.MainFont("normal"))
+
+
         self.button1 = wx.ToggleButton(parent, id=wx.ID_ANY, label=button1_label, name="1")
         self.button2 = wx.ToggleButton(parent, id=wx.ID_ANY, label=button2_label, name="2")
 
