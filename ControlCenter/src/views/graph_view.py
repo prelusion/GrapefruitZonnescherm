@@ -85,6 +85,7 @@ class GraphView(mvc.View):
                 color=color)
 
     def clear_trace(self, device_id):
+        print("clear trace:", device_id)
         self.graph.clear()
         self.graph.Update()
         self.graph.Layout()

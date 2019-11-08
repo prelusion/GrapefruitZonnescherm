@@ -2,7 +2,7 @@ import datetime
 
 from src import mvc
 from src.views.graphtab_view import GraphTabView
-
+import copy
 
 class GraphViewController(mvc.Controller):
     def __init__(self, view_parent, controlunit_manager):
@@ -32,7 +32,7 @@ class GraphViewController(mvc.Controller):
     def on_controlunit_measurement_change(self, model, data):
         print("on measurement change")
 
-        data = data.copy()  # copy otherwise we get RuntimeError if new measurements are added during iteration
+        data = copy.deepcopy(data) # copy otherwise we get RuntimeError if new measurements are added during iteration
 
         timestamps = list(map(lambda x: x.timestamp, data))
         temperatures = list(map(lambda x: x.temperature, data))
