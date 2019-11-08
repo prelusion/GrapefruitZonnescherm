@@ -21,4 +21,10 @@ void show_temperature_digital(uint8_t temperature);
  */ 
 void show_light_intensity_digital(uint8_t light_intensity); 
  
+/** 
+ * \brief  
+ * Gives the measurement to the digital display
+ */ 
+ void show_measurement(Sensor sensor, uint8_t measurement);
+ 
  #endif
