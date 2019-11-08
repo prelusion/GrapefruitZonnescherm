@@ -4,6 +4,7 @@ import threading
 import time
 from decimal import Decimal
 from random import randint
+import wx
 
 QUANTIZE_ONE_DIGIT = Decimal(10) ** -1  # e.g. Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT)
 
@@ -65,3 +66,8 @@ def save_json_to_file(filepath, data):
     with threading.Lock():
         with open(filepath, "w") as f:
             json.dump(data, f, indent=4)
+
+class Font(wx.Font):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.SetFamily(wx.FONTFAMILY_SWISS)
