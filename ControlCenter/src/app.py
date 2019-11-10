@@ -107,7 +107,7 @@ class MainView(wx.Frame):
 
 def mainloop():
     app = App(False)
-    mainview = MainView(app, "Grapefruit Control Center")
+    mainview = MainView(app, "Grapefruit Control Centre")
     mainview.Show()
     app.MainLoop()
 
