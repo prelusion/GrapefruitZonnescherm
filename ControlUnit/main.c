@@ -94,7 +94,7 @@ void check_thresholds(void)
 void digital_display()
 {
 	//Checks if a new button is pressed. if so set the new pressed button.
-	uint8_t toggle_status = check_new_pressed_buttons();
+	uint8_t toggle_status = check_new_pressed_buttons_from_display();
 	set_toggled_buttons(toggle_status);
 	switch(toggle_status)
 	{
@@ -122,7 +122,7 @@ int main(void)
 	serial_init();
 	init_distance_sensor();
 	init_leds();
-	digital_setup();
+	init_digital_display();
 	
 	if (!has_unit_id())
 	{
@@ -142,7 +142,7 @@ int main(void)
 	// Initialize the timer.
 	timer_init();
 
-	timer_add_task(&update_temperature, (uint16_t)500, (uint16_t)4000); // 4000 * 10ms = 40sec
+	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
 	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
 	timer_add_task(&update_history, (uint16_t)200, (uint16_t)6000); // 6000 * 10ms = 60sec
 	timer_add_task(&check_thresholds, (uint16_t)10, (uint16_t)2000); // 6000 * 10ms = 60sec

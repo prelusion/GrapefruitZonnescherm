@@ -21,7 +21,7 @@ typedef enum {
  * \brief  
  * Setups the digital display ports
  */ 
- void digital_setup(void);
+ void init_digital_display(void);
  
  
 /**
@@ -30,7 +30,7 @@ typedef enum {
  * 
  * \returns the last valid pressed button
  */
- uint8_t check_new_pressed_buttons(void);
+ uint8_t check_new_pressed_buttons_from_display(void);
  
 
 /**
@@ -39,24 +39,7 @@ typedef enum {
  * 
  * \returns the pressed new button
  */
- uint8_t read_buttons();
+ uint8_t read_pressed_display_buttons(void);
 
-
-/**
- * \brief 
- * Get the last pressed button
- * 
- * \returns last valid button
- */
- uint8_t get_toggled_buttons();
- 
-/** 
- * \brief  
- * Set new pressed button/
- *
- *\param new_toggled_buttons a new toggle button. 
- */
-
- void set_toggled_buttons(uint8_t new_toggled_buttons);
  
  #endif

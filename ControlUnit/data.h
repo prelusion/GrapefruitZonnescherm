@@ -101,4 +101,20 @@ UnitStatus get_current_unit_status(void);
  */
 void set_current_unit_status(UnitStatus unit_status);
 
+/**
+ * \brief 
+ * Get the last pressed button
+ * 
+ * \returns last valid button
+ */
+ uint8_t get_toggled_buttons();
+ 
+/** 
+ * \brief  
+ * Set new pressed button/
+ *
+ *\param new_toggled_buttons a new toggle button. 
+ */
+
+ void set_toggled_buttons(uint8_t new_toggled_buttons);
 #endif
