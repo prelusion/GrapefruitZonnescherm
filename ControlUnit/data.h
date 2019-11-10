@@ -18,6 +18,12 @@ typedef enum {
 	SENSOR_ERROR = 3 // Not all sensors are connected.
 } UnitStatus;
 
+typedef enum {
+	TEMPERATURE = 0,
+	LIGHT_INTENSITY = 1,
+	DISTANCE = 2
+} Sensor;
+
 /**
  * \brief 
  * Check if serial is connected.

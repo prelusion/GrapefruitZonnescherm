@@ -4,11 +4,6 @@
 #include "../data.h"
 #include <stdint.h>
 
-typedef enum {
-	TEMPERATURE = 0,
-	LIGHT_INTENSITY = 1,
-	DISTANCE = 2
-} Sensor;
 
 /** 
  * \brief  
