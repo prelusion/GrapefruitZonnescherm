@@ -3,6 +3,7 @@
 
 #include "scheduler.h"
 #include "data.h"
+#include "command_processing.h"
 
 //serial includes
 #include "serial.h"
@@ -27,7 +28,10 @@
 #include "storage/light_intensity_threshold.h"
 #include "storage/window_height.h"
 
-
+/**
+ * \brief 
+ * Add the current measures to the history. 
+ */
 void update_history(void)
 {
 	// Check if the unit is connected to the control center.
@@ -99,6 +103,7 @@ void initialize_shutter(void)
 
 int main(void)
 {
+	init_available_commands();
 	adc_init();
 	init_history();
 	serial_init();

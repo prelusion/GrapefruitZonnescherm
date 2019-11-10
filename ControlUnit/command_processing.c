@@ -19,10 +19,11 @@
 // Predefined command amount.
 #define COMMAND_AMOUNT 17
 
-Command* get_available_commands()
+// Array of all available commands.
+Command available_commands[COMMAND_AMOUNT];
+
+void init_available_commands(void)
 {
-	Command* available_commands = malloc(COMMAND_AMOUNT * sizeof(Command));
-	
 	strcpy(available_commands[0].name, "PING");
 	available_commands[0].function = &cmd_ping;
 	available_commands[0].parameters_required = 0;
@@ -107,8 +108,6 @@ Command* get_available_commands()
 	available_commands[16].function = &cmd_roll_down;
 	available_commands[16].parameters_required = 0;
 	available_commands[16].init_required = 1;
-	
-	return available_commands;
 }
 
 void process_input(char* input)
@@ -138,12 +137,9 @@ void process_input(char* input)
 
 void execute_command(char name[20], char parameters[30])
 {
-	// TODO load available commands only once
-	Command* commands = get_available_commands();
-	
 	for (uint8_t i = 0; i < COMMAND_AMOUNT; i++)
 	{
-		Command command = commands[i];
+		Command command = available_commands[i];
 		
 		if (strcmp(command.name, name) == 0)
 		{
@@ -155,13 +151,11 @@ void execute_command(char name[20], char parameters[30])
 				command.function(parameters, (char*)&result);
 			}
 			printf("%s=%s\n", name, result);
-			free(commands);
 			return;
 		}
 	}
 	
 	printf("%s=NOT_FOUND\n", name);
-	free(commands);
 }
 
 void cmd_ping(char parameters[30], char result[50])

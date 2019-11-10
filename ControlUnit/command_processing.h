@@ -4,20 +4,17 @@
 #include <stdint.h>
 
 typedef struct {
-	char name[20];				// The command name. Max 20 characters.
-	void(*function)(char[30], char[50]);	// Pointer to function that is associated with the command name.
-	uint8_t parameters_required;
-	uint8_t init_required;
+	char name[20]; // The command name. Max 20 characters.
+	void(*function)(char[30], char[50]); // Pointer to function that is associated with the command name.
+	uint8_t parameters_required; // Does this command require parameters?
+	uint8_t init_required; // Does this command require the unit to be initialized?
 } Command;
 
 /**
  * \brief 
- * Get all available commands.
- * 
- * \return Command* Collection of available commands
+ * Load all available commands.
  */
-Command* get_available_commands(void);
-
+void init_available_commands(void);
 
 /**
  * \brief 
