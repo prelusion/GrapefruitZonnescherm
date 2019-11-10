@@ -26,6 +26,7 @@ class SettingsViewController(mvc.Controller):
         self.disable_settings()
 
     def on_controlunits_change(self, model, data):
+        self.disable_settings()
         for port, unit in data.items():
             comm, model = unit
             model.selected.add_callback(self.on_controlunit_selected_change)
