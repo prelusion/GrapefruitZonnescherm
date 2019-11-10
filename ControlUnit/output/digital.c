@@ -137,7 +137,7 @@ void display_measurement(Sensor sensor, uint8_t measurement)
 		} 
 		else if(position < 7)
 		{
-			if (position == 4)
+			if (measurement >= 0 && position == 4)
 			{
 				uint8_t new_measurement = (measurement / 100);
 				if (new_measurement == 0)
