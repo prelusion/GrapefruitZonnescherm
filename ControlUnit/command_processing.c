@@ -344,7 +344,7 @@ void cmd_get_sensor_history(char parameters[30], char result[50])
 		{
 			uint16_t measurement = *(history.data + (chunk_index * chunk_size) + i);
 			int8_t temperature = (int8_t)(((measurement & 0b1111111000000000) >> 9) | (measurement & 0b1000000000000000) >> 8);
-			uint8_t light_intensity = (uint8_t)(((measurement & 0b0000000111111100) >> 2) * 2); // Light intensity is saved as divided by 2, so we have to multiply it again.
+			uint8_t light_intensity = (uint8_t)((measurement & 0b0000000111111100) >> 2);
 			uint8_t shutter_status = (uint8_t)(measurement & 0b0000000000000011);
 			
 			if (i == 0)

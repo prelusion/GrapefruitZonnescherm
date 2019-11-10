@@ -29,7 +29,7 @@ void init_shutter_status(void)
 	else if(status == CLOSING)
 	{
 		set_current_shutter_status(OPEN);
-		shutter_roll_down();			
+		shutter_roll_down();
 	}
 	else 
 	{
