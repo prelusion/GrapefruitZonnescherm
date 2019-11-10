@@ -44,7 +44,7 @@ void update_history(void)
 	// 16 bit per measurement:
 	//   0  0  0  0  0  0  0     0  0  0  0  0  0  0     0  0
 	// |      Temperature     |    Light intensity    | Shutter status
-	uint16_t measurement = (current_temperature << 9) | ((current_light_intensity / 2) << 2) | current_shutter_status;
+	uint16_t measurement = (current_temperature << 9) | (current_light_intensity << 2) | current_shutter_status;
 	
 	write_measurement(measurement);
 }
@@ -88,9 +88,13 @@ void check_thresholds(void)
 	}
 }
 
+/**
+ * \brief 
+ * Receive the last known shutter status from EEPROM and set it.
+ */	
 void initialize_shutter(void)
 {
-	init_shutter_status();	
+	init_shutter_status();
 }
 
 int main(void)
