@@ -1,5 +1,6 @@
 import logging
 import threading
+import time
 
 import wx
 
@@ -74,7 +75,7 @@ class GraphViewController(mvc.Controller):
         light_intensity = list(map(lambda x: x.light_intensity, measurements))
 
         if not timestamps or len(timestamps) < 2:
-            timestamps += [0, 0]
+            timestamps += [time.time() - 10, time.time() - 5]
         if not temperatures or len(temperatures) < 2:
             temperatures += [0, 0]
         if not shutter_status or len(shutter_status) < 2:
