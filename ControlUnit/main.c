@@ -104,7 +104,6 @@ void initialize_shutter(void)
 int main(void)
 {
 	init_available_commands();
-	process_input("PING");
 	adc_init();
 	init_history();
 	serial_init();
