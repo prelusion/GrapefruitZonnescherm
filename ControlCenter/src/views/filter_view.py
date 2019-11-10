@@ -7,8 +7,8 @@ from src import util
 
 class FilterView(mvc.View):
     CHECKBOX_CONNECTED = "connected"
-    CHECKBOX_STATUS_UP = "status up"
-    CHECKBOX_STATUS_DOWN = "status down"
+    CHECKBOX_STATUS_UP = "shutter status: up"
+    CHECKBOX_STATUS_DOWN = "shutter status: down"
     CHECKBOX_SELECT_ALL = "select all"
 
     def __init__(self, parent):
