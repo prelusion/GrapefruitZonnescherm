@@ -82,17 +82,6 @@ class GraphViewController(mvc.Controller):
         if not light_intensity or len(light_intensity) < 2:
             light_intensity += [0, 0]
 
-        self.view.update_temperature_graph(model.get_id(),
-                                           color,
-                                           timestamps,
-                                           temperatures)
-
-        self.view.update_status_graph(model.get_id(),
-                                      color,
-                                      timestamps,
-                                      shutter_status)
-
-        self.view.update_light_graph(model.get_id(),
-                                     color,
-                                     timestamps,
-                                     light_intensity)
+        self.view.update_temperature_graph(model.get_id(), color, timestamps, temperatures)
+        self.view.update_status_graph(model.get_id(), color, timestamps, shutter_status)
+        self.view.update_light_graph(model.get_id(), color, timestamps, light_intensity)
