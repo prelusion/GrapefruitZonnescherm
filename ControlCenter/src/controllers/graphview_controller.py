@@ -73,15 +73,14 @@ class GraphViewController(mvc.Controller):
         shutter_status = list(map(lambda x: x.shutter_status, measurements))
         light_intensity = list(map(lambda x: x.light_intensity, measurements))
 
+        if not timestamps or len(timestamps) < 2:
+            timestamps += [0, 0]
         if not temperatures or len(temperatures) < 2:
-            temperatures.append(0)
-            temperatures.append(0)
+            temperatures += [0, 0]
         if not shutter_status or len(shutter_status) < 2:
-            shutter_status.append(0)
-            shutter_status.append(0)
+            shutter_status += [0, 0]
         if not light_intensity or len(light_intensity) < 2:
-            light_intensity.append(0)
-            light_intensity.append(0)
+            light_intensity += [0, 0]
 
         self.view.update_temperature_graph(model.get_id(),
                                            color,
