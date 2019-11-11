@@ -16,7 +16,7 @@ class ControlUnitModel(mvc.Model):
     def __init__(self, id):
         self.initialized = mvc.Observable(self, False)
         self.id = mvc.Observable(self, id)
-        self.name = mvc.Observable(self, "uninitialized")
+        self.name = mvc.Observable(self, None)
         self.online = mvc.Observable(self, True)
         self.manual = mvc.Observable(self, False)
         self.color = mvc.Observable(self, wx.NullColour)

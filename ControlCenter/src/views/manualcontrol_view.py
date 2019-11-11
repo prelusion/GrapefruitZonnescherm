@@ -130,6 +130,7 @@ class ManualControlView(mvc.View):
         self.disable_shutter_control_buttons()
 
     def set_selected_unit_name(self, name = "No unit selected"):
+        if not name: name = "uninitialized"
         self.unit_name.SetLabel(name)
 
     def toggle_manual_control(self, boolean):

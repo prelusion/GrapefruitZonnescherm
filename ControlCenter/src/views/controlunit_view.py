@@ -77,6 +77,8 @@ class ControlUnitView(wx.Panel):
 
     def set_name(self, value):
         box = self.boxes["name"]
+        if not value:
+            value = "uninitialized"
         box.label.SetLabelText(str(value))
         box.label.GetFont().SetWeight(wx.BOLD)
         self._refresh(box.panel)
