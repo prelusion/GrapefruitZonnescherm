@@ -57,6 +57,18 @@ class ControlUnitManager:
         self.units.set(units)
         return unit
 
+    def delete_unit(self, device_id):
+        new_units = self.units.get().copy()
+
+        for unit in self.units.get():
+            if unit.model.get_id() == device_id:
+                print("units", new_units)
+                new_units.remove(unit)
+                print("units", new_units)
+                self.units.set(new_units)
+        else:
+            logger.warning(f"trying to delete unit with unexisting id: {device_id}")
+
     def remove_unit(self, port):
         units = self.units.get().copy()
 

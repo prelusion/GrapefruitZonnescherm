@@ -24,7 +24,7 @@ class SettingsViewController(mvc.Controller):
         self.tabstate_model.state.add_callback(self.on_tabstate_change)
         self.controlunit_manager.units.add_callback(self.on_controlunits_change)
         self.view.apply_button.Bind(wx.EVT_BUTTON, self.on_apply)
-        self.view.apply_button.Bind(wx.EVT_BUTTON, self.on_delete_unit)
+        self.view.delete_button.Bind(wx.EVT_BUTTON, self.on_delete_unit)
         self.selected_unit = None
         self.disable_settings()
 
@@ -40,7 +40,8 @@ class SettingsViewController(mvc.Controller):
                 self.init_settings_panel(units[0])
             else:
                 if self.tabstate_model.is_settings_view():
-                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings", title="Device not connected"))
+                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
+                                                              title="Device not connected"))
 
     def on_controlunits_change(self, model, data):
         self.view.delete_button.Disable()
@@ -60,7 +61,8 @@ class SettingsViewController(mvc.Controller):
                 self.init_settings_panel(units[0])
             else:
                 if self.tabstate_model.is_settings_view():
-                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings", title="Device not connected"))
+                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
+                                                              title="Device not connected"))
 
     def on_controlunit_selected_change(self, model, data):
         self.view.delete_button.Disable()
@@ -73,8 +75,8 @@ class SettingsViewController(mvc.Controller):
                 self.init_settings_panel(units[0])
             else:
                 if self.tabstate_model.is_settings_view():
-                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings", title="Device not connected"))
-
+                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
+                                                              title="Device not connected"))
 
     def init_settings_panel(self, unit):
 
@@ -233,4 +235,17 @@ class SettingsViewController(mvc.Controller):
 
     def on_delete_unit(self, e):
         units = self.controlunit_manager.get_selected_units()
-        print("delete unit:", units)
+
+        if len(units) != 1:
+            return
+
+        unit = units[0]
+
+        result = wx.MessageBox('Do you want to delete the selected unit?', 'Delete control unit', wx.YES_NO | wx.ICON_EXCLAMATION)
+
+        if result == wx.YES:
+
+            print("deleting unit")
+            self.controlunit_manager.delete_unit(unit.model.get_id())
+        else:
+            print("not deleting unit")
