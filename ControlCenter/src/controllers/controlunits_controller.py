@@ -51,10 +51,10 @@ class ControlUnitsController(mvc.Controller):
                 self.view.render_unit(1, view)
 
     def on_units_changed(self, model, data):
-        pass
-        # down_units = [i for i in set(self.prevstate) - set(data)]
-        # new_units = [i for i in set(data) - set(self.prevstate)]
-        # print("units changed:", new_units)
+        down_units = [i for i in set(self.prevstate) - set(data)]
+        new_units = [i for i in set(data) - set(self.prevstate)]
+        print("new units:", new_units)
+        print("down units:", down_units)
         #
         # for comm, model in down_units:
         #     wx.CallAfter(lambda: self.view.remove_unit(model.get_id()))
