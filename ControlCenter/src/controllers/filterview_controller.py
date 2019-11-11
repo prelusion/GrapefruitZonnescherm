@@ -36,21 +36,21 @@ class FilterViewController(mvc.Controller):
         distributor[label](value)
 
     def _reset(self):
-        for comm, model in self.controlunit_manager.get_units():
-            model.set_selected(False)
+        for unit in self.controlunit_manager.get_units():
+            unit.model.set_selected(False)
 
     def _select(self):
         self._reset()
 
-        for comm, model in self.controlunit_manager.get_units():
+        for unit in self.controlunit_manager.get_units():
             if self.filters[self.view.CHECKBOX_CONNECTED]:
-                if model.get_online(): model.set_selected(True)
+                if unit.model.get_online(): unit.model.set_selected(True)
             if self.filters[self.view.CHECKBOX_STATUS_UP]:
-                if model.get_shutter_status() == model.SHUTTER_UP: model.set_selected(True)
+                if unit.model.get_shutter_status() == unit.model.SHUTTER_UP: unit.model.set_selected(True)
             if self.filters[self.view.CHECKBOX_STATUS_DOWN]:
-                if model.get_shutter_status() == model.SHUTTER_DOWN: model.set_selected(True)
+                if unit.model.get_shutter_status() == unit.model.SHUTTER_DOWN: unit.model.set_selected(True)
             if self.filters[self.view.CHECKBOX_SELECT_ALL]:
-                model.set_selected(True)
+                unit.model.set_selected(True)
 
     def on_checkbox_connected(self, boolean):
         self.filters[self.view.CHECKBOX_CONNECTED] = boolean

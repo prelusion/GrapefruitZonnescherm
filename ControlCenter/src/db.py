@@ -77,3 +77,11 @@ def select_by_where(table, where):
         cur = conn.cursor()
         cur.execute(f"SELECT * FROM {table} WHERE {where}")
         return cur.fetchall()
+
+
+def delete(table, where):
+    with contextlib.closing(sqlite3.connect(DB_NAME)) as conn:
+        cur = conn.cursor()
+        sql = f"DELETE FROM {table} WHERE {where}"
+        cur.execute(sql)
+        conn.commit()

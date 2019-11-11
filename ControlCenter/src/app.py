@@ -46,13 +46,16 @@ class App(wx.App):
 
         self.app_id = app_data["id"]
 
+        self.controlunit_manager.fetch_units_from_db()
+        # wx.CallLater(500, self.controlunit_manager.fetch_units_from_db)
+
     def start_background_services(self):
         t = threading.Thread(target=controlunit.online_control_unit_service,
                              args=(self.app_id, self.controlunit_manager,), daemon=True)
         t.start()
 
         t = threading.Thread(target=controlunit.sensor_data_service,
-                             args=(self.controlunit_manager, 5), daemon=True)
+                             args=(self.controlunit_manager, 15), daemon=True)
         t.start()
 
 
@@ -92,9 +95,9 @@ class MainView(wx.Frame):
 
         # Left panel components
         controlunits_controller = ControlUnitsController(left_panel, self.app.controlunit_manager)
-        filterview_controller = FilterViewController(left_panel, self.app.controlunit_manager)
+        # filterview_controller = FilterViewController(left_panel, self.app.controlunit_manager)
         left_panel_sizer_vbox.Add(controlunits_controller.view, 8, wx.EXPAND | wx.ALL)
-        left_panel_sizer_vbox.Add(filterview_controller.view, 1, wx.EXPAND | wx.ALL)
+        # left_panel_sizer_vbox.Add(filterview_controller.view, 1, wx.EXPAND | wx.ALL)
         center_panel_sizer.Add(left_panel, wx.ID_ANY, wx.EXPAND | wx.ALL, 20)
 
         # Right panel components
@@ -107,8 +110,11 @@ class MainView(wx.Frame):
 
 def mainloop():
     app = App(False)
+
     mainview = MainView(app, "Grapefruit Control Center")
+
     mainview.Show()
+
     app.MainLoop()
 
 

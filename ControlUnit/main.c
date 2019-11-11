@@ -11,6 +11,7 @@
 //status includes
 #include "output/shutter.h"
 #include "output/status.h"
+#include "output/digital.h"
 
 //ports includes
 #include "ports/adc.h"
@@ -92,6 +93,27 @@ void check_thresholds(void)
 	}
 }
 
+//Gives the the digital display values of the toggle button.
+//Button 1 = temperature, button 2 = Light intensity, button 3 = distance
+void digital_display()
+{
+	//Checks if a new button is pressed. if so set the new pressed button.
+	uint8_t toggle_status = check_new_pressed_buttons_from_display();
+	set_current_selected_buttons(toggle_status);
+	switch(toggle_status)
+	{
+		case 0b00000001:
+			display_measurement(0, get_current_temperature());
+		break;
+		case 0b00000010:
+			display_measurement(1, get_current_light_intensity());
+		break;
+		case 0b00000100:
+			display_measurement(2, get_distance());
+		break;
+	}
+}
+
 /**
  * \brief 
  * Receive the last known shutter status from EEPROM and set it.
@@ -109,6 +131,7 @@ int main(void)
 	serial_init();
 	init_distance_sensor();
 	init_leds();
+	init_digital_display();
 	
 	if (!has_unit_id())
 	{
@@ -131,7 +154,9 @@ int main(void)
 	timer_add_task(&update_temperature, (uint16_t)0, (uint16_t)4000); // 4000 * 10ms = 40sec
 	timer_add_task(&update_light_intensity, (uint16_t)0, (uint16_t)3000); // 3000 * 10ms = 30sec
 	timer_add_task(&update_history, (uint16_t)200, (uint16_t)6000); // 6000 * 10ms = 60sec
-	timer_add_task(&check_thresholds, (uint16_t)10, (uint16_t)6000); // 6000 * 10ms = 60sec
+	timer_add_task(&check_thresholds, (uint16_t)10, (uint16_t)2000); // 6000 * 10ms = 60sec
+	timer_add_task(&digital_display, (uint16_t)10, (uint16_t)200); // 200 * 10ms = 2sec
+	
 	//Initializes the status as a task because the  timer has to be initialized before this works.
 	timer_add_task(&initialize_shutter, (uint16_t)0, (uint16_t)0);
 	timer_start();

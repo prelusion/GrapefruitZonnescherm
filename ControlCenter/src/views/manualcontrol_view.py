@@ -156,5 +156,5 @@ class ManualControlView(mvc.View):
             self.shutter_control.button2.SetValue(LabeledDoubleToggleButton.STATE_TOGGLED)
 
     @staticmethod
-    def show_error(message):
-        wx.MessageBox(message, 'Error', wx.OK | wx.ICON_ERROR)
+    def show_error(message, title="Error"):
+        wx.MessageBox(message, title, wx.OK | wx.ICON_ERROR)
