@@ -2,7 +2,7 @@ import logging
 import threading
 
 import wx
-
+from src import util
 from src import mvc
 from src.views.graphtab_view import GraphTabView
 
@@ -71,12 +71,13 @@ class GraphViewController(mvc.Controller):
             color = wx.BLACK
 
         timestamps = list(map(lambda x: x.timestamp, measurements))
-        temperatures = list(map(lambda x: x.temperature, measurements))
-        shutter_status = list(map(lambda x: x.shutter_status, measurements))
-        light_intensity = list(map(lambda x: x.light_intensity, measurements))
 
         if not timestamps or len(timestamps) < 2:
             return
+
+        temperatures = list(map(lambda x: x.temperature, measurements))
+        shutter_status = list(map(lambda x: x.shutter_status, measurements))
+        light_intensity = list(map(lambda x: x.light_intensity, measurements))
 
         self.view.update_temperature_graph(model.get_id(), color, timestamps, temperatures)
         self.view.update_status_graph(model.get_id(), color, timestamps, shutter_status)

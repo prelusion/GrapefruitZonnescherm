@@ -87,3 +87,14 @@ class MainFont(wx.Font):
             if bold is True:
                 self.MakeBold()
             self.SetPointSize(fontsize)
+
+
+def translate_shutter_status(value):
+    distributor = {
+        None: "unknown",
+        0: "up",
+        1: "down",
+        2: "going up",
+        3: "going down"
+    }
+    return distributor[value]
