@@ -18,6 +18,12 @@ typedef enum {
 	SENSOR_ERROR = 3 // Not all sensors are connected.
 } UnitStatus;
 
+typedef enum {
+	TEMPERATURE = 0,
+	LIGHT_INTENSITY = 1,
+	DISTANCE = 2
+} SelectedSensor;
+
 /**
  * \brief 
  * Check if serial is connected.
@@ -101,4 +107,20 @@ UnitStatus get_current_unit_status(void);
  */
 void set_current_unit_status(UnitStatus unit_status);
 
+/**
+ * \brief 
+ * Get the last pressed button
+ * 
+ * \returns last valid button
+ */
+ uint8_t get_current_selected_buttons();
+ 
+/** 
+ * \brief  
+ * Set new pressed button/
+ *
+ *\param new_toggled_buttons a new toggle button. 
+ */
+
+ void set_current_selected_buttons(uint8_t toggle_status);
 #endif

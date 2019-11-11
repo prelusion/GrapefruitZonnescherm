@@ -6,6 +6,7 @@ uint8_t current_light_intensity = 0;
 uint16_t current_distance = 0;
 ShutterStatus current_shutter_status = 0;
 UnitStatus current_unit_status = STARTING;
+SelectedSensor current_selected_sensor = TEMPERATURE;
 
 uint8_t get_current_serial_connection(void)
 {
@@ -65,4 +66,14 @@ UnitStatus get_current_unit_status(void)
 void set_current_unit_status(UnitStatus unit_status)
 {
 	current_unit_status = unit_status;
+}
+
+uint8_t get_current_selected_buttons()
+{
+	return current_selected_sensor;
+}
+
+void set_current_selected_buttons(uint8_t toggle_status)
+{
+	current_selected_sensor = toggle_status;
 }

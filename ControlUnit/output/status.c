@@ -15,7 +15,7 @@ void update_leds(void)
 	{
 		case CLOSED:
 			// Enable the red LED.
-			PORTB = 0b00000100;
+			PORTB = 0b00000001;
 			break;
 		case OPEN:
 			// Enable the green LED.
@@ -27,7 +27,7 @@ void update_leds(void)
 			break;
 		case OPENING:
 			// Blink the green and yellow LEDs.
-			PORTB = (~PORTB & 0b00000011);
+			PORTB = (~PORTB & 0b00000110);
 			break;
 	}
 }
