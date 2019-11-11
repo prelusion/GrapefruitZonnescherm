@@ -51,19 +51,21 @@ class ControlUnitsController(mvc.Controller):
                 self.view.render_unit(1, view)
 
     def on_units_changed(self, model, data):
-        down_units = [i for i in set(self.prevstate) - set(data)]
-        new_units = [i for i in set(data) - set(self.prevstate)]
-        print("units changed:", new_units)
-
-        for comm, model in down_units:
-            wx.CallAfter(lambda: self.view.remove_unit(model.get_id()))
-
-        for comm, model in new_units:
-            wx.CallAfter(lambda: self.create_control_unit_view(model))
-
-        self.prevstate = data.copy()
+        pass
+        # down_units = [i for i in set(self.prevstate) - set(data)]
+        # new_units = [i for i in set(data) - set(self.prevstate)]
+        # print("units changed:", new_units)
+        #
+        # for comm, model in down_units:
+        #     wx.CallAfter(lambda: self.view.remove_unit(model.get_id()))
+        #
+        # for comm, model in new_units:
+        #     wx.CallAfter(lambda: self.create_control_unit_view(model))
+        #
+        # self.prevstate = data.copy()
 
     def create_control_unit_view(self, model):
+        print("CREATE CONTROL UNIT VIEW")
         view = ControlUnitView(self.view)
         view.set_connection(model.get_online())
         view.set_name(model.get_name())
@@ -76,7 +78,7 @@ class ControlUnitsController(mvc.Controller):
         model.name.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_name(value)))
         model.temperature.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_temperature(value)))
         model.shutter_status.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_shutter_status(value)))
-        model.online.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_connection(value)))
+        model.online.add_callback(lambda model, value: wx.CallAfter(lambda: self.on_unit_online_change(model, value, view)))
         model.color.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_device_color(value)))
         model.manual.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_manual(value)))
         model.selected.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_selected(value)))
@@ -95,3 +97,24 @@ class ControlUnitsController(mvc.Controller):
         
         view.set_selected(True) if not model.get_selected() else view.set_selected(False)
         model.set_selected(not model.get_selected())
+
+    def on_unit_online_change(self, model, value, view):
+        print("on unit online change", value)
+        view.set_connection(value)
+        # print("view", view.IsEnabled())
+        # print("view", view)
+        # print("enabled", view.IsEnabled())
+        # if value:
+        #     view.Enable()
+        # else:
+        #     view.Disable()
+        # print("enabled", view.IsEnabled())
+
+        view.Enable()
+
+        view.Layout()
+        view.Refresh()
+        view.Update()
+        # self.view.Layout()
+        # self.view.Refresh()
+        # self.view.Update()

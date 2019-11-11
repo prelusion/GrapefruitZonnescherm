@@ -15,7 +15,24 @@ class ControlUnitManager:
         self.units = mvc.Observable(self, [])  #  (ControlUnitCommunication, ControlUnitModel)
         self.ports = mvc.Observable(self, [])
 
-    def add_unit(self, port, communication, model):
+    def get_unit(self, device_id):
+        units = [(comm, model) for comm, model in self.units.get() if model.get_id() == device_id]
+        if len(units) == 1:
+            return units[0]
+
+    def add_communication(self, device_id, port, comm):
+        unit = self.get_unit(device_id)
+        current_comm, model = unit
+        idx = self.units.get().index(unit)
+        units = self.units.get()
+        units[idx] = (comm, model)
+        ports = self.ports.get()
+        ports.append(port)
+        model.set_online(True)
+        self.ports.set(ports)
+        self.units.set(units)
+
+    def add_unit(self, device_id, communication, port):
         print("adding unit to manager")
         units = self.units.get()
         units[port] = (communication, model)
