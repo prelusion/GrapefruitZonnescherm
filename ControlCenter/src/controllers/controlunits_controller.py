@@ -104,10 +104,7 @@ class ControlUnitsController(mvc.Controller):
     def on_unit_online_change(self, model, online: bool, view):
         view.set_connection(online)
 
-        if online:
-            view.Enable()
-        else:
-            view.Disable()
+        if not online:
             model.set_selected(False)
 
         view.Layout()
