@@ -27,7 +27,7 @@ class GraphView(mvc.View):
         self.graph = Graph(self)
         self.graph_sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(self.graph_sizer)
-        self.graph_sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
+        self.graph_sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL , 0)
 
         self.framecolor = "LightGrey"
         self.graphmode = graphmode
@@ -38,10 +38,10 @@ class GraphView(mvc.View):
 
         if graphmode == GraphMode.Temp:
             self.graph.set_xlabel("Time")
-            self.y_min = -200
-            self.y_max = 200
+            self.y_min = -100
+            self.y_max = 100
             self.measure_unit = "Temperature in °C"
-            self.autoscale = True
+            self.autoscale = False
 
         if graphmode == GraphMode.Status:
             self.linewidth = 20
@@ -55,9 +55,8 @@ class GraphView(mvc.View):
             self.graph.set_xlabel("Time")
             self.y_min = 0
             self.y_max = 100
-            self.measure_unit = "Light intensity in #TODO"
-            # TODO Set light settings
-            self.autoscale = True
+            self.measure_unit = "% Light intensity of threshold"
+            self.autoscale = False
 
     def update_graph(self, device_id, color, timestamps, measurements):
         if device_id not in self.units:
