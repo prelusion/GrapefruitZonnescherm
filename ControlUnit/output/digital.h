@@ -9,15 +9,13 @@
  * \brief  
  * displays the measurement on the digital display
  */ 
- void display_measurement(Sensor sensor, uint8_t measurement);
- 
+ void display_measurement(Sensor sensor, int8_t measurement);
  
 /** 
  * \brief  
  * Setups the digital display ports
  */ 
  void init_digital_display(void);
- 
  
 /**
  * \brief 
@@ -27,7 +25,6 @@
  */
  uint8_t check_new_pressed_buttons_from_display(void);
  
-
 /**
  * \brief 
  * Checks a new pressed button.
@@ -35,6 +32,5 @@
  * \returns the pressed new button
  */
  uint8_t read_pressed_display_buttons(void);
-
  
  #endif
