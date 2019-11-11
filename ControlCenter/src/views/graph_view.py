@@ -14,8 +14,8 @@ class GraphMode(enum.Enum):
 
 class Graph(wxmplot.PlotPanel):
     def __init__(self, parent):
-        super().__init__(parent, pos=(150, 150), messenger=lambda text, panel: None,
-                         show_config_popup=False)
+        super().__init__(parent, messenger=lambda text, panel: None,
+                         show_config_popup=False)  # pos=(150, 150),
         self.Show()
 
 
@@ -31,6 +31,7 @@ class GraphView(mvc.View):
 
         self.framecolor = "LightGrey"
         self.graphmode = graphmode
+        self.linewidth = 2
         self.units = {}
         self.lines = None
         self.index = 0
@@ -43,6 +44,7 @@ class GraphView(mvc.View):
             self.autoscale = True
 
         if graphmode == GraphMode.Status:
+            self.linewidth = 20
             self.graph.set_xlabel("Time")
             self.y_min = 0
             self.y_max = 1
@@ -52,7 +54,7 @@ class GraphView(mvc.View):
         if graphmode == GraphMode.Light:
             self.graph.set_xlabel("Time")
             self.y_min = 0
-            self.y_max = 5000
+            self.y_max = 100
             self.measure_unit = "Light intensity in #TODO"
             # TODO Set light settings
             self.autoscale = True
@@ -66,13 +68,14 @@ class GraphView(mvc.View):
                                          ymax=self.y_max,
                                          ylabel=self.measure_unit,
                                          side='left',
-                                         linewidth=1,
+                                         linewidth=self.linewidth,
                                          labelfontsize=6,
                                          legendfontsize=6,
                                          autoscale=self.autoscale,
                                          framecolor=self.framecolor,
                                          use_dates=True,
-                                         color=color)
+                                         color=color),
+
             self.units[device_id] = self.index
             self.index += 1
         else:
@@ -83,6 +86,6 @@ class GraphView(mvc.View):
                 linewidth=1,
                 color=color)
 
-    def remove_device(self, device_id):
+    def clear_graph(self):
         self.graph.clear()
         self.graph.draw()

@@ -26,13 +26,13 @@ class SettingsViewController(mvc.Controller):
         self.disable_settings()
 
     def on_controlunits_change(self, model, data):
-        self.disable_settings()
+        wx.CallAfter(self.disable_settings)
         for port, unit in data.items():
             comm, model = unit
             model.selected.add_callback(self.on_controlunit_selected_change)
 
     def on_controlunit_selected_change(self, model, data):
-        self.disable_settings()
+        wx.CallAfter(self.disable_settings)
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:
             self.init_settings_panel(units[0])
@@ -167,6 +167,7 @@ class SettingsViewController(mvc.Controller):
 
             model.set_name(name)
             model.set_color(color)
+            model.set_initialized(True)
             wx.CallAfter(lambda: self.view.show_success("Successfully initialized device"))
         else:
             wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))

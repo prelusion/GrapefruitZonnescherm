@@ -13,6 +13,7 @@ class ControlUnitManager:
         self.units = mvc.Observable(self, OrderedDict())  # "port": <ControlUnitCommunication, ControlUnitModel>
 
     def add_unit(self, port, communication, model):
+        print("adding unit to manager")
         units = self.units.get()
         units[port] = (communication, model)
         self.units.set(units)

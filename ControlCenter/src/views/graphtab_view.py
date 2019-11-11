@@ -13,7 +13,7 @@ class GraphTab(View):
         self.graph = graph_view.GraphView(self, graphmode)
         sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(sizer)
-        sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
+        sizer.Add(self.graph, wx.ID_ANY, wx.EXPAND | wx.ALL, 0)
         # self.SetBackgroundColour(colour=(0, 255, 0))
         self.graph.SetSize(200, 200)
 
@@ -45,13 +45,13 @@ class GraphTabView(View):
         self.tab_panel.SetPageImage(1, icon1)
         self.tab_panel.SetPageImage(2, icon2)
 
-        self.sizer.Add(self.tab_panel, 1, wx.EXPAND)
+        self.sizer.Add(self.tab_panel, wx.ID_ANY, wx.EXPAND)
 
     def update_temperature_graph(self, device_id, color, timestamps, temperatures):
         self.temps_tab.graph.update_graph(device_id, color, timestamps, temperatures)
 
-    def remove_device(self, device_id):
-        self.temps_tab.graph.remove_device(device_id)
+    def clear_graph(self):
+        self.temps_tab.graph.clear_graph()
 
     def update_status_graph(self, device_id, color, timestamps, status):
         self.status_tab.graph.update_graph(device_id, color, timestamps, status)
