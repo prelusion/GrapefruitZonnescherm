@@ -42,7 +42,6 @@ class HoverButton(wx.Button):
 
     def Disable(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print("set disabled")
         self.SetBackgroundColour(self.dbg)
         self.Refresh()
         self.parent.Refresh()

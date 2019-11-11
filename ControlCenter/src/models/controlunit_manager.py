@@ -105,7 +105,6 @@ class ControlUnitManager:
         """
         :return: [(comm, model), (comm, model)]
         """
-        print("get units", self.units.get())
         return self.units.get()
 
     def get_selected_units(self):
@@ -123,10 +122,8 @@ class ControlUnitManager:
         return [unit.comm.port for unit in self.units.get() if unit.comm]
 
     def update_sensor_data(self):
-        print("update sensor data")
+
         for unit in self.units.get().copy():
-            print(unit)
-            print(unit.has_communication())
             if not unit.has_communication():
                 continue
             try:

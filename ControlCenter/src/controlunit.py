@@ -107,8 +107,6 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
             unit = controlunit_manager.get_unit(device_id)
 
             if unit:
-                print("add communication to unit", device_id)
-
                 unit.model.set_manual(comm.get_manual())
                 unit.model.set_initialized(initialized)
                 unit.model.set_online(True)
@@ -130,7 +128,6 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
 
                 controlunit_manager.add_communication(device_id, comm)
             else:
-                print("unit didnt exist")
                 model = ControlUnitModel(device_id)
 
                 try:

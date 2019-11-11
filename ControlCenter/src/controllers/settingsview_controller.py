@@ -247,8 +247,4 @@ class SettingsViewController(mvc.Controller):
         result = wx.MessageBox('Do you want to delete the selected unit?', 'Delete control unit', wx.YES_NO | wx.ICON_EXCLAMATION)
 
         if result == wx.YES:
-
-            print("deleting unit")
             self.controlunit_manager.delete_unit(unit.model.get_id())
-        else:
-            print("not deleting unit")
