@@ -27,6 +27,9 @@ class SettingsViewController(mvc.Controller):
         self.selected_unit = None
         self.disable_settings()
 
+        for unit in self.controlunit_manager.get_units():
+            unit.model.selected.add_callback(self.on_controlunit_selected_change)
+
     def on_tabstate_change(self, model, data):
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:

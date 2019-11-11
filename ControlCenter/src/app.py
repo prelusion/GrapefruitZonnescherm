@@ -54,9 +54,9 @@ class App(wx.App):
                              args=(self.app_id, self.controlunit_manager,), daemon=True)
         t.start()
 
-        # t = threading.Thread(target=controlunit.sensor_data_service,
-        #                      args=(self.controlunit_manager, 5), daemon=True)
-        # t.start()
+        t = threading.Thread(target=controlunit.sensor_data_service,
+                             args=(self.controlunit_manager, 5), daemon=True)
+        t.start()
 
 
 class MainView(wx.Frame):
