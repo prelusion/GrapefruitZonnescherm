@@ -69,8 +69,11 @@ class SettingsViewController(mvc.Controller):
         wx.CallAfter(self.disable_settings)
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:
-            self.view.delete_button.Enable()
+
             unit = units[0]
+            if not unit.model.get_online():
+                self.view.delete_button.Enable()
+
             if unit.has_communication():
                 self.init_settings_panel(units[0])
             else:

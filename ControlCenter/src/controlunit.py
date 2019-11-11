@@ -113,8 +113,9 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
                 unit.model.set_initialized(initialized)
                 unit.model.set_online(True)
                 sensor_data = comm.get_sensor_data()
-                unit.model.set_temperature(sensor_data.temperature)
-                unit.model.set_shutter_status(sensor_data.shutter_status)
+                if sensor_data:
+                    unit.model.set_temperature(sensor_data.temperature)
+                    unit.model.set_shutter_status(sensor_data.shutter_status)
 
                 try:
                     logger.info(f"checking for sensor history...")
@@ -141,8 +142,9 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
                 model.set_initialized(initialized)
                 model.set_manual(comm.get_manual())
                 sensor_data = comm.get_sensor_data()
-                model.set_temperature(sensor_data.temperature)
-                model.set_shutter_status(sensor_data.shutter_status)
+                if sensor_data:
+                    model.set_temperature(sensor_data.temperature)
+                    model.set_shutter_status(sensor_data.shutter_status)
 
                 try:
                     logger.info(f"checking for sensor history...")
