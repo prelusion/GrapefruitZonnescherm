@@ -3,6 +3,7 @@ import random
 import wx
 
 from src import mvc
+from src.models.controlunit import ControlUnitModel
 from src.views.controlunit_view import ControlUnitView
 from src.views.controlunits_view import ControlUnitsView
 
@@ -49,12 +50,13 @@ class ControlUnitsController(mvc.Controller):
         if debug:
             for i in range(3):
                 view = ControlUnitView(view_parent)
-                self.view.render_unit(1, view)
+                self.view.render_unit(i, view)
+                view.set_on_click_callback(lambda e: self.on_unit_click(ControlUnitModel(i), view))
 
     def on_units_changed(self, model, data):
         down_units = {k: self.prevstate[k] for k in set(self.prevstate) - set(data)}
         new_units = {k: data[k] for k in set(data) - set(self.prevstate)}
-        print("units changed:", new_units)
+
         for port, unit in down_units.items():
             comm, model = unit
             wx.CallAfter(lambda: self.view.remove_unit(model.get_id()))
@@ -94,6 +96,12 @@ class ControlUnitsController(mvc.Controller):
     def on_unit_click(self, model, view):
         # if model.is_selecting():
         #     return
-        
+
+        units = self.controlunits_manager.get_selected_units()
+
+        if len(units) >= 2:
+            wx.CallAfter(lambda: self.view.show_error("You can only select two control units at a time", title="Can not select more units"))
+            return
+
         view.set_selected(True) if not model.get_selected() else view.set_selected(False)
         model.set_selected(not model.get_selected())
