@@ -54,7 +54,7 @@ class ControlUnitsController(mvc.Controller):
     def on_units_changed(self, model, data):
         down_units = {k: self.prevstate[k] for k in set(self.prevstate) - set(data)}
         new_units = {k: data[k] for k in set(data) - set(self.prevstate)}
-
+        print("units changed:", new_units)
         for port, unit in down_units.items():
             comm, model = unit
             wx.CallAfter(lambda: self.view.remove_unit(model.get_id()))

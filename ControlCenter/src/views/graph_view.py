@@ -83,6 +83,6 @@ class GraphView(mvc.View):
                 linewidth=1,
                 color=color)
 
-    def remove_device(self, device_id):
+    def clear_graph(self):
         self.graph.clear()
         self.graph.draw()

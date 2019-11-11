@@ -50,8 +50,8 @@ class GraphTabView(View):
     def update_temperature_graph(self, device_id, color, timestamps, temperatures):
         self.temps_tab.graph.update_graph(device_id, color, timestamps, temperatures)
 
-    def remove_device(self, device_id):
-        self.temps_tab.graph.remove_device(device_id)
+    def clear_graph(self):
+        self.temps_tab.graph.clear_graph()
 
     def update_status_graph(self, device_id, color, timestamps, status):
         self.status_tab.graph.update_graph(device_id, color, timestamps, status)

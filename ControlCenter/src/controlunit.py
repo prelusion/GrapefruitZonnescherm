@@ -2,7 +2,6 @@ import concurrent
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
-from decimal import Decimal
 from logging import getLogger
 
 import serial as pyserial
@@ -32,7 +31,6 @@ def get_online_control_units(connected_ports=set(), unused_ports=set()):
             for i in range(20):
                 conn.write("PING")
                 data = conn.readbuffer()
-
                 if data and "PONG" in data:
                     return port
                 time.sleep(0.1)
@@ -73,14 +71,12 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
 
         new_ports, down_ports, invalid_ports = get_online_control_units(
             connected_ports=connected_ports, unused_ports=unused_ports)
-
         unused_ports |= invalid_ports
 
         for port in down_ports:
             controlunit_manager.remove_unit(port)
 
         for port in new_ports:
-
             if controlunit_manager.is_port_connected(port):
                 continue
 
@@ -119,12 +115,17 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
             model.set_initialized(initialized)
 
             try:
+                logger.info(f"checking for sensor history...")
                 history = comm.get_sensor_history()
                 if history:
+                    logger.info("adding history")
                     model.add_measurements(history)
+                else:
+                    logger.info("no sensor history was found")
             except pyserial.SerialException:
                 pass
 
+            logger.info("adding unit to control unit manager")
             controlunit_manager.add_unit(port, comm, model)
 
         time.sleep(interval)
@@ -209,7 +210,9 @@ class ControlUnitCommunication:
                 if not data:
                     continue
 
-                if "GET_SENSOR_HISTORY=L" in data:
+                if "GET_SENSOR_HISTORY=ERROR" in data:
+                    return None
+                elif "GET_SENSOR_HISTORY=L" in data:
                     datalength = data.split("GET_SENSOR_HISTORY=L")[1].strip()
                 elif "GET_SENSOR_HISTORY=OK" in data:
                     return ";".join(values)
@@ -217,7 +220,6 @@ class ControlUnitCommunication:
                     values.append(data.split("GET_SENSOR_HISTORY=")[1].strip())
 
         with threading.Lock():
-            logger.info("[THREADING] enter lock")
             try:
                 history_string = execute_command()
             except (
@@ -225,8 +227,6 @@ class ControlUnitCommunication:
                     serialutil.SerialException) as e:
                 logger.exception(e)
                 raise pyserial.SerialException
-
-        logger.info("[THREADING] exit lock")
 
         if not history_string:
             return
@@ -319,7 +319,6 @@ class ControlUnitCommunication:
             return False, buffer
 
         with threading.Lock():
-            logger.info("[THREADING] enter lock")
             buffer = None
 
             for i in range(self.COMMAND_RETRY):
@@ -333,8 +332,6 @@ class ControlUnitCommunication:
                         serialutil.SerialException) as e:
                     logger.exception(e)
                     raise pyserial.SerialException
-
-        logger.info("[THREADING] exit lock")
 
         return True if f"{command}=OK" in buffer else False
 
@@ -365,7 +362,6 @@ class ControlUnitCommunication:
 
         data = None
         with threading.Lock():
-            logger.info("[THREADING] enter lock")
 
             for i in range(self.COMMAND_RETRY):
                 try:
@@ -377,8 +373,6 @@ class ControlUnitCommunication:
                         serialutil.SerialException) as e:
                     logger.exception(e)
                     raise pyserial.SerialException
-
-        logger.info("[THREADING] exit lock")
 
         return data
 
