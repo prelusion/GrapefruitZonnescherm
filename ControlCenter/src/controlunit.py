@@ -75,7 +75,7 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
         unused_ports |= invalid_ports
 
         for port in down_ports:
-            controlunit_manager.remove_unit(port)
+            controlunit_manager.remove_communication(port)
 
         for port in new_ports:
             if controlunit_manager.is_port_connected(port):
@@ -87,47 +87,79 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
             initialized = True
 
             try:
-                current_id = comm.get_id()
+                device_id = comm.get_id()
             except pyserial.SerialException:
-                current_id = None
+                device_id = None
 
-            if not current_id:
+            if not device_id:
                 initialized = False
                 unit_id = util.generate_16bit_int()
-                current_id = util.encode_controlunit_id(app_id, unit_id)
+                device_id = util.encode_controlunit_id(app_id, unit_id)
             else:
                 logger.info("checking if device is already in database")
-                device = db.select_columns(db.TABLE_CONTROL_UNITS, "*", f"device_id = {current_id}")
+                device = db.select_columns(db.TABLE_CONTROL_UNITS, "*", f"device_id = {device_id}")
                 if not device:
                     logger.info("resetting device")
                     comm.reset()
                     initialized = False
 
-            logger.info(f"control unit with port '{port}' has id: {current_id}")
+            logger.info(f"control unit with port '{port}' has id: {device_id}")
 
-            model = ControlUnitModel(current_id)
+            unit = controlunit_manager.get_unit(device_id)
 
-            try:
+            if unit:
+                print("add communication to unit", device_id)
+
+                unit.model.set_manual(comm.get_manual())
+                unit.model.set_initialized(initialized)
+                unit.model.set_online(True)
+                sensor_data = comm.get_sensor_data()
+                if sensor_data:
+                    unit.model.set_temperature(sensor_data.temperature)
+                    unit.model.set_shutter_status(sensor_data.shutter_status)
+
+                try:
+                    logger.info(f"checking for sensor history...")
+                    history = comm.get_sensor_history()
+                    if history:
+                        logger.info("adding history")
+                        unit.model.add_measurements(history)
+                    else:
+                        logger.info("no sensor history was found")
+                except pyserial.SerialException:
+                    pass
+
+                controlunit_manager.add_communication(device_id, comm)
+            else:
+                print("unit didnt exist")
+                model = ControlUnitModel(device_id)
+
+                try:
+                    model.set_manual(comm.get_manual())
+                except pyserial.SerialException:
+                    pass
+
+                model.set_online(True)
+                model.set_initialized(initialized)
                 model.set_manual(comm.get_manual())
-            except pyserial.SerialException:
-                pass
+                sensor_data = comm.get_sensor_data()
+                if sensor_data:
+                    model.set_temperature(sensor_data.temperature)
+                    model.set_shutter_status(sensor_data.shutter_status)
 
-            model.set_online(True)
-            model.set_initialized(initialized)
+                try:
+                    logger.info(f"checking for sensor history...")
+                    history = comm.get_sensor_history()
+                    if history:
+                        logger.info("adding history")
+                        model.add_measurements(history)
+                    else:
+                        logger.info("no sensor history was found")
+                except pyserial.SerialException:
+                    pass
 
-            try:
-                logger.info(f"checking for sensor history...")
-                history = comm.get_sensor_history()
-                if history:
-                    logger.info("adding history")
-                    model.add_measurements(history)
-                else:
-                    logger.info("no sensor history was found")
-            except pyserial.SerialException:
-                pass
-
-            logger.info("adding unit to control unit manager")
-            controlunit_manager.add_unit(port, comm, model)
+                unit = controlunit_manager.add_unit(model)
+                unit.set_communication(comm)
 
         time.sleep(interval)
 
@@ -149,7 +181,7 @@ class ControlUnitCommunication:
 
     def __init__(self, port):
         self.id = None
-        self.com_port = port
+        self.port = port
         self._conn = None
 
     def initialize(self, device_id, window_height, temperature_threshold, light_intensity_threshold, manual_mode):
@@ -379,7 +411,7 @@ class ControlUnitCommunication:
 
     def _get_connection(self):
         if not self._conn:
-            self._conn = ser.Connection(self.com_port, BAUDRATE, timeout=2)
+            self._conn = ser.Connection(self.port, BAUDRATE, timeout=2)
             self._conn.open()
         return self._conn
 

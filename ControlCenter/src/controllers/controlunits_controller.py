@@ -3,7 +3,6 @@ import random
 import wx
 
 from src import mvc
-from src.models.controlunit import ControlUnitModel
 from src.views.controlunit_view import ControlUnitView
 from src.views.controlunits_view import ControlUnitsView
 
@@ -37,12 +36,13 @@ class ControlUnitsController(mvc.Controller):
         self.controlunits_manager = controlunits_manager
         self.view = ControlUnitsView(view_parent)
         self.controlunit_views = []
-        self.prevstate = {}
+        self.prevstate = []
 
-        for comm, model in self.controlunits_manager.get_units():
-            view = ControlUnitView(self.view)
-            self.controlunit_views[model.get_id()] = view
-            self.view.render_unit(model.get_id(), view)
+        units = self.controlunits_manager.get_units()
+        for unit in units:
+            print("rendering unit in init")
+            self.create_control_unit_view(unit.model)
+            self.prevstate = units.copy()
 
         self.controlunits_manager.units.add_callback(self.on_units_changed)
 
@@ -50,20 +50,23 @@ class ControlUnitsController(mvc.Controller):
         if debug:
             for i in range(3):
                 view = ControlUnitView(view_parent)
-                self.view.render_unit(i, view)
-                view.set_on_click_callback(lambda e: self.on_unit_click(ControlUnitModel(i), view))
+                self.view.render_unit(1, view)
 
     def on_units_changed(self, model, data):
-        down_units = {k: self.prevstate[k] for k in set(self.prevstate) - set(data)}
-        new_units = {k: data[k] for k in set(data) - set(self.prevstate)}
+        print("units changed")
+        print("data:", data)
+        print("prevstate:", self.prevstate)
+        down_units = [i for i in set(self.prevstate) - set(data)]
+        new_units = [i for i in set(data) - set(self.prevstate)]
 
-        for port, unit in down_units.items():
-            comm, model = unit
-            wx.CallAfter(lambda: self.view.remove_unit(model.get_id()))
+        print("down units:", down_units)
+        print("new units:", new_units)
 
-        for port, unit in new_units.items():
-            comm, model = unit
-            wx.CallAfter(lambda: self.create_control_unit_view(model))
+        for unit in down_units:
+            wx.CallAfter(lambda: self.view.remove_unit(unit.model.get_id()))
+
+        for unit in new_units:
+            wx.CallAfter(lambda: self.create_control_unit_view(unit.model))
 
         self.prevstate = data.copy()
 
@@ -80,18 +83,23 @@ class ControlUnitsController(mvc.Controller):
         model.name.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_name(value)))
         model.temperature.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_temperature(value)))
         model.shutter_status.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_shutter_status(value)))
-        model.online.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_connection(value)))
+        model.online.add_callback(lambda model, value: wx.CallAfter(lambda: self.on_unit_online_change(model, value, view)))
         model.color.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_device_color(value)))
         model.manual.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_manual(value)))
         model.selected.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_selected(value)))
-
         view.set_on_click_callback(lambda e: self.on_unit_click(model, view))
+
+        if model.get_online(): view.Enable()
+
         self.view.render_unit(model.get_id(), view)
 
         if not model.get_initialized():
             wx.MessageBox("Please select your new device and go to the settings tab",
                           'New device detected',
                           wx.OK | wx.ICON_INFORMATION)
+
+    def update_control_unit_view(self):
+        pass
 
     def on_unit_click(self, model, view):
         # if model.is_selecting():
@@ -105,3 +113,13 @@ class ControlUnitsController(mvc.Controller):
 
         view.set_selected(True) if not model.get_selected() else view.set_selected(False)
         model.set_selected(not model.get_selected())
+
+    def on_unit_online_change(self, model, online: bool, view):
+        view.set_connection(online)
+
+        if not online:
+            model.set_selected(False)
+
+        view.Layout()
+        view.Refresh()
+        view.Update()
