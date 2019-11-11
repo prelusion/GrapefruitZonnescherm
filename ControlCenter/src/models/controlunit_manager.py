@@ -62,9 +62,8 @@ class ControlUnitManager:
 
         for unit in self.units.get():
             if unit.model.get_id() == device_id:
-                print("units", new_units)
+                db.delete(db.TABLE_CONTROL_UNITS, f"device_id = {device_id}")
                 new_units.remove(unit)
-                print("units", new_units)
                 self.units.set(new_units)
         else:
             logger.warning(f"trying to delete unit with unexisting id: {device_id}")
