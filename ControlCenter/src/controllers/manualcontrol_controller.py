@@ -41,14 +41,14 @@ class ManualControlController(mvc.Controller):
                     return
 
     def on_units_change(self, model, data):
-        for comm, model in self.controlunit_manager.get_units():
-            model.selected.add_callback(self.on_unit_selected_change)
+        for unit in self.controlunit_manager.get_units():
+            unit.model.selected.add_callback(self.on_unit_selected_change)
 
     def on_unit_selected_change(self, model, data):
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:
-            comm, model = units[0]
-            if not comm and self.tabstate_model.is_manual_view():
+            unit = units[0]
+            if not unit.has_communication() and self.tabstate_model.is_manual_view():
                 self.view.show_error("Device must be connected for manual control", title="Device not connected")
                 return
 
@@ -65,10 +65,10 @@ class ManualControlController(mvc.Controller):
     def on_manual_control_enable(self):
 
         def execute():
-            for comm, model in self.controlunit_manager.get_selected_units():
+            for unit in self.controlunit_manager.get_selected_units():
                 try:
-                    if comm.set_manual(True):
-                        wx.CallAfter(lambda: model.set_manual(True))
+                    if unit.comm.set_manual(True):
+                        wx.CallAfter(lambda: unit.model.set_manual(True))
                         wx.CallAfter(lambda: self.view.enable_shutter_control_buttons())
                         wx.CallAfter(lambda: self.view.manual_toggle.on_toggle_2_success())
                     else:
@@ -86,10 +86,10 @@ class ManualControlController(mvc.Controller):
         self.view.disable_shutter_control_buttons()
 
         def execute():
-            for comm, model in self.controlunit_manager.get_selected_units():
+            for unit in self.controlunit_manager.get_selected_units():
                 try:
-                    if comm.set_manual(False):
-                        wx.CallAfter(lambda: model.set_manual(False))
+                    if unit.comm.set_manual(False):
+                        wx.CallAfter(lambda: unit.model.set_manual(False))
                         wx.CallAfter(lambda: self.view.manual_toggle.on_toggle_1_success())
                     else:
                         wx.CallAfter(lambda: self.view.show_error("Disable manual control failure"))
@@ -105,10 +105,10 @@ class ManualControlController(mvc.Controller):
     def on_toggle_up(self):
 
         def execute():
-            for comm, model in self.controlunit_manager.get_selected_units():
+            for unit in self.controlunit_manager.get_selected_units():
                 try:
-                    if comm.roll_up():
-                        wx.CallAfter(lambda: model.set_shutter_status(model.SHUTTER_GOING_UP))
+                    if unit.comm.roll_up():
+                        wx.CallAfter(lambda: unit.model.set_shutter_status(unit.model.SHUTTER_GOING_UP))
                         wx.CallAfter(lambda: self.view.shutter_control.on_toggle_1_success())
                     else:
                         wx.CallAfter(lambda: self.view.show_error("Toggle up failure"))
@@ -124,10 +124,10 @@ class ManualControlController(mvc.Controller):
     def on_toggle_down(self):
 
         def execute():
-            for comm, model in self.controlunit_manager.get_selected_units():
+            for unit in self.controlunit_manager.get_selected_units():
                 try:
-                    if comm.roll_down():
-                        wx.CallAfter(lambda: model.set_shutter_status(model.SHUTTER_GOING_DOWN))
+                    if unit.comm.roll_down():
+                        wx.CallAfter(lambda: unit.model.set_shutter_status(unit.model.SHUTTER_GOING_DOWN))
                         wx.CallAfter(lambda: self.view.shutter_control.on_toggle_2_success())
                     else:
                         wx.CallAfter(lambda: self.view.show_error("Toggle down failure"))

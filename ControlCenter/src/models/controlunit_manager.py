@@ -10,47 +10,68 @@ from src.models.controlunit import ControlUnitModel
 logger = getLogger(__name__)
 
 
+class Unit:
+    def __init__(self, model):
+        self.model = model
+        self.comm = None
+
+    def set_communication(self, comm):
+        self.comm = comm
+        self.model.set_online(True)
+
+    def has_communication(self):
+        return self.comm is not None
+
+    def remove_communication(self):
+        try:
+            self.comm.close()
+        except pyserial.SerialException:
+            pass
+        self.comm = None
+        self.model.set_online(False)
+
+
 class ControlUnitManager:
     def __init__(self):
-        self.units = mvc.Observable(self, [])  #  (ControlUnitCommunication, ControlUnitModel)
-        self.ports = mvc.Observable(self, [])
+        self.units = mvc.Observable(self, [])  # [Unit)
 
     def get_unit(self, device_id):
-        units = [(comm, model) for comm, model in self.units.get() if model.get_id() == device_id]
+        units = [unit for unit in self.units.get() if unit.model.get_id() == device_id]
         if len(units) == 1:
             return units[0]
 
-    def add_communication(self, device_id, port, comm):
-        unit = self.get_unit(device_id)
-        current_comm, model = unit
-        idx = self.units.get().index(unit)
-        units = self.units.get()
-        units[idx] = (comm, model)
-        ports = self.ports.get()
-        ports.append(port)
-        model.set_online(True)
-        self.ports.set(ports)
-        self.units.set(units)
+    def add_communication(self, device_id, comm):
+        self.get_unit(device_id).set_communication(comm)
+
+    def remove_communication(self, port):
+        for unit in self.units.get():
+            if unit.has_communication() and unit.comm.port == port:
+                unit.remove_communication()
+                return
+        else:
+            logger.warning(f"trying to remove connection from unexisting port: {port}")
 
     def add_unit(self, device_id, communication, port):
         print("adding unit to manager")
-        units = self.units.get()
-        units[port] = (communication, model)
-        self.units.set(units)
+        # units = self.units.get()
+        # units[port] = (communication, model)
+        # self.units.set(units)
 
     def remove_unit(self, port):
-        units = self.units.get()
-        if port not in units:
-            logger.warning(f"trying to remove unexisting port: {port}")
-            return
+        units = self.units.get().copy()
 
-        comm, model = units[port]
-        try:
-            comm.close()
-        except pyserial.SerialException:
-            pass
-        del units[port]
-        self.units.set(units)
+        for i, unit in enumerate(units):
+            if unit.has_communication() and unit.comm.port == port:
+                try:
+                    unit.comm.close()
+                except pyserial.SerialException:
+                    pass
+
+                del units[i]
+                self.units.set(units)
+                return
+        else:
+            logger.warning(f"trying to remove unexisting port: {port}")
 
     def fetch_units_from_db(self):
         units = []
@@ -61,7 +82,7 @@ class ControlUnitManager:
             model.set_color(color)
             model.set_online(False)
             model.set_initialized(True)
-            units.append((None, model))
+            units.append(Unit(model))
 
         self.units.set(units)
 
@@ -69,6 +90,7 @@ class ControlUnitManager:
         """
         :return: [(comm, model), (comm, model)]
         """
+        print("get units", self.units.get())
         return self.units.get()
 
     def get_selected_units(self):
@@ -77,31 +99,30 @@ class ControlUnitManager:
 
         :return: [(comm, model), (comm, model)]
         """
-        return [unit for unit in self.units.get() if unit[1].get_selected()]
+        return [unit for unit in self.units.get() if unit.model.get_selected()]
 
     def is_port_connected(self, port):
-        return port in self.ports.get()
+        return port in self.get_connected_ports()
 
     def get_connected_ports(self):
-        return self.ports.get()
+        return [unit.comm.port for unit in self.units.get() if unit.comm]
 
     def update_sensor_data(self):
-        for comm, model in self.units.get().copy():
+        for unit in self.units.get().copy():
             try:
-                data = comm.get_sensor_data()
+                data = unit.comm.get_sensor_data()
 
                 if data:
-                    model.add_measurement(data)
-                    model.set_temperature(data.temperature)
-                    model.set_shutter_status(data.shutter_status)
-                    model.set_light_intensity(data.light_intensity)
+                    unit.model.add_measurement(data)
+                    unit.model.set_temperature(data.temperature)
+                    unit.model.set_shutter_status(data.shutter_status)
+                    unit.model.set_light_intensity(data.light_intensity)
             except pyserial.SerialException:
                 pass
 
     def close_connections(self):
-        for unit in self.units.get().items():
-            comm, model = unit
+        for unit in self.units.get():
             try:
-                comm.close()
+                unit.comm.close()
             except pyserial.SerialException:
                 pass

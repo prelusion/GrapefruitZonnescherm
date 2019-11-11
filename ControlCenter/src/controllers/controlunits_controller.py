@@ -38,9 +38,9 @@ class ControlUnitsController(mvc.Controller):
         self.controlunit_views = []
         self.prevstate = {}
 
-        for comm, model in self.controlunits_manager.get_units():
+        for unit in self.controlunits_manager.get_units():
             print("rendering unit in init")
-            self.create_control_unit_view(model)
+            self.create_control_unit_view(unit.model)
 
         self.controlunits_manager.units.add_callback(self.on_units_changed)
 
@@ -53,16 +53,14 @@ class ControlUnitsController(mvc.Controller):
     def on_units_changed(self, model, data):
         down_units = [i for i in set(self.prevstate) - set(data)]
         new_units = [i for i in set(data) - set(self.prevstate)]
-        print("new units:", new_units)
-        print("down units:", down_units)
-        #
-        # for comm, model in down_units:
-        #     wx.CallAfter(lambda: self.view.remove_unit(model.get_id()))
-        #
-        # for comm, model in new_units:
-        #     wx.CallAfter(lambda: self.create_control_unit_view(model))
-        #
-        # self.prevstate = data.copy()
+
+        for unit in down_units:
+            wx.CallAfter(lambda: self.view.remove_unit(unit.model.get_id()))
+
+        for unit in new_units:
+            wx.CallAfter(lambda: self.create_control_unit_view(unit.model))
+
+        self.prevstate = data.copy()
 
     def create_control_unit_view(self, model):
         print("CREATE CONTROL UNIT VIEW")
@@ -82,14 +80,17 @@ class ControlUnitsController(mvc.Controller):
         model.color.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_device_color(value)))
         model.manual.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_manual(value)))
         model.selected.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_selected(value)))
-
         view.set_on_click_callback(lambda e: self.on_unit_click(model, view))
+
         self.view.render_unit(model.get_id(), view)
 
         if not model.get_initialized():
             wx.MessageBox("Please select your new device and go to the settings tab",
                           'New device detected',
                           wx.OK | wx.ICON_INFORMATION)
+
+    def update_control_unit_view(self):
+        pass
 
     def on_unit_click(self, model, view):
         # if model.is_selecting():

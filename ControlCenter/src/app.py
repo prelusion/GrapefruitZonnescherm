@@ -46,7 +46,8 @@ class App(wx.App):
 
         self.app_id = app_data["id"]
 
-        wx.CallLater(500, self.controlunit_manager.fetch_units_from_db)
+        self.controlunit_manager.fetch_units_from_db()
+        # wx.CallLater(500, self.controlunit_manager.fetch_units_from_db)
 
     def start_background_services(self):
         t = threading.Thread(target=controlunit.online_control_unit_service,

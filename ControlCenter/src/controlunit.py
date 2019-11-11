@@ -74,7 +74,7 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
         unused_ports |= invalid_ports
 
         for port in down_ports:
-            controlunit_manager.remove_unit(port)
+            controlunit_manager.remove_communication(port)
 
         for port in new_ports:
             if controlunit_manager.is_port_connected(port):
@@ -108,7 +108,7 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
 
             if unit:
                 print("add communication to unit", device_id)
-                controlunit_manager.add_communication(device_id, port, comm)
+                controlunit_manager.add_communication(device_id, comm)
             else:
                 print("unit didnt exist")
             # model = ControlUnitModel(current_id)
@@ -155,7 +155,7 @@ class ControlUnitCommunication:
 
     def __init__(self, port):
         self.id = None
-        self.com_port = port
+        self.port = port
         self._conn = None
 
     def initialize(self, device_id, window_height, temperature_threshold, light_intensity_threshold, manual_mode):
@@ -385,7 +385,7 @@ class ControlUnitCommunication:
 
     def _get_connection(self):
         if not self._conn:
-            self._conn = ser.Connection(self.com_port, BAUDRATE, timeout=2)
+            self._conn = ser.Connection(self.port, BAUDRATE, timeout=2)
             self._conn.open()
         return self._conn
 

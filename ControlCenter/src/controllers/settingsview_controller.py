@@ -30,8 +30,8 @@ class SettingsViewController(mvc.Controller):
     def on_tabstate_change(self, model, data):
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:
-            comm, model = units[0]
-            if comm:
+            unit = units[0]
+            if unit.has_communication():
                 self.init_settings_panel(units[0])
             else:
                 if self.tabstate_model.is_settings_view():
@@ -39,25 +39,24 @@ class SettingsViewController(mvc.Controller):
 
     def on_controlunits_change(self, model, data):
         wx.CallAfter(self.disable_settings)
-        for comm, model in data:
-            model.selected.add_callback(self.on_controlunit_selected_change)
+        for unit in data:
+            unit.model.selected.add_callback(self.on_controlunit_selected_change)
 
     def on_controlunit_selected_change(self, model, data):
         wx.CallAfter(self.disable_settings)
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:
-            comm, model = units[0]
-            if comm:
+            unit = units[0]
+            if unit.has_communication():
                 self.init_settings_panel(units[0])
             else:
                 if self.tabstate_model.is_settings_view():
                     wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings", title="Device not connected"))
 
     def init_settings_panel(self, unit):
-        comm, model = unit
 
         def update_view(window_height, temperature_threshold, light_threshold, color):
-            self.view.set_name(model.get_name())
+            self.view.set_name(unit.model.get_name())
             self.view.set_color(color)
             self.view.set_window_height(window_height if window_height != "ERROR" else "")
             self.view.set_temperature_threshold(temperature_threshold if temperature_threshold != "ERROR" else "")
@@ -74,10 +73,10 @@ class SettingsViewController(mvc.Controller):
 
         def execute_threaded():
             try:
-                window_height = str(comm.get_window_height())
-                temperature_threshold = comm.get_temperature_threshold()
-                light_threshold = comm.get_light_intensity_threshold()
-                color = model.get_color()
+                window_height = str(unit.comm.get_window_height())
+                temperature_threshold = unit.comm.get_temperature_threshold()
+                light_threshold = unit.comm.get_light_intensity_threshold()
+                color = unit.model.get_color()
                 wx.CallAfter(lambda: update_view(window_height, temperature_threshold, light_threshold, color))
             except pyserial.SerialException:
                 logger.warning("Serial error")
