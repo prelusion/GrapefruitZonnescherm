@@ -221,7 +221,7 @@ class ControlUnitCommunication:
             try:
                 history_string = execute_command()
             except (
-                    UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                    UnicodeDecodeError, Exception, OSError, IOError, pyserial.SerialException,
                     serialutil.SerialException) as e:
                 logger.exception(e)
                 raise pyserial.SerialException
@@ -329,7 +329,7 @@ class ControlUnitCommunication:
                         break
                     time.sleep(self.RETRY_SLEEP)
                 except (
-                        UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                        UnicodeDecodeError, Exception, OSError, IOError, pyserial.SerialException,
                         serialutil.SerialException) as e:
                     logger.exception(e)
                     raise pyserial.SerialException
@@ -373,7 +373,7 @@ class ControlUnitCommunication:
                     if data: break
                     time.sleep(self.RETRY_SLEEP)
                 except (
-                        UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
+                        UnicodeDecodeError, Exception, OSError, IOError, pyserial.SerialException,
                         serialutil.SerialException) as e:
                     logger.exception(e)
                     raise pyserial.SerialException
