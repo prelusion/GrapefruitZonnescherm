@@ -52,9 +52,10 @@ class ControlUnitModel(mvc.Model):
         db.update(db.TABLE_CONTROL_UNITS, f"name = '{name}'", f"device_id = {self.get_id()}")
 
     def get_name(self):
-        name = db.select_columns(db.TABLE_CONTROL_UNITS, "name", f"device_id = {self.get_id()}")
-        if name and len(name) == 1:
-            self.set_name(name[0][0])
+        if not self.name.get()
+            name = db.select_columns(db.TABLE_CONTROL_UNITS, "name", f"device_id = {self.get_id()}")
+            if name and len(name) == 1:
+                self.set_name(name[0][0])
         return self.name.get()
 
     def set_color(self, color):
