@@ -113,7 +113,7 @@ void set_current_unit_status(UnitStatus unit_status);
  * 
  * \returns last valid button
  */
- SelectedSensor get_current_selected_sensor();
+ uint8_t get_current_selected_buttons();
  
 /** 
  * \brief  
@@ -122,5 +122,5 @@ void set_current_unit_status(UnitStatus unit_status);
  *\param new_toggled_buttons a new toggle button. 
  */
 
- void set_current_selected_sensor(SelectedSensor selected_sensor);
+ void set_current_selected_buttons(uint8_t toggle_status);
 #endif

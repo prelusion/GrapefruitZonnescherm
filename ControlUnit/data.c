@@ -68,12 +68,12 @@ void set_current_unit_status(UnitStatus unit_status)
 	current_unit_status = unit_status;
 }
 
-SelectedSensor get_current_selected_sensor()
+uint8_t get_current_selected_buttons()
 {
 	return current_selected_sensor;
 }
 
-void set_current_selected_sensor(SelectedSensor selected_sensor)
+void set_current_selected_buttons(uint8_t toggle_status)
 {
-	current_selected_sensor = selected_sensor;
+	current_selected_sensor = toggle_status;
 }

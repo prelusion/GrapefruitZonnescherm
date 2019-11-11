@@ -21,7 +21,7 @@ const uint8_t data = 5;
 const uint8_t clock = 6;
 const uint8_t strobe = 7;
 
-/*0*/  /*1*/   /*2*/  /*3*/  /*4*/  /*5*/  /*6*/  /*7*/  /*8*/  /*9*/ /* C */ /*D*/ /* E */ /* I */ /* L */ /* M */ /* P */ /* S */ /* T */ /* ° */ /*   */
+/*0*/  /*1*/   /*2*/  /*3*/  /*4*/  /*5*/  /*6*/  /*7*/  /*8*/  /*9*/ /* C */ /*D*/ /* E */ /* I */ /* L */ /* M */ /* P */ /* S */ /* T */ /* G */ /*   */
 const uint8_t characters[] = { 0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x39, 0x5e, 0x78, 0x30, 0x38, 0x15, 0x73, 0x6d, 0x78, 0xe3, 0x00 };
 
 // read_pin_from_display value from pin
@@ -117,7 +117,7 @@ void display_measurement(SelectedSensor sensor, int8_t measurement)
 	{
 		case TEMPERATURE:
 		strcpy(text, "TEMP");
-		unit = '°';
+		unit = 'G';
 		break;
 		case LIGHT_INTENSITY:
 		strcpy(text, "LI  ");
@@ -195,7 +195,7 @@ void display_measurement(SelectedSensor sensor, int8_t measurement)
 			case 'T':
 			character_index = 18;
 			break;
-			case '°':
+			case 'G':
 			character_index = 19;
 			break;
 			default:
@@ -209,10 +209,10 @@ void display_measurement(SelectedSensor sensor, int8_t measurement)
 }
 
 //Checks if new pressed button is valid
-SelectedSensor check_new_pressed_buttons_from_display(void)
+uint8_t check_new_pressed_buttons_from_display(void)
 {
-	SelectedSensor new_pressed_buttons = read_pressed_display_buttons();
-	SelectedSensor buttons = get_current_selected_sensor();
+	uint8_t new_pressed_buttons = read_pressed_display_buttons();
+	uint8_t buttons = get_current_selected_buttons();
 	if(new_pressed_buttons != buttons && new_pressed_buttons != 0x00)
 	{
 		buttons = new_pressed_buttons;
@@ -221,7 +221,7 @@ SelectedSensor check_new_pressed_buttons_from_display(void)
 }
 
 //read_pin_from_displays all the digital buttons that are pressed
-SelectedSensor read_pressed_display_buttons()
+uint8_t read_pressed_display_buttons()
 {
 	uint8_t checked_buttons = 0;
 	write_pin_from_display(strobe, LOW);
@@ -237,6 +237,6 @@ SelectedSensor read_pressed_display_buttons()
 
 	DDRD |= _BV(data); // set bit, direction = output
 	write_pin_from_display(strobe, HIGH);
-	return (SelectedSensor)checked_buttons;
+	return (uint8_t)checked_buttons;
 
 }

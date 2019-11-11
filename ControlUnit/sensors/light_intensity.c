@@ -18,7 +18,7 @@ uint8_t get_light_intensity(void)
 		light_intensity = 100;
 	}
 	//Return the %amount
-	return light_intensity;
+	return (uint8_t)light_intensity;
 }
 
 uint8_t light_intensity_sensor_connected(void)
