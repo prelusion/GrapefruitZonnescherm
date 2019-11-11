@@ -18,11 +18,11 @@ class ControlUnitModel(mvc.Model):
         self.id = mvc.Observable(self, id)
         self.name = mvc.Observable(self, "uninitialized")
         self.online = mvc.Observable(self, True)
-        self.manual = mvc.Observable(self, False)
+        self.manual = mvc.Observable(self, None)
         self.color = mvc.Observable(self, wx.NullColour)
         self.measurements = mvc.Observable(self, [])
         self.shutter_status = mvc.Observable(self, None)
-        self.temperature = mvc.Observable(self, 0)
+        self.temperature = mvc.Observable(self, None)
         self.light_intensity = mvc.Observable(self, 0)
         self.selected = mvc.Observable(self, False)
 

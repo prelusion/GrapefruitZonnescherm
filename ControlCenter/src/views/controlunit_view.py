@@ -10,6 +10,8 @@ UnitValueBox = namedtuple("UnitValueBox", ["panel", "label"])
 class ControlUnitView(wx.Panel):
     COLOR_ACTIVE = (0, 0, 0)
     COLOR_INACTIVE = (200, 200, 200)
+    COLOR_ONLINE = (0, 153, 51)
+    COLOR_OFFLINE = wx.RED
 
     def __init__(self, parent):
         super().__init__(parent, size=(500, 130))
@@ -72,7 +74,10 @@ class ControlUnitView(wx.Panel):
 
     def set_temperature(self, value):
         box = self.boxes["temperature"]
-        box.label.SetLabelText(str(value) + " °C")
+        if value:
+            box.label.SetLabelText(str(value) + " °C")
+        else:
+            box.label.SetLabelText("unknown")
         self._refresh(box.panel)
 
     def set_name(self, value):
@@ -95,11 +100,17 @@ class ControlUnitView(wx.Panel):
     def set_connection(self, boolean):
         box = self.boxes["connection"]
         box.label.SetLabelText("online" if boolean else "offline")
+        box.label.SetForegroundColour(self.COLOR_ONLINE if boolean else self.COLOR_OFFLINE)
         self._refresh(box.panel)
 
-    def set_manual(self, boolean):
+    def set_manual(self, value):
         box = self.boxes["mode"]
-        box.label.SetLabelText("manual" if boolean else "auto")
+
+        if value is None:
+            box.label.SetLabelText("unknown")
+        else:
+            box.label.SetLabelText("manual" if value else "auto")
+
         self._refresh(box.panel)
 
     def _refresh(self, panel):

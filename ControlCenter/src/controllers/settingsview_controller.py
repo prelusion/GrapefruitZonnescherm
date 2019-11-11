@@ -13,35 +13,78 @@ logger = logging.getLogger(__name__)
 
 
 class SettingsViewController(mvc.Controller):
-    def __init__(self, app, view_parent, controlunit_manager):
+    def __init__(self, app, view_parent, controlunit_manager, tabstate_model):
         super().__init__()
 
         self.app = app
         self.view_parent = view_parent
         self.view = SettingsView(self.view_parent)
         self.controlunit_manager = controlunit_manager
+        self.tabstate_model = tabstate_model
+        self.tabstate_model.state.add_callback(self.on_tabstate_change)
         self.controlunit_manager.units.add_callback(self.on_controlunits_change)
         self.view.apply_button.Bind(wx.EVT_BUTTON, self.on_apply)
+        self.view.delete_button.Bind(wx.EVT_BUTTON, self.on_delete_unit)
         self.selected_unit = None
         self.disable_settings()
 
-    def on_controlunits_change(self, model, data):
-        wx.CallAfter(self.disable_settings)
-        for port, unit in data.items():
-            comm, model = unit
-            model.selected.add_callback(self.on_controlunit_selected_change)
+        for unit in self.controlunit_manager.get_units():
+            unit.model.selected.add_callback(self.on_controlunit_selected_change)
+            unit.model.online.add_callback(self.on_controlunit_online_change)
 
-    def on_controlunit_selected_change(self, model, data):
+    def on_tabstate_change(self, model, data):
+        units = self.controlunit_manager.get_selected_units()
+        if len(units) == 1:
+            unit = units[0]
+            if unit.has_communication():
+                self.init_settings_panel(units[0])
+            else:
+                if self.tabstate_model.is_settings_view():
+                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
+                                                              title="Device not connected"))
+
+    def on_controlunits_change(self, model, data):
+        self.view.delete_button.Disable()
+        wx.CallAfter(self.disable_settings)
+        for unit in data:
+            unit.model.selected.add_callback(self.on_controlunit_selected_change)
+            unit.model.online.add_callback(self.on_controlunit_online_change)
+
+    def on_controlunit_online_change(self, model, data):
         wx.CallAfter(self.disable_settings)
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:
-            self.init_settings_panel(units[0])
+            unit = units[0]
+            if not unit.model.get_selected():
+                return
+            if unit.has_communication():
+                self.init_settings_panel(units[0])
+            else:
+                if self.tabstate_model.is_settings_view():
+                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
+                                                              title="Device not connected"))
+
+    def on_controlunit_selected_change(self, model, data):
+        self.view.delete_button.Disable()
+        wx.CallAfter(self.disable_settings)
+        units = self.controlunit_manager.get_selected_units()
+        if len(units) == 1:
+
+            unit = units[0]
+            if not unit.model.get_online():
+                self.view.delete_button.Enable()
+
+            if unit.has_communication():
+                self.init_settings_panel(units[0])
+            else:
+                if self.tabstate_model.is_settings_view():
+                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
+                                                              title="Device not connected"))
 
     def init_settings_panel(self, unit):
-        comm, model = unit
 
         def update_view(window_height, temperature_threshold, light_threshold, color):
-            self.view.set_name(model.get_name())
+            self.view.set_name(unit.model.get_name())
             self.view.set_color(color)
             self.view.set_window_height(window_height if window_height != "ERROR" else "")
             self.view.set_temperature_threshold(temperature_threshold if temperature_threshold != "ERROR" else "")
@@ -53,15 +96,16 @@ class SettingsViewController(mvc.Controller):
                 self.enable_settings()
             else:
                 self.disable_settings()
+                self.view.delete_button.Disable()
 
             self.view.Update()
 
         def execute_threaded():
             try:
-                window_height = str(comm.get_window_height())
-                temperature_threshold = comm.get_temperature_threshold()
-                light_threshold = comm.get_light_intensity_threshold()
-                color = model.get_color()
+                window_height = str(unit.comm.get_window_height())
+                temperature_threshold = unit.comm.get_temperature_threshold()
+                light_threshold = unit.comm.get_light_intensity_threshold()
+                color = unit.model.get_color()
                 wx.CallAfter(lambda: update_view(window_height, temperature_threshold, light_threshold, color))
             except pyserial.SerialException:
                 logger.warning("Serial error")
@@ -117,13 +161,13 @@ class SettingsViewController(mvc.Controller):
             return
 
         def execute_threaded():
-            for comm, model in self.controlunit_manager.get_selected_units():
+            for unit in self.controlunit_manager.get_selected_units():
                 try:
-                    device_id = comm.get_id()
+                    device_id = unit.comm.get_id()
 
                     if device_id:
-                        self.update_settings(comm,
-                                             model,
+                        self.update_settings(unit.comm,
+                                             unit.model,
                                              device_id,
                                              name,
                                              color,
@@ -131,15 +175,15 @@ class SettingsViewController(mvc.Controller):
                                              temperature_threshold,
                                              light_intensity_threshold)
                     else:
-                        self.init_device(comm,
-                                         model,
-                                         model.get_id(),
+                        self.init_device(unit.comm,
+                                         unit.model,
+                                         unit.model.get_id(),
                                          name,
                                          color,
                                          height,
                                          temperature_threshold,
                                          light_intensity_threshold,
-                                         model.get_manual())
+                                         unit.model.get_manual())
                 except pyserial.SerialException:
                     logger.warning("Serial error")
                     # TODO: show user error
@@ -191,3 +235,20 @@ class SettingsViewController(mvc.Controller):
         model.set_name(name)
         model.set_color(color)
         wx.CallAfter(lambda: self.view.show_success("Successfully updated device"))
+
+    def on_delete_unit(self, e):
+        units = self.controlunit_manager.get_selected_units()
+
+        if len(units) != 1:
+            return
+
+        unit = units[0]
+
+        result = wx.MessageBox('Do you want to delete the selected unit?', 'Delete control unit', wx.YES_NO | wx.ICON_EXCLAMATION)
+
+        if result == wx.YES:
+
+            print("deleting unit")
+            self.controlunit_manager.delete_unit(unit.model.get_id())
+        else:
+            print("not deleting unit")
