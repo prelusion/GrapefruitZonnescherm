@@ -57,13 +57,26 @@ class ManualControlView(mvc.View):
 
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.main_sizer)
-        self.main_sizer.AddSpacer(50)
 
         self.inner_panel = wx.Panel(self)
         self.main_sizer.Add(self.inner_panel, 20, wx.CENTER)
 
         grid_sizer = wx.GridSizer(14, 3, 0, 20)
         self.inner_panel.SetSizer(grid_sizer)
+
+        # Top text
+        grid_sizer.Add(wx.StaticText(self.inner_panel))
+        manualText = wx.StaticText(self.inner_panel, label="Manual:")
+        manualText.SetFont(util.MainFont("title", fontsize=12))
+        grid_sizer.Add(manualText, wx.ALIGN_CENTER)
+        grid_sizer.Add(wx.StaticText(self.inner_panel))
+
+        # Selected unit name
+        self.manual_toggle = LabeledDoubleToggleButton(self.inner_panel, "Manual Control", "ON", "OFF")
+        grid_sizer.Add(self.manual_toggle.label, flag=wx.EXPAND | wx.ALL)
+        grid_sizer.Add(self.manual_toggle.button1, flag=wx.EXPAND | wx.ALL)
+        grid_sizer.Add(self.manual_toggle.button2, flag=wx.EXPAND | wx.ALL)
+
 
         # Manual toggle
         self.manual_toggle = LabeledDoubleToggleButton(self.inner_panel, "Manual Control", "ON", "OFF")
