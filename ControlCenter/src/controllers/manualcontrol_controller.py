@@ -32,6 +32,7 @@ class ManualControlController(mvc.Controller):
     def on_units_change(self, model, data):
         for comm, model in self.controlunit_manager.get_units():
             model.selected.add_callback(self.on_unit_selected_change)
+            model.name.add_callback(self.on_selected_unit_name_change)
 
     def on_unit_selected_change(self, model, data):
         units = self.controlunit_manager.get_selected_units()
@@ -39,13 +40,22 @@ class ManualControlController(mvc.Controller):
             comm, model = units[0]
             self.view.enable_manual_control()
             self.view.toggle_manual_control(model.get_manual())
+            self.view.set_selected_unit_name(model.get_name())
             if model.get_manual():
                 self.view.enable_shutter_control_buttons()
                 self.view.toggle_shutter_control(model.get_shutter_status())
         elif units:
+            self.view.set_selected_unit_name()
             self.view.disable_manual_control()
         else:
+            self.view.set_selected_unit_name()
             self.view.disable_manual_control()
+
+    def on_selected_unit_name_change(self, mode, data):
+        units = self.controlunit_manager.get_selected_units()
+        if len(units) == 1:
+            comm, model = units[0]
+            self.view.set_selected_unit_name(model.get_name())
 
     def on_manual_control_enable(self):
 

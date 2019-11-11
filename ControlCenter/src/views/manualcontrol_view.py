@@ -72,11 +72,12 @@ class ManualControlView(mvc.View):
         grid_sizer.Add(wx.StaticText(self.inner_panel))
 
         # Selected unit name
-        self.manual_toggle = LabeledDoubleToggleButton(self.inner_panel, "Manual Control", "ON", "OFF")
-        grid_sizer.Add(self.manual_toggle.label, flag=wx.EXPAND | wx.ALL)
-        grid_sizer.Add(self.manual_toggle.button1, flag=wx.EXPAND | wx.ALL)
-        grid_sizer.Add(self.manual_toggle.button2, flag=wx.EXPAND | wx.ALL)
-
+        self.selected_text = wx.StaticText(self.inner_panel, label="Selected Unit: ")
+        self.unit_name = wx.StaticText(self.inner_panel, label="No unit selected")
+        self.unit_name.SetFont(util.MainFont("Normal", fontsize=14))
+        grid_sizer.Add(self.selected_text, flag=wx.EXPAND | wx.ALL)
+        grid_sizer.Add(self.unit_name, flag=wx.EXPAND | wx.ALL)
+        grid_sizer.Add(wx.StaticText(self.inner_panel), flag=wx.EXPAND | wx.ALL)
 
         # Manual toggle
         self.manual_toggle = LabeledDoubleToggleButton(self.inner_panel, "Manual Control", "ON", "OFF")
@@ -127,6 +128,9 @@ class ManualControlView(mvc.View):
     def disable_manual_control(self):
         self.disable_manual_control_buttons()
         self.disable_shutter_control_buttons()
+
+    def set_selected_unit_name(self, name = "No unit selected"):
+        self.unit_name.SetLabel(name)
 
     def toggle_manual_control(self, boolean):
         """
