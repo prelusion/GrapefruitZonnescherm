@@ -134,6 +134,7 @@ class SettingsView(mvc.View):
         apply_sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
 
         self.delete_button = wx.Button(apply_panel, label="Delete Unit")
+        self.delete_button.Disable()
         apply_sizer.Add(self.delete_button, flag=wx.ALIGN_CENTER)
 
         settingsizer.Add(main_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)

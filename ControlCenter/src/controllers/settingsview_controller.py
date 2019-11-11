@@ -24,6 +24,7 @@ class SettingsViewController(mvc.Controller):
         self.tabstate_model.state.add_callback(self.on_tabstate_change)
         self.controlunit_manager.units.add_callback(self.on_controlunits_change)
         self.view.apply_button.Bind(wx.EVT_BUTTON, self.on_apply)
+        self.view.apply_button.Bind(wx.EVT_BUTTON, self.on_delete_unit)
         self.selected_unit = None
         self.disable_settings()
 
@@ -42,6 +43,7 @@ class SettingsViewController(mvc.Controller):
                     wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings", title="Device not connected"))
 
     def on_controlunits_change(self, model, data):
+        self.view.delete_button.Disable()
         wx.CallAfter(self.disable_settings)
         for unit in data:
             unit.model.selected.add_callback(self.on_controlunit_selected_change)
@@ -61,15 +63,18 @@ class SettingsViewController(mvc.Controller):
                     wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings", title="Device not connected"))
 
     def on_controlunit_selected_change(self, model, data):
+        self.view.delete_button.Disable()
         wx.CallAfter(self.disable_settings)
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:
+            self.view.delete_button.Enable()
             unit = units[0]
             if unit.has_communication():
                 self.init_settings_panel(units[0])
             else:
                 if self.tabstate_model.is_settings_view():
                     wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings", title="Device not connected"))
+
 
     def init_settings_panel(self, unit):
 
@@ -86,6 +91,7 @@ class SettingsViewController(mvc.Controller):
                 self.enable_settings()
             else:
                 self.disable_settings()
+                self.view.delete_button.Disable()
 
             self.view.Update()
 
@@ -224,3 +230,7 @@ class SettingsViewController(mvc.Controller):
         model.set_name(name)
         model.set_color(color)
         wx.CallAfter(lambda: self.view.show_success("Successfully updated device"))
+
+    def on_delete_unit(self, e):
+        units = self.controlunit_manager.get_selected_units()
+        print("delete unit:", units)
