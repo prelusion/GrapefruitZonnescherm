@@ -67,14 +67,15 @@ class ManualControlView(mvc.View):
         # Top text
         grid_sizer.Add(wx.StaticText(self.inner_panel))
         manualText = wx.StaticText(self.inner_panel, label="Manual:")
-        manualText.SetFont(util.MainFont("title", fontsize=12))
+        manualText.SetFont(util.MainFont("title"))
         grid_sizer.Add(manualText, wx.ALIGN_CENTER)
         grid_sizer.Add(wx.StaticText(self.inner_panel))
 
         # Selected unit name
         self.selected_text = wx.StaticText(self.inner_panel, label="Selected Unit: ")
+        self.selected_text.SetFont(util.MainFont("normal"))
         self.unit_name = wx.StaticText(self.inner_panel, label="No unit selected")
-        self.unit_name.SetFont(util.MainFont("Normal", fontsize=14))
+        self.unit_name.SetFont(util.MainFont("Normal"))
         grid_sizer.Add(self.selected_text, flag=wx.EXPAND | wx.ALL)
         grid_sizer.Add(self.unit_name, flag=wx.EXPAND | wx.ALL)
         grid_sizer.Add(wx.StaticText(self.inner_panel), flag=wx.EXPAND | wx.ALL)
