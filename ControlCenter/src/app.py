@@ -28,7 +28,7 @@ class App(wx.App):
         self.tabstate_model = TabstateModel()
 
         self.init()
-        # self.start_background_services()
+        self.start_background_services()
 
     def init(self):
         if not os.path.exists(const.DATA_DIR):
@@ -48,15 +48,14 @@ class App(wx.App):
 
         wx.CallLater(500, self.controlunit_manager.fetch_units_from_db)
 
-
     def start_background_services(self):
         t = threading.Thread(target=controlunit.online_control_unit_service,
                              args=(self.app_id, self.controlunit_manager,), daemon=True)
         t.start()
 
-        t = threading.Thread(target=controlunit.sensor_data_service,
-                             args=(self.controlunit_manager, 5), daemon=True)
-        t.start()
+        # t = threading.Thread(target=controlunit.sensor_data_service,
+        #                      args=(self.controlunit_manager, 5), daemon=True)
+        # t.start()
 
 
 class MainView(wx.Frame):

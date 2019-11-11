@@ -80,6 +80,8 @@ class ControlUnitView(wx.Panel):
 
         self.Bind(wx.EVT_LEFT_DOWN, self.on_click)
 
+        self.Disable()
+
     def set_temperature(self, value):
         box = self.boxes["temperature"]
         box.label.SetLabelText(str(value) + " °C")
