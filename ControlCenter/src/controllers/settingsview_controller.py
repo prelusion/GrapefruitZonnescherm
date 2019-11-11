@@ -26,21 +26,16 @@ class SettingsViewController(mvc.Controller):
         self.disable_settings()
 
     def on_controlunits_change(self, model, data):
+        self.disable_settings()
         for port, unit in data.items():
             comm, model = unit
             model.selected.add_callback(self.on_controlunit_selected_change)
 
     def on_controlunit_selected_change(self, model, data):
+        self.disable_settings()
         units = self.controlunit_manager.get_selected_units()
-        if len(units) > 1:
-            self.disable_settings()
-        elif len(units) < 1:
-            self.disable_settings()
-        elif len(units) == 1:
+        if len(units) == 1:
             self.init_settings_panel(units[0])
-            self.enable_settings()
-        else:
-            self.disable_settings()
 
     def init_settings_panel(self, unit):
         comm, model = unit
@@ -51,7 +46,14 @@ class SettingsViewController(mvc.Controller):
             self.view.set_window_height(window_height)
             self.view.set_temperature_threshold(temperature_threshold)
             self.view.set_light_intensity_threshold(light_threshold)
-            self.enable_settings()
+
+            """ This code ensures that when a user clicks VERY FAST on two control units at the same time, 
+            the application doesnt go into a buggy state. """
+            if len(self.controlunit_manager.get_selected_units()) == 1:
+                self.enable_settings()
+            else:
+                self.disable_settings()
+
             self.view.Update()
 
         def execute_threaded():
@@ -59,7 +61,7 @@ class SettingsViewController(mvc.Controller):
                 window_height = str(comm.get_window_height())
                 temperature_threshold = comm.get_temperature_threshold()
                 light_threshold = comm.get_light_intensity_threshold()
-                color = model.get_colour()
+                color = model.get_color()
                 wx.CallAfter(lambda: update_view(window_height, temperature_threshold, light_threshold, color))
             except pyserial.SerialException:
                 logger.warning("Serial error")
@@ -70,7 +72,7 @@ class SettingsViewController(mvc.Controller):
     def disable_settings(self):
         self.view.disable_inputs()
         self.view.set_name("")
-        self.view.set_color("")
+        self.view.set_color(wx.LIGHT_GREY)
         self.view.set_window_height("")
         self.view.set_temperature_threshold("")
         self.view.set_light_intensity_threshold("")
@@ -164,7 +166,7 @@ class SettingsViewController(mvc.Controller):
                     wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))
 
             model.set_name(name)
-            model.set_colour(color)
+            model.set_color(color)
             wx.CallAfter(lambda: self.view.show_success("Successfully initialized device"))
         else:
             wx.CallAfter(lambda: self.view.show_error("Failed to initialize device", title="Failure"))
@@ -186,5 +188,5 @@ class SettingsViewController(mvc.Controller):
             return
 
         model.set_name(name)
-        model.set_colour(color)
+        model.set_color(color)
         wx.CallAfter(lambda: self.view.show_success("Successfully updated device"))

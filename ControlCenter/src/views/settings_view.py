@@ -1,6 +1,7 @@
 import wx
 
 from src import mvc
+from src import util
 
 
 class SettingsView(mvc.View):
@@ -16,8 +17,8 @@ class SettingsView(mvc.View):
         self.device_name_label = "Set device name: "
         self.device_color_label = "Set device color: "
         self.window_height_label = "Set window height: "
-        self.temp_treshold_label = "Set temperature treshold: "
-        self.light_intens_label = "Set light intensety treshold: "
+        self.temp_treshold_label = "Set temperature threshold: "
+        self.light_intens_label = "Set light intensity threshold: "
 
         # Create main sizer and set to panel
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -39,8 +40,7 @@ class SettingsView(mvc.View):
         sizer.Add(wx.StaticText(title_panel))
 
         settingText = wx.StaticText(title_panel, label="Settings:")
-        font = wx.Font(10, wx.DEFAULT, wx.NORMAL, wx.BOLD)
-        settingText.SetFont(font)
+        settingText.SetFont(util.MainFont("title", fontsize=12))
 
         # add title to title panel
         sizer.Add(wx.StaticText())
@@ -57,9 +57,12 @@ class SettingsView(mvc.View):
         self.inputs = {}
 
         for k in labels:
-            settings_sizer.Add(wx.StaticText(settings_panel, label=k))
+            settings_label = wx.StaticText(settings_panel, label=k)
+            settings_label.SetFont(util.MainFont("normal"))
+            settings_sizer.Add(settings_label)
             if k == "Set device color: ":
                 input_type = wx.ColourPickerCtrl(settings_panel)
+                input_type.SetColour(wx.LIGHT_GREY)
             else:
                 input_type = wx.TextCtrl(settings_panel)
             self.inputs[k] = input_type
@@ -70,7 +73,7 @@ class SettingsView(mvc.View):
         apply_panel.SetSizer(apply_sizer)
 
         # Create apply button and add to sizer
-        self.apply_button = wx.Button(apply_panel, label="apply")
+        self.apply_button = wx.Button(apply_panel, label="Apply")
         apply_sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
 
         settingsizer.Add(main_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)

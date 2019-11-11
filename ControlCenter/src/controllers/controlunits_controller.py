@@ -71,7 +71,7 @@ class ControlUnitsController(mvc.Controller):
         view.set_name(model.get_name())
         view.set_manual(model.get_manual())
         view.set_shutter_status(model.get_shutter_status())
-        view.set_device_color(model.get_colour())
+        view.set_device_color(model.get_color())
         view.set_temperature(model.get_temperature())
         view.set_selected(model.get_selected())
 
@@ -92,8 +92,8 @@ class ControlUnitsController(mvc.Controller):
                           wx.OK | wx.ICON_INFORMATION)
 
     def on_unit_click(self, model, view):
+        # if model.is_selecting():
+        #     return
+        
         view.set_selected(True) if not model.get_selected() else view.set_selected(False)
         model.set_selected(not model.get_selected())
-        measurements = model.get_measurements()
-
-        print("measurements for unit:", len(measurements))

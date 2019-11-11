@@ -120,7 +120,8 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
 
             try:
                 history = comm.get_sensor_history()
-                model.add_measurements(history)
+                if history:
+                    model.add_measurements(history)
             except pyserial.SerialException:
                 pass
 
@@ -187,7 +188,7 @@ class ControlUnitCommunication:
 
         try:
             return Measurement(
-                time.time(), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                time.time(), int(temp),
                 int(shutter), int(light))
         except ValueError:
             return
@@ -216,6 +217,7 @@ class ControlUnitCommunication:
                     values.append(data.split("GET_SENSOR_HISTORY=")[1].strip())
 
         with threading.Lock():
+            logger.info("[THREADING] enter lock")
             try:
                 history_string = execute_command()
             except (
@@ -223,6 +225,8 @@ class ControlUnitCommunication:
                     serialutil.SerialException) as e:
                 logger.exception(e)
                 raise pyserial.SerialException
+
+        logger.info("[THREADING] exit lock")
 
         if not history_string:
             return
@@ -236,7 +240,7 @@ class ControlUnitCommunication:
                 temp, light, shutter = value.split(",")
 
                 measurement = Measurement(
-                    time.time() - ((i + 1) * 60), Decimal(temp).quantize(util.QUANTIZE_ONE_DIGIT),
+                    time.time() - ((i + 1) * 60), int(temp),
                     int(shutter), int(light))
 
                 measurements.append(measurement)
@@ -315,6 +319,7 @@ class ControlUnitCommunication:
             return False, buffer
 
         with threading.Lock():
+            logger.info("[THREADING] enter lock")
             buffer = None
 
             for i in range(self.COMMAND_RETRY):
@@ -329,7 +334,9 @@ class ControlUnitCommunication:
                     logger.exception(e)
                     raise pyserial.SerialException
 
-            return True if f"{command}=OK" in buffer else False
+        logger.info("[THREADING] exit lock")
+
+        return True if f"{command}=OK" in buffer else False
 
     @retry_on_any_exception(retries=EXCEPT_RETRIES)
     def _get_command(self, command):
@@ -356,17 +363,24 @@ class ControlUnitCommunication:
 
                 return buffer.split(f"{command}=")[1].strip()
 
+        data = None
         with threading.Lock():
+            logger.info("[THREADING] enter lock")
+
             for i in range(self.COMMAND_RETRY):
                 try:
                     data = execute_command()
-                    if data: return data
+                    if data: break
                     time.sleep(self.RETRY_SLEEP)
                 except (
                         UnicodeDecodeError, Exception, OSError, pyserial.SerialException,
                         serialutil.SerialException) as e:
                     logger.exception(e)
                     raise pyserial.SerialException
+
+        logger.info("[THREADING] exit lock")
+
+        return data
 
     def _get_connection(self):
         if not self._conn:

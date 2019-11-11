@@ -2,12 +2,13 @@ import wx
 
 from src import mvc
 from src import widgets
+from src import util
 
 
 class FilterView(mvc.View):
     CHECKBOX_CONNECTED = "connected"
-    CHECKBOX_STATUS_UP = "status up"
-    CHECKBOX_STATUS_DOWN = "status down"
+    CHECKBOX_STATUS_UP = "shutter status: up"
+    CHECKBOX_STATUS_DOWN = "shutter status: down"
     CHECKBOX_SELECT_ALL = "select all"
 
     def __init__(self, parent):
@@ -23,8 +24,7 @@ class FilterView(mvc.View):
         h_sizer = wx.BoxSizer(wx.HORIZONTAL)
         title_panel.SetSizer(h_sizer)
         label = widgets.CenteredLabel(title_panel, "Filters")
-        font = wx.Font(12, wx.FONTFAMILY_SWISS, wx.NORMAL, wx.BOLD)
-        label.SetFont(font)
+        label.SetFont(util.MainFont("title"))
         h_sizer.Add(label, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         # Create lower panel and its sizers
@@ -46,6 +46,7 @@ class FilterView(mvc.View):
             if index == 1 or index == 4:
                 gridsizer.AddStretchSpacer(10)
             else:
+                checkboxes[counter].SetFont(util.MainFont("normal"))
                 gridsizer.Add(checkboxes[counter], 0)
                 counter += 1
         checkbox_panel.SetSizer(gridsizer)

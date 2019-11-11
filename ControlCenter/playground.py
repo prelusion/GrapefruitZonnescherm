@@ -27,13 +27,13 @@ class test(wx.Frame):
         settings_panel = wx.Panel(main_panel)
         settings_panel.SetBackgroundColour((255, 255, 255))
         settings_panel.SetWindowStyle(wx.BORDER_SIMPLE)
-        apply_panel = wx.Panel(main_panel)
-        apply_panel.SetBackgroundColour((200,1,111))
+        self.apply_panel = wx.Panel(main_panel)
+        self.apply_panel.SetBackgroundColour((200,1,111))
 
         # add panels to sizers
         main_sizer.Add(title_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         main_sizer.Add(settings_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
-        main_sizer.Add(apply_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
+        main_sizer.Add(self.apply_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
 
         # Create content for title panel
         sizer = wx.GridSizer(2,3,0,0)
@@ -59,7 +59,8 @@ class test(wx.Frame):
         settings_panel.SetSizer(settings_sizer)
 
         # Create all settingslabels and inputs
-        labels = [self.device_name_label, self.device_color_label, self.window_height_label, self.temp_treshold_label, self.light_intens_label]
+        labels = [self.device_name_label, self.device_color_label, self.window_height_label,
+                  self.temp_treshold_label, self.light_intens_label]
         self.inputs = {}
 
         for k in labels:
@@ -70,28 +71,34 @@ class test(wx.Frame):
                 input_type = wx.TextCtrl(settings_panel)
             self.inputs[k] = input_type
             settings_sizer.Add(input_type)
-        pprint.pprint(self.inputs)
+        # pprint.pprint(self.inputs)
 
         # Create apply panel sizer
         apply_sizer = wx.GridSizer(1,1,0,0)
-        apply_panel.SetSizer(apply_sizer)
+        self.apply_panel.SetSizer(apply_sizer)
 
         # Create apply button and add to sizer
-        self.apply_button = wx.Button(apply_panel, label="apply")
+        self.apply_button = wx.Button(self.apply_panel, label="apply")
+        self.apply_button.Bind(wx.EVT_BUTTON, self.onclick)
         apply_sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
+
 
 
     def onclick(self, e):
         """
         :return: ['name', wx.Colour(0, 0, 0, 255), 'window', 'temp', 'intensity']
         """
-        result = []
-        for label in self.inputs:
-            if type(self.inputs[label]) == wx.ColourPickerCtrl:
-                result.append(self.inputs[label].GetColour())
-            else:
-                result.append(self.inputs[label].GetValue())
-        return result
+        # result = []
+        # for label in self.inputs:
+        #     if type(self.inputs[label]) == wx.ColourPickerCtrl:
+        #         result.append(self.inputs[label].GetColour())
+        #     else:
+        #         result.append(self.inputs[label].GetValue())
+        # return result
+        self.apply_panel.SetBackgroundColour((1,1,1))
+        print("executed")
+        self.apply_panel.Refresh()
+
 
     def disable_inputs(self):
         for input in self.inputs.values():

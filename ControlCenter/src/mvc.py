@@ -1,5 +1,8 @@
+import logging
+import threading
 from abc import ABC
 
+logger = logging.getLogger(__name__)
 import wx
 
 
@@ -22,13 +25,25 @@ class Observable:
         self.callbacks = {}
 
     def add_callback(self, func):
-        self.callbacks[func] = 1
+        with threading.Lock():
+            logger.info("[THREADING] enter lock")
+            self.callbacks[func] = 1
+        logger.info("[THREADING] exit lock")
 
     def del_callback(self, func):
-        del self.callbacks[func]
+        with threading.Lock():
+            logger.info("[THREADING] enter lock")
+            del self.callbacks[func]
+        logger.info("[THREADING] exit lock")
 
     def _docallbacks(self, data):
-        [func(self.model, data) for func in self.callbacks]
+        with threading.Lock():
+            logger.info("[THREADING] enter lock")
+            try:
+                [func(self.model, data) for func in self.callbacks]
+            except RuntimeError as e:
+                logger.exception(e)
+        logger.info("[THREADING] exit lock")
 
     def set(self, data):
         self.data = data
