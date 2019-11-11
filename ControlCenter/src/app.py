@@ -46,16 +46,14 @@ class App(wx.App):
 
         self.app_id = app_data["id"]
 
-        wx.CallLater(500, self.controlunit_manager.fetch_units_from_db)
-
     def start_background_services(self):
         t = threading.Thread(target=controlunit.online_control_unit_service,
                              args=(self.app_id, self.controlunit_manager,), daemon=True)
         t.start()
 
-        # t = threading.Thread(target=controlunit.sensor_data_service,
-        #                      args=(self.controlunit_manager, 5), daemon=True)
-        # t.start()
+        t = threading.Thread(target=controlunit.sensor_data_service,
+                             args=(self.controlunit_manager, 15), daemon=True)
+        t.start()
 
 
 class MainView(wx.Frame):
@@ -109,11 +107,8 @@ class MainView(wx.Frame):
 
 def mainloop():
     app = App(False)
-
     mainview = MainView(app, "Grapefruit Control Center")
-
     mainview.Show()
-
     app.MainLoop()
 
 
