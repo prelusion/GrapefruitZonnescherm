@@ -56,8 +56,7 @@ class GraphView(mvc.View):
             self.y_min = 0
             self.y_max = 100
             self.measure_unit = "% Light intensity of threshold"
-            # TODO Set light settings
-            self.autoscale = True
+            self.autoscale = False
 
     def update_graph(self, device_id, color, timestamps, measurements):
         if device_id not in self.units:
