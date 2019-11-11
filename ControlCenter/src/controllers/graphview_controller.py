@@ -79,6 +79,7 @@ class GraphViewController(mvc.Controller):
             self._mocked = True
         elif self._mocked:
             self.redraw_all_units()
+            self._mocked = False
             return
 
         self.view.update_temperature_graph(model.get_id(), color, timestamps, temperatures)
