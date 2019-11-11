@@ -1,6 +1,5 @@
 import logging
 import threading
-import time
 
 import wx
 
@@ -20,7 +19,6 @@ class GraphViewController(mvc.Controller):
 
         self.controlunit_manager.units.add_callback(self.on_controlunits_change)
         self.units = []
-        self._mocked = False
 
     def on_controlunits_change(self, model, data):
         wx.CallAfter(self.redraw_all_units)
@@ -30,7 +28,6 @@ class GraphViewController(mvc.Controller):
             model.initialized.add_callback(self.on_controlunit_initialized_change)
 
     def redraw_all_units(self):
-        self._mocked = False
         self.view.clear_graph()
         for unit in self.controlunit_manager.get_selected_units():
             comm, model = unit
