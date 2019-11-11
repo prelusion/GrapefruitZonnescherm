@@ -2,19 +2,9 @@ from collections import namedtuple
 
 import wx
 from src import util
+from src.util import translate_shutter_status
 
 UnitValueBox = namedtuple("UnitValueBox", ["panel", "label"])
-
-
-def translate_shutter_status(value):
-    distributor = {
-        None: "unknown",
-        0: "up",
-        1: "down",
-        2: "going up",
-        3: "going down"
-    }
-    return distributor[value]
 
 
 class ControlUnitView(wx.Panel):
