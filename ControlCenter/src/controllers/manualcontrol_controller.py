@@ -39,7 +39,7 @@ class ManualControlController(mvc.Controller):
             if len(units) == 1:
 
                 unit = units[0]
-                print("on tabstate  change", unit)
+
                 if not unit.has_communication() and self.tabstate_model.is_manual_view():
                     self.view.disable_manual_control()
                     wx.CallAfter(lambda: self.view.show_error("Device must be connected for manual control", title="Device not connected"))
@@ -50,12 +50,11 @@ class ManualControlController(mvc.Controller):
             unit.model.selected.add_callback(self.on_unit_selected_change)
 
     def on_unit_selected_change(self, model, data):
-        print("unit selected change")
         units = self.controlunit_manager.get_selected_units()
-        print(units)
+
         if len(units) == 1:
             unit = units[0]
-            print("on unit selected", unit)
+
             if not unit.has_communication() and self.tabstate_model.is_manual_view():
                 self.view.show_error("Device must be connected for manual control", title="Device not connected")
                 return

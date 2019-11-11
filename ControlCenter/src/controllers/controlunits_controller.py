@@ -40,7 +40,6 @@ class ControlUnitsController(mvc.Controller):
 
         units = self.controlunits_manager.get_units()
         for unit in units:
-            print("rendering unit in init")
             self.create_control_unit_view(unit.model)
             self.prevstate = units.copy()
 
@@ -53,14 +52,8 @@ class ControlUnitsController(mvc.Controller):
                 self.view.render_unit(1, view)
 
     def on_units_changed(self, model, data):
-        print("units changed")
-        print("data:", data)
-        print("prevstate:", self.prevstate)
         down_units = [i for i in set(self.prevstate) - set(data)]
         new_units = [i for i in set(data) - set(self.prevstate)]
-
-        print("down units:", down_units)
-        print("new units:", new_units)
 
         for unit in down_units:
             wx.CallAfter(lambda: self.view.remove_unit(unit.model.get_id()))
@@ -71,7 +64,6 @@ class ControlUnitsController(mvc.Controller):
         self.prevstate = data.copy()
 
     def create_control_unit_view(self, model):
-        print("CREATE CONTROL UNIT VIEW")
         view = ControlUnitView(self.view)
         view.set_connection(model.get_online())
         view.set_name(model.get_name())
