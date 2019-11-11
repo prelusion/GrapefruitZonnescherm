@@ -74,7 +74,10 @@ class ControlUnitView(wx.Panel):
 
     def set_temperature(self, value):
         box = self.boxes["temperature"]
-        box.label.SetLabelText(str(value) + " °C")
+        if value:
+            box.label.SetLabelText(str(value) + " °C")
+        else:
+            box.label.SetLabelText("unknown")
         self._refresh(box.panel)
 
     def set_name(self, value):
@@ -100,9 +103,13 @@ class ControlUnitView(wx.Panel):
         box.label.SetForegroundColour(self.COLOR_ONLINE if boolean else self.COLOR_OFFLINE)
         self._refresh(box.panel)
 
-    def set_manual(self, boolean):
+    def set_manual(self, value):
         box = self.boxes["mode"]
-        box.label.SetLabelText("manual" if boolean else "auto")
+
+        if value is None:
+            box.label.SetLabelText("unknown")
+        else:
+            box.label.SetLabelText("manual" if value else "auto")
 
         self._refresh(box.panel)
 

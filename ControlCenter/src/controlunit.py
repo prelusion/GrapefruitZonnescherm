@@ -108,6 +108,14 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
 
             if unit:
                 print("add communication to unit", device_id)
+
+                unit.model.set_manual(comm.get_manual())
+                unit.model.set_initialized(initialized)
+                unit.model.set_online(True)
+                sensor_data = comm.get_sensor_data()
+                unit.model.set_temperature(sensor_data.temperature)
+                unit.model.set_shutter_status(sensor_data.shutter_status)
+
                 try:
                     logger.info(f"checking for sensor history...")
                     history = comm.get_sensor_history()
@@ -131,6 +139,10 @@ def online_control_unit_service(app_id, controlunit_manager, interval=0.5):
 
                 model.set_online(True)
                 model.set_initialized(initialized)
+                model.set_manual(comm.get_manual())
+                sensor_data = comm.get_sensor_data()
+                model.set_temperature(sensor_data.temperature)
+                model.set_shutter_status(sensor_data.shutter_status)
 
                 try:
                     logger.info(f"checking for sensor history...")
