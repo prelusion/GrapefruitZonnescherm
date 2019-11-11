@@ -13,29 +13,45 @@ logger = logging.getLogger(__name__)
 
 
 class SettingsViewController(mvc.Controller):
-    def __init__(self, app, view_parent, controlunit_manager):
+    def __init__(self, app, view_parent, controlunit_manager, tabstate_model):
         super().__init__()
 
         self.app = app
         self.view_parent = view_parent
         self.view = SettingsView(self.view_parent)
         self.controlunit_manager = controlunit_manager
+        self.tabstate_model = tabstate_model
+        self.tabstate_model.state.add_callback(self.on_tabstate_change)
         self.controlunit_manager.units.add_callback(self.on_controlunits_change)
         self.view.apply_button.Bind(wx.EVT_BUTTON, self.on_apply)
         self.selected_unit = None
         self.disable_settings()
 
+    def on_tabstate_change(self, model, data):
+        units = self.controlunit_manager.get_selected_units()
+        if len(units) == 1:
+            comm, model = units[0]
+            if comm:
+                self.init_settings_panel(units[0])
+            else:
+                if self.tabstate_model.is_settings_view():
+                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings", title="Device not connected"))
+
     def on_controlunits_change(self, model, data):
         wx.CallAfter(self.disable_settings)
-        for port, unit in data.items():
-            comm, model = unit
+        for comm, model in data:
             model.selected.add_callback(self.on_controlunit_selected_change)
 
     def on_controlunit_selected_change(self, model, data):
         wx.CallAfter(self.disable_settings)
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:
-            self.init_settings_panel(units[0])
+            comm, model = units[0]
+            if comm:
+                self.init_settings_panel(units[0])
+            else:
+                if self.tabstate_model.is_settings_view():
+                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings", title="Device not connected"))
 
     def init_settings_panel(self, unit):
         comm, model = unit

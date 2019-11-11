@@ -21,3 +21,9 @@ class TabstateModel(mvc.Model):
 
     def set_settings_view(self):
         self.state.set(self.View.settings)
+
+    def is_settings_view(self):
+        return self.state.get() == self.View.settings
+
+    def is_manual_view(self):
+        return self.state.get() == self.View.manualcontrol

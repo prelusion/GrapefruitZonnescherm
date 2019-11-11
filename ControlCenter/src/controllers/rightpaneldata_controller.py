@@ -22,8 +22,8 @@ class RightpanelDataController(mvc.Controller):
         self.tabstate_model.state.add_callback(self.on_tab_change)
 
         self.graphview_controller = GraphViewController(self.view, self.controlunit_manager)
-        self.manualcontrolview_controller = ManualControlController(self.view, self.controlunit_manager)
-        self.settingsview_controller = SettingsViewController(app, self.view, controlunit_manager)
+        self.manualcontrolview_controller = ManualControlController(self.view, self.controlunit_manager, self.tabstate_model)
+        self.settingsview_controller = SettingsViewController(app, self.view, controlunit_manager, self.tabstate_model)
 
         self.graphview_controller.view.Hide()
         self.manualcontrolview_controller.view.Hide()
