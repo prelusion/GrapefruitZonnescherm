@@ -14,8 +14,8 @@ class GraphMode(enum.Enum):
 
 class Graph(wxmplot.PlotPanel):
     def __init__(self, parent):
-        super().__init__(parent, pos=(150, 150), messenger=lambda text, panel: None,
-                         show_config_popup=False)
+        super().__init__(parent, messenger=lambda text, panel: None,
+                         show_config_popup=False)  # pos=(150, 150),
         self.Show()
 
 

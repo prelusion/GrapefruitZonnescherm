@@ -23,15 +23,19 @@ class GraphViewController(mvc.Controller):
         self._mocked = False
 
     def on_controlunits_change(self, model, data):
+        wx.CallAfter(self.redraw_all_units)
         for port, unit in data.items():
             comm, model = unit
             model.selected.add_callback(self.on_controlunit_selected_change)
+            model.initialized.add_callback(self.on_controlunit_initialized_change)
 
     def redraw_all_units(self):
+        self._mocked = False
         self.view.clear_graph()
         for unit in self.controlunit_manager.get_selected_units():
             comm, model = unit
             self.update_graph(model, model.get_measurements())
+        self.view.Layout()
 
     def on_controlunit_selected_change(self, model, selected):
 
@@ -53,6 +57,9 @@ class GraphViewController(mvc.Controller):
         with threading.Lock():
             wx.CallAfter(execute)
 
+    def on_controlunit_initialized_change(self, model, boolean):
+        wx.CallAfter(self.redraw_all_units)
+
     def on_controlunit_measurement_change(self, model, data):
         with threading.Lock():
             if model.get_selected():
@@ -72,14 +79,6 @@ class GraphViewController(mvc.Controller):
         light_intensity = list(map(lambda x: x.light_intensity, measurements))
 
         if not timestamps or len(timestamps) < 2:
-            timestamps += [time.time() - 10, time.time() - 5]
-            temperatures += [0, 0]
-            shutter_status += [0, 0]
-            light_intensity += [0, 0]
-            self._mocked = True
-        elif self._mocked:
-            self.redraw_all_units()
-            self._mocked = False
             return
 
         self.view.update_temperature_graph(model.get_id(), color, timestamps, temperatures)

@@ -29,10 +29,10 @@ class ControlUnitModel(mvc.Model):
         self._selecting = False
 
     def set_initialized(self, boolean):
-        self.initialized = boolean
+        self.initialized.set(boolean)
 
     def get_initialized(self):
-        return self.initialized
+        return self.initialized.get()
 
     def set_id(self, id, save_db=False):
         """ ID is not automatically saved to database because we only
