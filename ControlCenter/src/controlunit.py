@@ -36,6 +36,7 @@ def get_online_control_units(connected_ports=set(), unused_ports=set()):
                 time.sleep(0.1)
 
     all_ports = ser.get_com_ports()
+
     new_ports = set(all_ports) - set(connected_ports) - set(unused_ports)
     down_ports = set(connected_ports) - set(all_ports) - set(unused_ports)
 

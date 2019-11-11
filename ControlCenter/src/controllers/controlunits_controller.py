@@ -97,7 +97,13 @@ class ControlUnitsController(mvc.Controller):
     def on_unit_click(self, model, view):
         # if model.is_selecting():
         #     return
-        
+
+        units = self.controlunits_manager.get_selected_units()
+
+        if len(units) >= 2 and not model.get_selected():
+            wx.CallAfter(lambda: self.view.show_error("You can only select two control units at a time", title="Can not select more units"))
+            return
+
         view.set_selected(True) if not model.get_selected() else view.set_selected(False)
         model.set_selected(not model.get_selected())
 

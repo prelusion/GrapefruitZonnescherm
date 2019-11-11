@@ -45,3 +45,6 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         for i, id_ in enumerate(self.unit_indexes):
             if self.unit_indexes[id_] > removed_index:
                 self.unit_indexes[id_] -= 1
+
+    def show_error(self, message, title="Error"):
+        wx.MessageBox(message, title, wx.OK | wx.ICON_ERROR)
