@@ -4,7 +4,33 @@ from src import mvc
 from src import util
 
 
+class HoverButton(wx.Button):
+    def __init__(self, parent, fg, bg, hbg, *args, **kwargs):
+        super().__init__(parent, *args, **kwargs)
+        self.parent = parent
+        self.fg = fg  # text color
+        self.bg = bg  # background color
+        self.hbg = hbg  # hover background color
+        self.SetForegroundColour(self.fg)
+        self.SetBackgroundColour(self.bg)
+        self.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
+        self.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
+
+    def on_enter(self, e):
+        self.SetBackgroundColour(self.hbg)
+        self.Refresh()
+        self.parent.Refresh()
+
+    def on_leave(self, e):
+        self.SetBackgroundColour(self.bg)
+        self.Refresh()
+        self.parent.Refresh()
+
+
 class SettingsView(mvc.View):
+    BTN_APPLY_COLOR = (51, 153, 255)
+    BTN_DELETE_COLOR = (204, 0, 0)
+
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -27,35 +53,34 @@ class SettingsView(mvc.View):
         # Create panels to fit in sizer
         title_panel = wx.Panel(main_panel)
         settings_panel = wx.Panel(main_panel)
-        apply_panel = wx.Panel(main_panel)
+        apply_outer_panel = wx.Panel(main_panel)
+        apply_outer_panel_sizer = wx.BoxSizer(wx.VERTICAL)
+        apply_panel = wx.Panel(apply_outer_panel)
+        apply_outer_panel_sizer.Add(apply_panel, wx.ID_ANY, wx.EXPAND | wx.ALL, 200)
+        apply_outer_panel.SetSizer(apply_outer_panel_sizer)
 
         # add panels to sizers
         main_sizer.Add(title_panel, 2, wx.EXPAND | wx.ALL)
         main_sizer.Add(settings_panel, 5, wx.EXPAND | wx.ALL)
-        main_sizer.Add(apply_panel, 15, wx.EXPAND | wx.ALL)
+        main_sizer.Add(apply_outer_panel, 15, wx.EXPAND | wx.ALL)
 
         # Create content for title panel
         sizer = wx.GridSizer(2, 3, 0, 0)
         title_panel.SetSizer(sizer)
-        sizer.Add(wx.StaticText(title_panel))
-
-        settingText = wx.StaticText(title_panel, label="Settings:")
-        settingText.SetFont(util.MainFont("title", fontsize=10))
-
-        # add title to title panel
-        sizer.Add(wx.StaticText())
+        sizer.Add(wx.StaticText(title_panel, label=""))
+        settingText = wx.StaticText(title_panel, label="Settings:       ")
+        settingText.SetFont(util.MainFont("title", fontsize=12))
         sizer.Add(settingText, flag=wx.ALIGN_CENTER)
-        sizer.Add(wx.StaticText(title_panel))
+        sizer.Add(wx.StaticText(title_panel, label=""))
 
         # Create settingspanel sizer
-        settings_sizer = wx.GridSizer(7, 2, 0, 0)
+        settings_sizer = wx.GridSizer(5, 2, 0, 0)
         settings_panel.SetSizer(settings_sizer)
 
         # Create all settingslabels and inputs
         labels = [self.device_name_label, self.device_color_label, self.window_height_label, self.temp_treshold_label,
                   self.light_intens_label]
         self.inputs = {}
-        self.input_names = {}
 
         for k in labels:
             settings_label = wx.StaticText(settings_panel, label=k)
@@ -67,29 +92,22 @@ class SettingsView(mvc.View):
             else:
                 input_type = wx.TextCtrl(settings_panel)
             self.inputs[k] = input_type
-            self.input_names[k] = input_type
             settings_sizer.Add(input_type)
 
         # Create apply panel sizer
-        # apply_sizer = wx.GridSizer(1, 2, 0, 0)
-        # apply_panel.SetSizer(apply_sizer)
-        # apply_panel.SetBackgroundColour(wx.BLUE)
+        apply_sizer = wx.GridSizer(1, 2, 0, 0)
+        apply_panel.SetSizer(apply_sizer)
+
         # Create apply button and add to sizer
+        self.apply_button = HoverButton(apply_panel, wx.WHITE, self.BTN_APPLY_COLOR, wx.LIGHT_GREY, label="Apply Settings")
+        apply_sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
 
-        self.apply_button = wx.Button(settings_panel, label="Apply")
-        # apply_sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
-        mocklabel2 = wx.StaticText(settings_panel, label="")
-        settings_sizer.Add(mocklabel2)
-        settings_sizer.Add(self.apply_button)
-
-        self.delete_button = wx.Button(settings_panel, label="Delete unit")
-        mocklabel = wx.StaticText(settings_panel, label="")
-        settings_sizer.Add(mocklabel)
-        settings_sizer.Add(self.delete_button)
-
-
-
-        # apply_sizer.Add(self.delete_button, flag=wx.ALIGN_CENTER)
+        self.delete_button = wx.Button(apply_panel, label="Delete Unit")
+        self.delete_button.SetForegroundColour(wx.WHITE)
+        self.delete_button.SetBackgroundColour(self.BTN_DELETE_COLOR)
+        # self.delete_button.Bind(wx.EVT_ENTER_WINDOW, self.on_del_btn_hover)
+        # self.delete_button.Bind(wx.EVT_LEAVE_WINDOW, self.on_del_btn_hover_leave)
+        apply_sizer.Add(self.delete_button, flag=wx.ALIGN_CENTER)
 
         settingsizer.Add(main_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         main_panel.Layout()
