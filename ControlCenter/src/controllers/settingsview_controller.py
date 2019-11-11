@@ -29,6 +29,7 @@ class SettingsViewController(mvc.Controller):
 
         for unit in self.controlunit_manager.get_units():
             unit.model.selected.add_callback(self.on_controlunit_selected_change)
+            unit.model.online.add_callback(self.on_controlunit_online_change)
 
     def on_tabstate_change(self, model, data):
         units = self.controlunit_manager.get_selected_units()
@@ -44,6 +45,20 @@ class SettingsViewController(mvc.Controller):
         wx.CallAfter(self.disable_settings)
         for unit in data:
             unit.model.selected.add_callback(self.on_controlunit_selected_change)
+            unit.model.online.add_callback(self.on_controlunit_online_change)
+
+    def on_controlunit_online_change(self, model, data):
+        wx.CallAfter(self.disable_settings)
+        units = self.controlunit_manager.get_selected_units()
+        if len(units) == 1:
+            unit = units[0]
+            if not unit.model.get_selected():
+                return
+            if unit.has_communication():
+                self.init_settings_panel(units[0])
+            else:
+                if self.tabstate_model.is_settings_view():
+                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings", title="Device not connected"))
 
     def on_controlunit_selected_change(self, model, data):
         wx.CallAfter(self.disable_settings)
