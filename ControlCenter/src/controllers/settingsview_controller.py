@@ -43,9 +43,9 @@ class SettingsViewController(mvc.Controller):
         def update_view(window_height, temperature_threshold, light_threshold, color):
             self.view.set_name(model.get_name())
             self.view.set_color(color)
-            self.view.set_window_height(window_height)
-            self.view.set_temperature_threshold(temperature_threshold)
-            self.view.set_light_intensity_threshold(light_threshold)
+            self.view.set_window_height(window_height if window_height != "ERROR" else "")
+            self.view.set_temperature_threshold(temperature_threshold if temperature_threshold != "ERROR" else "")
+            self.view.set_light_intensity_threshold(light_threshold if light_threshold != "ERROR" else "")
 
             """ This code ensures that when a user clicks VERY FAST on two control units at the same time, 
             the application doesnt go into a buggy state. """
