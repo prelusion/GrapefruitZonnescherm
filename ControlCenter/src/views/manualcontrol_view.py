@@ -57,13 +57,27 @@ class ManualControlView(mvc.View):
 
         self.main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.main_sizer)
-        self.main_sizer.AddSpacer(50)
 
         self.inner_panel = wx.Panel(self)
         self.main_sizer.Add(self.inner_panel, 20, wx.CENTER)
 
         grid_sizer = wx.GridSizer(14, 3, 0, 20)
         self.inner_panel.SetSizer(grid_sizer)
+
+        # Top text
+        grid_sizer.Add(wx.StaticText(self.inner_panel))
+        manualText = wx.StaticText(self.inner_panel, label="Manual:")
+        manualText.SetFont(util.MainFont("title", fontsize=12))
+        grid_sizer.Add(manualText, wx.ALIGN_CENTER)
+        grid_sizer.Add(wx.StaticText(self.inner_panel))
+
+        # Selected unit name
+        self.selected_text = wx.StaticText(self.inner_panel, label="Selected Unit: ")
+        self.unit_name = wx.StaticText(self.inner_panel, label="No unit selected")
+        self.unit_name.SetFont(util.MainFont("Normal", fontsize=14))
+        grid_sizer.Add(self.selected_text, flag=wx.EXPAND | wx.ALL)
+        grid_sizer.Add(self.unit_name, flag=wx.EXPAND | wx.ALL)
+        grid_sizer.Add(wx.StaticText(self.inner_panel), flag=wx.EXPAND | wx.ALL)
 
         # Manual toggle
         self.manual_toggle = LabeledDoubleToggleButton(self.inner_panel, "Manual Control", "ON", "OFF")
@@ -114,6 +128,10 @@ class ManualControlView(mvc.View):
     def disable_manual_control(self):
         self.disable_manual_control_buttons()
         self.disable_shutter_control_buttons()
+
+    def set_selected_unit_name(self, name = "No unit selected"):
+        if not name: name = "uninitialized"
+        self.unit_name.SetLabel(name)
 
     def toggle_manual_control(self, boolean):
         """

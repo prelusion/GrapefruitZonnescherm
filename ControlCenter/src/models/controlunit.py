@@ -16,7 +16,7 @@ class ControlUnitModel(mvc.Model):
     def __init__(self, id):
         self.initialized = mvc.Observable(self, False)
         self.id = mvc.Observable(self, id)
-        self.name = mvc.Observable(self, "uninitialized")
+        self.name = mvc.Observable(self, None)
         self.online = mvc.Observable(self, True)
         self.manual = mvc.Observable(self, None)
         self.color = mvc.Observable(self, wx.NullColour)
@@ -52,9 +52,10 @@ class ControlUnitModel(mvc.Model):
         db.update(db.TABLE_CONTROL_UNITS, f"name = '{name}'", f"device_id = {self.get_id()}")
 
     def get_name(self):
-        name = db.select_columns(db.TABLE_CONTROL_UNITS, "name", f"device_id = {self.get_id()}")
-        if name and len(name) == 1:
-            self.set_name(name[0][0])
+        if not self.name.get():
+            name = db.select_columns(db.TABLE_CONTROL_UNITS, "name", f"device_id = {self.get_id()}")
+            if name and len(name) == 1:
+                self.set_name(name[0][0])
         return self.name.get()
 
     def set_color(self, color):
