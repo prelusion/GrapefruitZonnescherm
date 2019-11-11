@@ -50,11 +50,12 @@ class ControlUnitManager:
         else:
             logger.warning(f"trying to remove connection from unexisting port: {port}")
 
-    def add_unit(self, device_id, communication, port):
-        print("adding unit to manager")
-        # units = self.units.get()
-        # units[port] = (communication, model)
-        # self.units.set(units)
+    def add_unit(self, model):
+        unit = Unit(model)
+        units = self.units.get()
+        units.append(unit)
+        self.units.set(units)
+        return unit
 
     def remove_unit(self, port):
         units = self.units.get().copy()

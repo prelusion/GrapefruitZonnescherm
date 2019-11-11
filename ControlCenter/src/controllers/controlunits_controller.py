@@ -82,6 +82,8 @@ class ControlUnitsController(mvc.Controller):
         model.selected.add_callback(lambda model, value: wx.CallAfter(lambda: view.set_selected(value)))
         view.set_on_click_callback(lambda e: self.on_unit_click(model, view))
 
+        if model.get_online(): view.Enable()
+
         self.view.render_unit(model.get_id(), view)
 
         if not model.get_initialized():
