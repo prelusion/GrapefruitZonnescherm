@@ -132,13 +132,13 @@ class SettingsViewController(mvc.Controller):
             return
 
         def execute_threaded():
-            for comm, model in self.controlunit_manager.get_selected_units():
+            for unit in self.controlunit_manager.get_selected_units():
                 try:
-                    device_id = comm.get_id()
+                    device_id = unit.comm.get_id()
 
                     if device_id:
-                        self.update_settings(comm,
-                                             model,
+                        self.update_settings(unit.comm,
+                                             unit.model,
                                              device_id,
                                              name,
                                              color,
@@ -146,15 +146,15 @@ class SettingsViewController(mvc.Controller):
                                              temperature_threshold,
                                              light_intensity_threshold)
                     else:
-                        self.init_device(comm,
-                                         model,
-                                         model.get_id(),
+                        self.init_device(unit.comm,
+                                         unit.model,
+                                         unit.model.get_id(),
                                          name,
                                          color,
                                          height,
                                          temperature_threshold,
                                          light_intensity_threshold,
-                                         model.get_manual())
+                                         unit.model.get_manual())
                 except pyserial.SerialException:
                     logger.warning("Serial error")
                     # TODO: show user error

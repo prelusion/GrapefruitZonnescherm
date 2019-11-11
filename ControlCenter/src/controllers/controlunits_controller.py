@@ -99,9 +99,9 @@ class ControlUnitsController(mvc.Controller):
         view.set_selected(True) if not model.get_selected() else view.set_selected(False)
         model.set_selected(not model.get_selected())
 
-    def on_unit_online_change(self, model, value, view):
-        print("on unit online change", value)
-        view.set_connection(value)
+    def on_unit_online_change(self, model, online: bool, view):
+        print("on unit online change", online)
+        view.set_connection(online)
         # print("view", view.IsEnabled())
         # print("view", view)
         # print("enabled", view.IsEnabled())
@@ -111,7 +111,7 @@ class ControlUnitsController(mvc.Controller):
         #     view.Disable()
         # print("enabled", view.IsEnabled())
 
-        view.Enable()
+        view.Enable() if online else view.Disable()
 
         view.Layout()
         view.Refresh()

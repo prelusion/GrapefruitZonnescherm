@@ -37,8 +37,7 @@ class ControlUnitManager:
 
     def get_unit(self, device_id):
         units = [unit for unit in self.units.get() if unit.model.get_id() == device_id]
-        if len(units) == 1:
-            return units[0]
+        if len(units) == 1: return units[0]
 
     def add_communication(self, device_id, comm):
         self.get_unit(device_id).set_communication(comm)
