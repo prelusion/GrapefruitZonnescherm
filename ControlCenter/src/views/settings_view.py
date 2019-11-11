@@ -5,16 +5,23 @@ from src import util
 
 
 class HoverButton(wx.Button):
-    def __init__(self, parent, fg, bg, hbg, *args, **kwargs):
+    def __init__(self, parent, fg, bg, hbg, cbg, dbg, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.parent = parent
         self.fg = fg  # text color
         self.bg = bg  # background color
         self.hbg = hbg  # hover background color
+        self.cbg = cbg  # click background color
+        self.dbg = dbg  # disabled background color
         self.SetForegroundColour(self.fg)
         self.SetBackgroundColour(self.bg)
         self.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
         self.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
+        self.Bind(wx.EVT_BUTTON, self.on_click)
+        self.click_callback = None
+
+    def set_click_callback(self, callback):
+        self.click_callback = callback
 
     def on_enter(self, e):
         self.SetBackgroundColour(self.hbg)
@@ -26,9 +33,32 @@ class HoverButton(wx.Button):
         self.Refresh()
         self.parent.Refresh()
 
+    def on_click(self, e):
+        self.SetBackgroundColour(self.cbg)
+        self.Refresh()
+        self.parent.Refresh()
+        wx.CallLater(2000, lambda: self.on_leave(None))
+        if self.click_callback: self.click_callback()
+
+    def Disable(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print("set disabled")
+        self.SetBackgroundColour(self.dbg)
+        self.Refresh()
+        self.parent.Refresh()
+
+    def Enable(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.SetBackgroundColour(self.bg)
+        self.Refresh()
+        self.parent.Refresh()
+
 
 class SettingsView(mvc.View):
     BTN_APPLY_COLOR = (51, 153, 255)
+    BTN_APPLY_COLOR_HOVER = (38, 123, 209)
+    BTN_APPLY_COLOR_CLICK = (24, 83, 143)
+    BTN_APPLY_COLOR_DISABLED = (161, 207, 255)
     BTN_DELETE_COLOR = (204, 0, 0)
 
     def __init__(self, parent):
@@ -99,18 +129,17 @@ class SettingsView(mvc.View):
         apply_panel.SetSizer(apply_sizer)
 
         # Create apply button and add to sizer
-        self.apply_button = HoverButton(apply_panel, wx.WHITE, self.BTN_APPLY_COLOR, wx.LIGHT_GREY, label="Apply Settings")
+        # self.apply_button = HoverButton(apply_panel, wx.WHITE, self.BTN_APPLY_COLOR, self.BTN_APPLY_COLOR_HOVER, self.BTN_APPLY_COLOR_CLICK, self.BTN_APPLY_COLOR_DISABLED, label="Apply Settings")
+        self.apply_button = wx.Button(apply_panel, label="Apply Settings")
         apply_sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
 
         self.delete_button = wx.Button(apply_panel, label="Delete Unit")
-        self.delete_button.SetForegroundColour(wx.WHITE)
-        self.delete_button.SetBackgroundColour(self.BTN_DELETE_COLOR)
-        # self.delete_button.Bind(wx.EVT_ENTER_WINDOW, self.on_del_btn_hover)
-        # self.delete_button.Bind(wx.EVT_LEAVE_WINDOW, self.on_del_btn_hover_leave)
         apply_sizer.Add(self.delete_button, flag=wx.ALIGN_CENTER)
 
         settingsizer.Add(main_panel, wx.ID_ANY, wx.EXPAND | wx.ALL)
         main_panel.Layout()
+
+        self.disable_inputs()
 
     def get_settings(self):
         """
