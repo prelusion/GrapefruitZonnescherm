@@ -99,7 +99,7 @@ void digital_display()
 {
 	//Checks if a new button is pressed. if so set the new pressed button.
 	uint8_t toggle_status = check_new_pressed_buttons_from_display();
-	set_toggled_buttons(toggle_status);
+	set_current_selected_sensor(toggle_status);
 	switch(toggle_status)
 	{
 		case 0b00000001:

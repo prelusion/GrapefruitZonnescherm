@@ -9,7 +9,7 @@
  * \brief  
  * displays the measurement on the digital display
  */ 
- void display_measurement(Sensor sensor, int8_t measurement);
+ void display_measurement(SelectedSensor sensor, int8_t measurement);
  
 /** 
  * \brief  
@@ -23,7 +23,7 @@
  * 
  * \returns the last valid pressed button
  */
- uint8_t check_new_pressed_buttons_from_display(void);
+ SelectedSensor check_new_pressed_buttons_from_display(void);
  
 /**
  * \brief 
@@ -31,6 +31,6 @@
  * 
  * \returns the pressed new button
  */
- uint8_t read_pressed_display_buttons(void);
+ SelectedSensor read_pressed_display_buttons(void);
  
  #endif

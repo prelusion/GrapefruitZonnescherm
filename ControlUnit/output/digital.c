@@ -104,7 +104,7 @@ void init_digital_display()
 }
 
 //Gives a display on the led board of the selected measurement
-void display_measurement(Sensor sensor, int8_t measurement)
+void display_measurement(SelectedSensor sensor, int8_t measurement)
 {
 	reset_display();
 	send_command_to_display(0x40); // auto-increment address
@@ -209,10 +209,10 @@ void display_measurement(Sensor sensor, int8_t measurement)
 }
 
 //Checks if new pressed button is valid
-uint8_t check_new_pressed_buttons_from_display(void)
+SelectedSensor check_new_pressed_buttons_from_display(void)
 {
-	uint8_t new_pressed_buttons = read_pressed_display_buttons();
-	uint8_t buttons = get_toggled_buttons();
+	SelectedSensor new_pressed_buttons = read_pressed_display_buttons();
+	SelectedSensor buttons = get_current_selected_sensor();
 	if(new_pressed_buttons != buttons && new_pressed_buttons != 0x00)
 	{
 		buttons = new_pressed_buttons;
@@ -221,7 +221,7 @@ uint8_t check_new_pressed_buttons_from_display(void)
 }
 
 //read_pin_from_displays all the digital buttons that are pressed
-uint8_t read_pressed_display_buttons()
+SelectedSensor read_pressed_display_buttons()
 {
 	uint8_t checked_buttons = 0;
 	write_pin_from_display(strobe, LOW);
@@ -237,6 +237,6 @@ uint8_t read_pressed_display_buttons()
 
 	DDRD |= _BV(data); // set bit, direction = output
 	write_pin_from_display(strobe, HIGH);
-	return (uint8_t)checked_buttons;
+	return (SelectedSensor)checked_buttons;
 
 }

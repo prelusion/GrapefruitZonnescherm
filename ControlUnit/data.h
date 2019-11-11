@@ -22,7 +22,7 @@ typedef enum {
 	TEMPERATURE = 0,
 	LIGHT_INTENSITY = 1,
 	DISTANCE = 2
-} Sensor;
+} SelectedSensor;
 
 /**
  * \brief 
@@ -113,7 +113,7 @@ void set_current_unit_status(UnitStatus unit_status);
  * 
  * \returns last valid button
  */
- uint8_t get_toggled_buttons();
+ SelectedSensor get_current_selected_sensor();
  
 /** 
  * \brief  
@@ -122,5 +122,5 @@ void set_current_unit_status(UnitStatus unit_status);
  *\param new_toggled_buttons a new toggle button. 
  */
 
- void set_toggled_buttons(uint8_t new_toggled_buttons);
+ void set_current_selected_sensor(SelectedSensor selected_sensor);
 #endif
