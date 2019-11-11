@@ -21,9 +21,9 @@ class GraphViewController(mvc.Controller):
         self.units = []
 
     def on_controlunits_change(self, model, data):
+        print("control units change", data)
         wx.CallAfter(self.redraw_all_units)
-        for port, unit in data.items():
-            comm, model = unit
+        for comm, model in data:
             model.selected.add_callback(self.on_controlunit_selected_change)
             model.initialized.add_callback(self.on_controlunit_initialized_change)
 

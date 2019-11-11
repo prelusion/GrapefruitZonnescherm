@@ -12,11 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class ManualControlController(mvc.Controller):
-    def __init__(self, view_parent, controlunit_manager):
+    def __init__(self, view_parent, controlunit_manager, tabstate_model):
         super().__init__()
 
         self.controlunit_manager = controlunit_manager
-
+        self.tabstate_model = tabstate_model
+        self.tabstate_model.state.add_callback(self.on_tabstate_change)
         self.view = ManualControlView(view_parent)
 
         self.view.set_enable_manual_control_callback(self.on_manual_control_enable)
@@ -29,6 +30,16 @@ class ManualControlController(mvc.Controller):
 
         self.controlunit_manager.units.add_callback(self.on_units_change)
 
+    def on_tabstate_change(self, model, data):
+        if self.tabstate_model.is_manual_view():
+            units = self.controlunit_manager.get_selected_units()
+            if len(units) == 1:
+                comm, model = units[0]
+                if not comm and self.tabstate_model.is_manual_view():
+                    self.view.disable_manual_control()
+                    wx.CallAfter(lambda: self.view.show_error("Device must be connected for manual control", title="Device not connected"))
+                    return
+
     def on_units_change(self, model, data):
         for comm, model in self.controlunit_manager.get_units():
             model.selected.add_callback(self.on_unit_selected_change)
@@ -37,6 +48,10 @@ class ManualControlController(mvc.Controller):
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:
             comm, model = units[0]
+            if not comm and self.tabstate_model.is_manual_view():
+                self.view.show_error("Device must be connected for manual control", title="Device not connected")
+                return
+
             self.view.enable_manual_control()
             self.view.toggle_manual_control(model.get_manual())
             if model.get_manual():

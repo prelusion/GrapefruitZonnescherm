@@ -3,14 +3,17 @@ from logging import getLogger
 
 import serial as pyserial
 
+from src import db
 from src import mvc
+from src.models.controlunit import ControlUnitModel
 
 logger = getLogger(__name__)
 
 
 class ControlUnitManager:
     def __init__(self):
-        self.units = mvc.Observable(self, OrderedDict())  # "port": <ControlUnitCommunication, ControlUnitModel>
+        self.units = mvc.Observable(self, [])  #  (ControlUnitCommunication, ControlUnitModel)
+        self.ports = mvc.Observable(self, [])
 
     def add_unit(self, port, communication, model):
         print("adding unit to manager")
@@ -32,11 +35,24 @@ class ControlUnitManager:
         del units[port]
         self.units.set(units)
 
+    def fetch_units_from_db(self):
+        units = []
+        for unit in db.select_all(db.TABLE_CONTROL_UNITS):
+            db_id, device_id, name, color, created_at = unit
+            model = ControlUnitModel(device_id)
+            model.set_name(name)
+            model.set_color(color)
+            model.set_online(False)
+            model.set_initialized(True)
+            units.append((None, model))
+
+        self.units.set(units)
+
     def get_units(self):
         """
         :return: [(comm, model), (comm, model)]
         """
-        return [unit for port, unit in self.units.get().items()]
+        return self.units.get()
 
     def get_selected_units(self):
         """
@@ -44,20 +60,16 @@ class ControlUnitManager:
 
         :return: [(comm, model), (comm, model)]
         """
-        return [unit for port, unit in self.units.get().items() if unit[1].get_selected()]
+        return [unit for unit in self.units.get() if unit[1].get_selected()]
 
     def is_port_connected(self, port):
-        return port in self.units.get()
+        return port in self.ports.get()
 
     def get_connected_ports(self):
-        return list(self.units.get().keys())
+        return self.ports.get()
 
     def update_sensor_data(self):
-        units = self.units.get().copy()
-
-        for i, port in enumerate(units):
-            comm, model = units[port]
-
+        for comm, model in self.units.get().copy():
             try:
                 data = comm.get_sensor_data()
 

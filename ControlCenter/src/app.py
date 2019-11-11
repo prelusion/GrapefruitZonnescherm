@@ -28,7 +28,7 @@ class App(wx.App):
         self.tabstate_model = TabstateModel()
 
         self.init()
-        self.start_background_services()
+        # self.start_background_services()
 
     def init(self):
         if not os.path.exists(const.DATA_DIR):
@@ -45,6 +45,9 @@ class App(wx.App):
             util.save_json_to_file(const.APP_DATA_FILE, app_data)
 
         self.app_id = app_data["id"]
+
+        wx.CallLater(500, self.controlunit_manager.fetch_units_from_db)
+
 
     def start_background_services(self):
         t = threading.Thread(target=controlunit.online_control_unit_service,
@@ -107,8 +110,11 @@ class MainView(wx.Frame):
 
 def mainloop():
     app = App(False)
+
     mainview = MainView(app, "Grapefruit Control Center")
+
     mainview.Show()
+
     app.MainLoop()
 
 

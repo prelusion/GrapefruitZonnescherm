@@ -39,9 +39,8 @@ class ControlUnitsController(mvc.Controller):
         self.prevstate = {}
 
         for comm, model in self.controlunits_manager.get_units():
-            view = ControlUnitView(self.view)
-            self.controlunit_views[model.get_id()] = view
-            self.view.render_unit(model.get_id(), view)
+            print("rendering unit in init")
+            self.create_control_unit_view(model)
 
         self.controlunits_manager.units.add_callback(self.on_units_changed)
 
@@ -52,15 +51,14 @@ class ControlUnitsController(mvc.Controller):
                 self.view.render_unit(1, view)
 
     def on_units_changed(self, model, data):
-        down_units = {k: self.prevstate[k] for k in set(self.prevstate) - set(data)}
-        new_units = {k: data[k] for k in set(data) - set(self.prevstate)}
+        down_units = [i for i in set(self.prevstate) - set(data)]
+        new_units = [i for i in set(data) - set(self.prevstate)]
         print("units changed:", new_units)
-        for port, unit in down_units.items():
-            comm, model = unit
+
+        for comm, model in down_units:
             wx.CallAfter(lambda: self.view.remove_unit(model.get_id()))
 
-        for port, unit in new_units.items():
-            comm, model = unit
+        for comm, model in new_units:
             wx.CallAfter(lambda: self.create_control_unit_view(model))
 
         self.prevstate = data.copy()
