@@ -40,8 +40,8 @@ class GraphView(mvc.View):
 
         if graphmode == GraphMode.Temp:
             self.graph.set_xlabel("Time")
-            self.y_min = -150
-            self.y_max = 150
+            self.y_min = -64
+            self.y_max = 63
             self.graph.set_ylabel("Temperature in °C")
             self.measure_unit = "Temperature in °C"
             self.autoscale = False
