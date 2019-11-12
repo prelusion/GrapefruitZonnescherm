@@ -50,13 +50,17 @@ class SettingsViewController(mvc.Controller):
             unit.model.selected.add_callback(self.on_controlunit_selected_change)
             unit.model.online.add_callback(self.on_controlunit_online_change)
 
-    def on_controlunit_online_change(self, model, data):
+    def on_controlunit_online_change(self, model, online):
         wx.CallAfter(self.disable_settings)
         units = self.controlunit_manager.get_selected_units()
         if len(units) == 1:
             unit = units[0]
             if not unit.model.get_selected():
                 return
+            if online:
+                wx.CallAfter(lambda: self.view.delete_button.Disable())
+            else:
+                wx.CallAfter(lambda: self.view.delete_button.Enable())
             if unit.has_communication():
                 self.init_settings_panel(units[0])
             # else:
