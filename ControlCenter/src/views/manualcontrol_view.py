@@ -1,8 +1,8 @@
 import wx
 
 from src import mvc
-from src import widgets
 from src import util
+from src import widgets
 
 
 class LabeledDoubleToggleButton(wx.Panel):
@@ -17,7 +17,6 @@ class LabeledDoubleToggleButton(wx.Panel):
 
         self.label = widgets.CenteredLabel(parent, label=label, horizontal=False)
         self.label.SetFont(util.MainFont("normal"))
-
 
         self.button1 = wx.ToggleButton(parent, id=wx.ID_ANY, label=button1_label, name="1")
         self.button2 = wx.ToggleButton(parent, id=wx.ID_ANY, label=button2_label, name="2")
@@ -66,9 +65,9 @@ class ManualControlView(mvc.View):
 
         # Top text
         grid_sizer.Add(wx.StaticText(self.inner_panel))
-        manualText = wx.StaticText(self.inner_panel, label="Manual:")
-        manualText.SetFont(util.MainFont("title"))
-        grid_sizer.Add(manualText, wx.ALIGN_CENTER)
+        manual_text = wx.StaticText(self.inner_panel, label="Manual:")
+        manual_text.SetFont(util.MainFont("title"))
+        grid_sizer.Add(manual_text, wx.ALIGN_CENTER)
         grid_sizer.Add(wx.StaticText(self.inner_panel))
 
         # Selected unit name
@@ -130,7 +129,7 @@ class ManualControlView(mvc.View):
         self.disable_manual_control_buttons()
         self.disable_shutter_control_buttons()
 
-    def set_selected_unit_name(self, name = "No unit selected"):
+    def set_selected_unit_name(self, name="No unit selected"):
         if not name: name = "uninitialized"
         self.unit_name.SetLabel(name)
 

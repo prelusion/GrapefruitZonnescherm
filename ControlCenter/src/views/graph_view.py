@@ -14,10 +14,7 @@ class GraphMode(enum.Enum):
 
 class Graph(wxmplot.PlotPanel):
     def __init__(self, parent):
-        super().__init__(parent, messenger=lambda text, panel: None,
-                         show_config_popup=False)  # pos=(150, 150),
-
-        # self.Show()
+        super().__init__(parent, messenger=lambda text, panel: None, show_config_popup=False)
 
 
 class GraphView(mvc.View):
@@ -29,7 +26,7 @@ class GraphView(mvc.View):
         self.graph.set_xlabel("Time")
         self.graph_sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(self.graph_sizer)
-        self.graph_sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL , 0)
+        self.graph_sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL, 0)
 
         self.framecolor = "LightGrey"
         self.graphmode = graphmode
@@ -40,8 +37,8 @@ class GraphView(mvc.View):
 
         if graphmode == GraphMode.Temp:
             self.graph.set_xlabel("Time")
-            self.y_min = -150
-            self.y_max = 150
+            self.y_min = -64
+            self.y_max = 63
             self.graph.set_ylabel("Temperature in °C")
             self.measure_unit = "Temperature in °C"
             self.autoscale = False

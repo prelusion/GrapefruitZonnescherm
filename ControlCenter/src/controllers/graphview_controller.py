@@ -2,7 +2,7 @@ import logging
 import threading
 
 import wx
-from src import util
+
 from src import mvc
 from src.views.graphtab_view import GraphTabView
 

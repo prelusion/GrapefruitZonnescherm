@@ -38,10 +38,6 @@ class SettingsViewController(mvc.Controller):
             unit = units[0]
             if unit.has_communication():
                 self.init_settings_panel(units[0])
-            # else:
-            #     if self.tabstate_model.is_settings_view():
-            #         wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
-            #                                                   title="Device not connected"))
 
     def on_controlunits_change(self, model, data):
         self.view.delete_button.Disable()
@@ -63,10 +59,6 @@ class SettingsViewController(mvc.Controller):
                 wx.CallAfter(lambda: self.view.delete_button.Enable())
             if unit.has_communication():
                 self.init_settings_panel(units[0])
-            # else:
-            #     if self.tabstate_model.is_settings_view():
-            #         # wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
-            #         #                                           title="Device not connected"))
 
     def on_controlunit_selected_change(self, model, data):
         self.view.delete_button.Disable()
@@ -80,10 +72,6 @@ class SettingsViewController(mvc.Controller):
 
             if unit.has_communication():
                 self.init_settings_panel(units[0])
-            # else:
-            #     if self.tabstate_model.is_settings_view():
-                    # wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
-                    #                                           title="Device not connected"))
 
     def init_settings_panel(self, unit):
 
@@ -113,7 +101,6 @@ class SettingsViewController(mvc.Controller):
                 wx.CallAfter(lambda: update_view(window_height, temperature_threshold, light_threshold, color))
             except pyserial.SerialException:
                 logger.warning("Serial error")
-                # TODO: show user error
 
         threading.Thread(target=execute_threaded, daemon=True).start()
 
@@ -190,7 +177,6 @@ class SettingsViewController(mvc.Controller):
                                          unit.model.get_manual())
                 except pyserial.SerialException:
                     logger.warning("Serial error")
-                    # TODO: show user error
 
         threading.Thread(target=execute_threaded, daemon=True).start()
 
@@ -248,7 +234,8 @@ class SettingsViewController(mvc.Controller):
 
         unit = units[0]
 
-        result = wx.MessageBox('Do you want to delete the selected unit?', 'Delete control unit', wx.YES_NO | wx.ICON_EXCLAMATION)
+        result = wx.MessageBox('Do you want to delete the selected unit?', 'Delete control unit',
+                               wx.YES_NO | wx.ICON_EXCLAMATION)
 
         if result == wx.YES:
             self.controlunit_manager.delete_unit(unit.model.get_id())

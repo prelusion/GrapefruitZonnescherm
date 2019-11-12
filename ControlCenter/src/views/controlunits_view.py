@@ -22,7 +22,6 @@ class ControlUnitsView(scrolled.ScrolledPanel):
         self.SetSizer(self.main_sizer)
 
     def render_unit(self, id_, view):
-        # view.SetBackgroundColour((255, 0, 255))
         self.unit_views[id_] = view
         self.unit_sizer.Add(view, 0, wx.EXPAND | wx.ALL, 10)
         self.unit_indexes[id_] = self.unit_count
@@ -46,5 +45,6 @@ class ControlUnitsView(scrolled.ScrolledPanel):
             if self.unit_indexes[id_] > removed_index:
                 self.unit_indexes[id_] -= 1
 
-    def show_error(self, message, title="Error"):
+    @staticmethod
+    def show_error(message, title="Error"):
         wx.MessageBox(message, title, wx.OK | wx.ICON_ERROR)

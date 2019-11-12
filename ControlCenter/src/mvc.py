@@ -2,8 +2,9 @@ import logging
 import threading
 from abc import ABC
 
-logger = logging.getLogger(__name__)
 import wx
+
+logger = logging.getLogger(__name__)
 
 
 class Model(ABC):
