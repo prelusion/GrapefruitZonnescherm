@@ -9,7 +9,7 @@
  * \brief  
  * displays the measurement on the digital display
  */ 
- void display_measurement(SelectedSensor sensor, int8_t measurement);
+ void display_measurement(SelectedSensor sensor, int16_t measurement);
  
 /** 
  * \brief  
