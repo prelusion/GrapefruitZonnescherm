@@ -1,5 +1,5 @@
-#ifndef _STATUS_SHUTTER_H_
-#define _STATUS_SHUTTER_H_
+#ifndef _OUTPUT_SHUTTER_H_
+#define _OUTPUT_SHUTTER_H_
 
 #include <stdint.h>
 #include "../data.h"

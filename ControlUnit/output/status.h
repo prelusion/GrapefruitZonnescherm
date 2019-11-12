@@ -1,5 +1,5 @@
-#ifndef _STATUS_OUTPUT_H_
-#define _STATUS_OUTPUT_H_
+#ifndef _OUTPUT_STATUS_H_
+#define _OUTPUT_STATUS_H_
 
 #include "../data.h"
 

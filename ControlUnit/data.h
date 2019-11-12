@@ -109,18 +109,19 @@ void set_current_unit_status(UnitStatus unit_status);
 
 /**
  * \brief 
- * Get the last pressed button
+ * Get the selected sensor
  * 
- * \returns last valid button
+ * \returns the selected sensor
  */
- uint8_t get_current_selected_buttons();
+ SelectedSensor get_current_selected_sensor();
  
 /** 
  * \brief  
- * Set new pressed button/
+ * Set the current selected sensor.
  *
- *\param new_toggled_buttons a new toggle button. 
+ *\param selected_sensor The sensor to select.
  */
 
- void set_current_selected_buttons(uint8_t toggle_status);
+ void set_current_selected_sensor(SelectedSensor selected_sensor);
+ 
 #endif

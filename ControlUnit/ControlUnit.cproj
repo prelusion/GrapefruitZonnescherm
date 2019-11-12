@@ -148,10 +148,10 @@
     <Compile Include="data.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="output\digital.c">
+    <Compile Include="output\display.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="output\digital.h">
+    <Compile Include="output\display.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="ports\adc.c">

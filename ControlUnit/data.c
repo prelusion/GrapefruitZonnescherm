@@ -3,7 +3,6 @@
 uint8_t current_serial_connection = 0;
 int8_t current_temperature = 0;
 uint8_t current_light_intensity = 0;
-uint16_t current_distance = 0;
 ShutterStatus current_shutter_status = 0;
 UnitStatus current_unit_status = STARTING;
 SelectedSensor current_selected_sensor = TEMPERATURE;
@@ -38,16 +37,6 @@ void set_current_light_intensity(uint8_t light_intensity)
 	current_light_intensity = light_intensity;
 }
 
-uint16_t get_current_distance(void)
-{
-	return current_distance;
-}
-
-void set_current_distance(uint16_t distance)
-{
-	current_distance = distance;
-}
-
 ShutterStatus get_current_shutter_status(void)
 {
 	return current_shutter_status;
@@ -68,12 +57,12 @@ void set_current_unit_status(UnitStatus unit_status)
 	current_unit_status = unit_status;
 }
 
-uint8_t get_current_selected_buttons()
+SelectedSensor get_current_selected_sensor()
 {
 	return current_selected_sensor;
 }
 
-void set_current_selected_buttons(uint8_t toggle_status)
+void set_current_selected_sensor(SelectedSensor selected_sensor)
 {
-	current_selected_sensor = toggle_status;
+	current_selected_sensor= selected_sensor;
 }
