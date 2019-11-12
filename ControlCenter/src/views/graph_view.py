@@ -25,6 +25,7 @@ class GraphView(mvc.View):
         self.parent = parent
 
         self.graph = Graph(self)
+        self.graph.set_xlabel("Time")
         self.graph_sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(self.graph_sizer)
         self.graph_sizer.Add(self.graph, 0, wx.EXPAND | wx.ALL , 0)
@@ -72,6 +73,7 @@ class GraphView(mvc.View):
                                          side='left',
                                          linewidth=self.linewidth,
                                          labelfontsize=6,
+                                         xlabel="Time",
                                          legendfontsize=6,
                                          autoscale=self.autoscale,
                                          framecolor=self.framecolor,
@@ -84,6 +86,7 @@ class GraphView(mvc.View):
             self.graph.oplot(
                 ydata=measurements,
                 xdata=timestamps,
+                xlabel="Time",
                 side='left',
                 linewidth=1,
                 color=color)
