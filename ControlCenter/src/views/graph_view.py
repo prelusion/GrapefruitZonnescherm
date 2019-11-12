@@ -16,7 +16,8 @@ class Graph(wxmplot.PlotPanel):
     def __init__(self, parent):
         super().__init__(parent, messenger=lambda text, panel: None,
                          show_config_popup=False)  # pos=(150, 150),
-        self.Show()
+
+        # self.Show()
 
 
 class GraphView(mvc.View):

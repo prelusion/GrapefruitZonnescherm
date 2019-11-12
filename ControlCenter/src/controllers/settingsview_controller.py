@@ -38,10 +38,10 @@ class SettingsViewController(mvc.Controller):
             unit = units[0]
             if unit.has_communication():
                 self.init_settings_panel(units[0])
-            else:
-                if self.tabstate_model.is_settings_view():
-                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
-                                                              title="Device not connected"))
+            # else:
+            #     if self.tabstate_model.is_settings_view():
+            #         wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
+            #                                                   title="Device not connected"))
 
     def on_controlunits_change(self, model, data):
         self.view.delete_button.Disable()
@@ -59,10 +59,10 @@ class SettingsViewController(mvc.Controller):
                 return
             if unit.has_communication():
                 self.init_settings_panel(units[0])
-            else:
-                if self.tabstate_model.is_settings_view():
-                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
-                                                              title="Device not connected"))
+            # else:
+            #     if self.tabstate_model.is_settings_view():
+            #         # wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
+            #         #                                           title="Device not connected"))
 
     def on_controlunit_selected_change(self, model, data):
         self.view.delete_button.Disable()
@@ -76,10 +76,10 @@ class SettingsViewController(mvc.Controller):
 
             if unit.has_communication():
                 self.init_settings_panel(units[0])
-            else:
-                if self.tabstate_model.is_settings_view():
-                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
-                                                              title="Device not connected"))
+            # else:
+            #     if self.tabstate_model.is_settings_view():
+                    # wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
+                    #                                           title="Device not connected"))
 
     def init_settings_panel(self, unit):
 
