@@ -1,8 +1,8 @@
 import wx
 
+from src import util
 from src import widgets
 from src.controllers.tabview_controller import TabviewController
-from src import util
 
 
 class TopView(wx.Panel):

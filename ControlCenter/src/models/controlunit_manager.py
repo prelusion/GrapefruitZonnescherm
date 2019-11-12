@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from logging import getLogger
 
 import serial as pyserial
@@ -32,7 +31,6 @@ class Unit:
         self.model.set_temperature(None)
         self.model.set_shutter_status(None)
         self.model.set_manual(None)
-        # self.model.set_shutter_status("unknown")
 
 
 class ControlUnitManager:

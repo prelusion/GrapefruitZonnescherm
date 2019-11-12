@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 import wx
+
 from src import util
 from src.util import translate_shutter_status
 
@@ -78,32 +79,33 @@ class ControlUnitView(wx.Panel):
             box.label.SetLabelText(str(value) + " °C")
         else:
             box.label.SetLabelText("unknown")
-        self._refresh(box.panel)
+        self.refresh(box.panel)
 
     def set_name(self, value):
         box = self.boxes["name"]
+
         if not value:
             value = "uninitialized"
+
         box.label.SetLabelText(str(value))
         box.label.GetFont().SetWeight(wx.BOLD)
-        self._refresh(box.panel)
+        self.refresh(box.panel)
 
     def set_shutter_status(self, value):
-
         box = self.boxes["shutter status"]
         box.label.SetLabelText(translate_shutter_status(value))
-        self._refresh(box.panel)
+        self.refresh(box.panel)
 
     def set_device_color(self, value):
         panel = self.boxes["color"].panel
         panel.SetBackgroundColour(value)
-        self._refresh(panel)
+        self.refresh(panel)
 
     def set_connection(self, boolean):
         box = self.boxes["connection"]
         box.label.SetLabelText("online" if boolean else "offline")
         box.label.SetForegroundColour(self.COLOR_ONLINE if boolean else self.COLOR_OFFLINE)
-        self._refresh(box.panel)
+        self.refresh(box.panel)
 
     def set_manual(self, value):
         box = self.boxes["mode"]
@@ -113,9 +115,10 @@ class ControlUnitView(wx.Panel):
         else:
             box.label.SetLabelText("manual" if value else "auto")
 
-        self._refresh(box.panel)
+        self.refresh(box.panel)
 
-    def _refresh(self, panel):
+    @staticmethod
+    def refresh(panel):
         panel.Layout()
         panel.Refresh()
 

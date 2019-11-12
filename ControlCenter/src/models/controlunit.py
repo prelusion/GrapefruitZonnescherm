@@ -135,11 +135,5 @@ class ControlUnitModel(mvc.Model):
         self.selected.set(value)
         self._selecting = True
 
-    def is_selecting(self):
-        return self._selecting
-
-    def done_selecting(self):
-        self._selecting = False
-
     def get_selected(self):
         return self.selected.get()

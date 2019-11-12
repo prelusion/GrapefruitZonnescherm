@@ -51,7 +51,6 @@ class ManualControlController(mvc.Controller):
 
                 if not unit.has_communication() and self.tabstate_model.is_manual_view():
                     self.view.set_selected_unit_name("Selected unit must be online")
-                    # self.view.show_error("Device must be connected for manual control", title="Device not connected")
                     return
 
                 self.view.enable_manual_control()
@@ -78,7 +77,6 @@ class ManualControlController(mvc.Controller):
 
                 if not unit.has_communication() and self.tabstate_model.is_manual_view():
                     self.view.disable_manual_control()
-                    # wx.CallAfter(lambda: self.view.show_error("Device must be connected for manual control", title="Device not connected"))
                     return
 
     def on_units_change(self, model, data):
@@ -96,15 +94,16 @@ class ManualControlController(mvc.Controller):
 
             if not unit.has_communication() and self.tabstate_model.is_manual_view():
                 self.view.set_selected_unit_name("Selected unit must be online")
-                # self.view.show_error("Device must be connected for manual control", title="Device not connected")
                 return
 
             self.view.enable_manual_control()
             self.view.toggle_manual_control(model.get_manual())
             self.view.set_selected_unit_name(model.get_name())
+
             if model.get_manual():
                 self.view.enable_shutter_control_buttons()
                 self.view.toggle_shutter_control(model.get_shutter_status())
+
         elif units:
             self.view.set_selected_unit_name("Please select one unit")
             self.view.disable_manual_control()
@@ -134,7 +133,6 @@ class ManualControlController(mvc.Controller):
                         "Enable manual control failure: functionality was not implemented on this control unit"))
                 except pyserial.SerialException:
                     logger.warning("Serial error")
-                    # TODO: show user error
 
         threading.Thread(target=execute, daemon=True).start()
 
@@ -154,7 +152,6 @@ class ManualControlController(mvc.Controller):
                         "Disable manual control failure: functionality was not implemented on this control unit"))
                 except pyserial.SerialException:
                     logger.warning("Serial error")
-                    # TODO: show user error
 
         threading.Thread(target=execute, daemon=True).start()
 
@@ -173,7 +170,6 @@ class ManualControlController(mvc.Controller):
                         "Toggle up failure: functionality was not implemented on this control unit"))
                 except pyserial.SerialException:
                     logger.warning("Serial error")
-                    # TODO: show user error
 
         threading.Thread(target=execute, daemon=True).start()
 
@@ -192,6 +188,5 @@ class ManualControlController(mvc.Controller):
                         "Toggle down failure: functionality was not implemented on this control unit"))
                 except pyserial.SerialException:
                     logger.warning("Serial error")
-                    # TODO: show user error
 
         threading.Thread(target=execute, daemon=True).start()

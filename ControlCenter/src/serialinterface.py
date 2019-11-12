@@ -53,8 +53,6 @@ class Connection:
         if not self._interface:
             raise IOError("Connection must be opened before writing")
 
-        # logger.info(f"write serial data: {data}")
-
         if '\r' not in data:
             data += '\r'
 
@@ -66,8 +64,7 @@ class Connection:
             raise IOError("Connection must be opened before reading")
 
         data = self._interface.read(self._interface.inWaiting()).decode()
-        # if data:
-        # logger.info(f"read serial data: {data}")
+
         return data
 
     @retry_on_any_exception(RETRIES)
@@ -76,10 +73,3 @@ class Connection:
             raise IOError("Connection must be opened before reading")
 
         return self._interface.readline().decode()
-
-
-"""
-except (Exception, OSError, SerialException) as e:
-            logger.exception(e)
-            
-            """

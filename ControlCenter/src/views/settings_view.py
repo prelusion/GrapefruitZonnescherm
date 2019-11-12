@@ -4,61 +4,7 @@ from src import mvc
 from src import util
 
 
-class HoverButton(wx.Button):
-    def __init__(self, parent, fg, bg, hbg, cbg, dbg, *args, **kwargs):
-        super().__init__(parent, *args, **kwargs)
-        self.parent = parent
-        self.fg = fg  # text color
-        self.bg = bg  # background color
-        self.hbg = hbg  # hover background color
-        self.cbg = cbg  # click background color
-        self.dbg = dbg  # disabled background color
-        self.SetForegroundColour(self.fg)
-        self.SetBackgroundColour(self.bg)
-        self.Bind(wx.EVT_ENTER_WINDOW, self.on_enter)
-        self.Bind(wx.EVT_LEAVE_WINDOW, self.on_leave)
-        self.Bind(wx.EVT_BUTTON, self.on_click)
-        self.click_callback = None
-
-    def set_click_callback(self, callback):
-        self.click_callback = callback
-
-    def on_enter(self, e):
-        self.SetBackgroundColour(self.hbg)
-        self.Refresh()
-        self.parent.Refresh()
-
-    def on_leave(self, e):
-        self.SetBackgroundColour(self.bg)
-        self.Refresh()
-        self.parent.Refresh()
-
-    def on_click(self, e):
-        self.SetBackgroundColour(self.cbg)
-        self.Refresh()
-        self.parent.Refresh()
-        wx.CallLater(2000, lambda: self.on_leave(None))
-        if self.click_callback: self.click_callback()
-
-    def Disable(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.SetBackgroundColour(self.dbg)
-        self.Refresh()
-        self.parent.Refresh()
-
-    def Enable(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.SetBackgroundColour(self.bg)
-        self.Refresh()
-        self.parent.Refresh()
-
-
 class SettingsView(mvc.View):
-    BTN_APPLY_COLOR = (51, 153, 255)
-    BTN_APPLY_COLOR_HOVER = (38, 123, 209)
-    BTN_APPLY_COLOR_CLICK = (24, 83, 143)
-    BTN_APPLY_COLOR_DISABLED = (161, 207, 255)
-    BTN_DELETE_COLOR = (204, 0, 0)
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -97,9 +43,9 @@ class SettingsView(mvc.View):
         sizer = wx.GridSizer(2, 3, 0, 0)
         title_panel.SetSizer(sizer)
         sizer.Add(wx.StaticText(title_panel, label=""))
-        settingText = wx.StaticText(title_panel, label="Settings:       ")
-        settingText.SetFont(util.MainFont("title", fontsize=12))
-        sizer.Add(settingText, flag=wx.ALIGN_CENTER)
+        setting_text = wx.StaticText(title_panel, label="Settings:       ")
+        setting_text.SetFont(util.MainFont("title", fontsize=12))
+        sizer.Add(setting_text, flag=wx.ALIGN_CENTER)
         sizer.Add(wx.StaticText(title_panel, label=""))
 
         # Create settingspanel sizer
@@ -128,7 +74,6 @@ class SettingsView(mvc.View):
         apply_panel.SetSizer(apply_sizer)
 
         # Create apply button and add to sizer
-        # self.apply_button = HoverButton(apply_panel, wx.WHITE, self.BTN_APPLY_COLOR, self.BTN_APPLY_COLOR_HOVER, self.BTN_APPLY_COLOR_CLICK, self.BTN_APPLY_COLOR_DISABLED, label="Apply Settings")
         self.apply_button = wx.Button(apply_panel, label="Apply Settings")
         apply_sizer.Add(self.apply_button, flag=wx.ALIGN_CENTER)
 
@@ -154,13 +99,13 @@ class SettingsView(mvc.View):
         return result
 
     def disable_inputs(self):
-        for input in self.inputs.values():
-            input.Disable()
+        for input_field in self.inputs.values():
+            input_field.Disable()
         self.apply_button.Disable()
 
     def enable_inputs(self):
-        for input in self.inputs.values():
-            input.Enable()
+        for input_field in self.inputs.values():
+            input_field.Enable()
         self.apply_button.Enable()
 
     def set_name(self, name):
@@ -178,8 +123,10 @@ class SettingsView(mvc.View):
     def set_light_intensity_threshold(self, light):
         self.inputs[self.light_intens_label].SetValue(str(light))
 
+    @staticmethod
     def show_success(self, message, title="Success"):
         wx.MessageBox(message, title, wx.OK | wx.ICON_INFORMATION)
 
-    def show_error(self, message, title="Error"):
+    @staticmethod
+    def show_error(message, title="Error"):
         wx.MessageBox(message, title, wx.OK | wx.ICON_ERROR)

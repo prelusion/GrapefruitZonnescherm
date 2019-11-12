@@ -14,7 +14,6 @@ class GraphTab(View):
         sizer = wx.GridSizer(1, 1, 1, 1)
         self.SetSizer(sizer)
         sizer.Add(self.graph, wx.ID_ANY, wx.EXPAND | wx.ALL, 0)
-        # self.SetBackgroundColour(colour=(0, 255, 0))
         self.graph.SetSize(200, 200)
 
 
