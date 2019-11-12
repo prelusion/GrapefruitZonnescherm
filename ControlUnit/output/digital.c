@@ -104,7 +104,7 @@ void init_digital_display()
 }
 
 //Gives a display on the led board of the selected measurement
-void display_measurement(SelectedSensor sensor, int8_t measurement)
+void display_measurement(SelectedSensor sensor, int16_t measurement)
 {
 	reset_display();
 	send_command_to_display(0x40); // auto-increment address
@@ -113,24 +113,26 @@ void display_measurement(SelectedSensor sensor, int8_t measurement)
 	
 	char text[5];
 	char unit;
+	char value[8];
 	switch (sensor)
 	{
 		case TEMPERATURE:
 		strcpy(text, "TEMP");
 		unit = 'G';
+		sprintf(value, "%s%3d%c", text, (uint8_t)measurement, unit);
 		break;
 		case LIGHT_INTENSITY:
 		strcpy(text, "LI  ");
 		unit = 'P';
+		sprintf(value, "%s%3d%c", text, (uint8_t)measurement, unit);
 		break;
 		case DISTANCE:
 		strcpy(text, "DIST");
 		unit = 'C';
+		sprintf(value, "%s%3d%c", text, measurement, unit);
 		break;
 	}
 	
-	char value[8];
-	sprintf(value, "%s%3d%c", text, measurement, unit);
 	
 	for(uint8_t position = 0; position < 8; position++)
 	{
