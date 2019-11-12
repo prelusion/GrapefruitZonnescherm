@@ -40,8 +40,8 @@ class SettingsViewController(mvc.Controller):
                 self.init_settings_panel(units[0])
             else:
                 if self.tabstate_model.is_settings_view():
-                    wx.CallAfter(lambda: self.view.show_error("Device must be connected to apply settings",
-                                                              title="Device not connected"))
+                    wx.CallAfter(lambda: self.view.show_error("Not all settings are available when device is offline!",
+                                                              title="Warning"))
 
     def on_controlunits_change(self, model, data):
         self.view.delete_button.Disable()
