@@ -36,28 +36,38 @@ class ManualControlController(mvc.Controller):
         self.controlunit_manager.units.add_callback(self.on_units_change)
 
     def on_unit_online_change(self, model, online):
-        units = self.controlunit_manager.get_selected_units()
 
-        if len(units) == 1:
-            unit = units[0]
-
-            if not unit.has_communication() and self.tabstate_model.is_manual_view():
-                self.view.set_selected_unit_name("Selected unit must be online")
-                # self.view.show_error("Device must be connected for manual control", title="Device not connected")
-                return
-
-            self.view.enable_manual_control()
-            self.view.toggle_manual_control(model.get_manual())
-            self.view.set_selected_unit_name(model.get_name())
-            if model.get_manual():
-                self.view.enable_shutter_control_buttons()
-                self.view.toggle_shutter_control(model.get_shutter_status())
-        elif units:
-            self.view.set_selected_unit_name("Please select one unit")
+        def execute():
             self.view.disable_manual_control()
-        else:
-            self.view.set_selected_unit_name()
-            self.view.disable_manual_control()
+
+            units = self.controlunit_manager.get_selected_units()
+
+            if len(units) == 1:
+                unit = units[0]
+
+                if not online:
+                    wx.CallAfter(lambda: self.view.set_selected_unit_name("Selected unit must be online"))
+                    return
+
+                if not unit.has_communication() and self.tabstate_model.is_manual_view():
+                    self.view.set_selected_unit_name("Selected unit must be online")
+                    # self.view.show_error("Device must be connected for manual control", title="Device not connected")
+                    return
+
+                self.view.enable_manual_control()
+                self.view.toggle_manual_control(model.get_manual())
+                self.view.set_selected_unit_name(model.get_name())
+                if model.get_manual():
+                    self.view.enable_shutter_control_buttons()
+                    self.view.toggle_shutter_control(model.get_shutter_status())
+            elif units:
+                self.view.set_selected_unit_name("Please select one unit")
+                self.view.disable_manual_control()
+            else:
+                self.view.set_selected_unit_name()
+                self.view.disable_manual_control()
+
+        wx.CallAfter(execute)
 
     def on_tabstate_change(self, model, data):
         if self.tabstate_model.is_manual_view():
@@ -78,6 +88,7 @@ class ManualControlController(mvc.Controller):
             unit.model.online.add_callback(self.on_unit_online_change)
 
     def on_unit_selected_change(self, model, data):
+        self.view.disable_manual_control()
         units = self.controlunit_manager.get_selected_units()
 
         if len(units) == 1:

@@ -7,7 +7,7 @@ from src.measurement import Measurement
 
 
 class ControlUnitModel(mvc.Model):
-    MEMORY_COUNT_THRESHOLD = 200
+    MEMORY_COUNT_THRESHOLD = 50
     SHUTTER_UP = 0
     SHUTTER_DOWN = 1
     SHUTTER_GOING_UP = 2
