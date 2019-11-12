@@ -124,7 +124,7 @@ class SettingsView(mvc.View):
         self.inputs[self.light_intens_label].SetValue(str(light))
 
     @staticmethod
-    def show_success(self, message, title="Success"):
+    def show_success(message, title="Success"):
         wx.MessageBox(message, title, wx.OK | wx.ICON_INFORMATION)
 
     @staticmethod
